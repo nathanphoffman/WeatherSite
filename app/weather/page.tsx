@@ -1,4 +1,4 @@
-import styles from './styles2.module.css'
+import styles from './styles.module.css'
 
 export default async function Page() {
   
