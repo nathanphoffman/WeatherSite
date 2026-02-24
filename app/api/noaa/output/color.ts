@@ -1,12 +1,12 @@
 import { RealFeelPreferences, StormPreferences } from "../config";
 import { Magnitude } from "../types/general";
 
-export const BRIGHT = 1 as const;
-export const BLINK = 5 as const;
-export const RED = 31 as const;
-export const GREEN = 32 as const;
-export const YELLOW = 33 as const;
-export const WHITE = 37 as const;
+export const BRIGHT = "text-rose-500" as const;
+//export const BLINK = 5 as const;
+export const RED = "text-red-500" as const;
+export const GREEN = "text-green-500" as const;
+export const YELLOW = "text-yellow-500" as const;
+export const WHITE = "text-white" as const;
 
 export function getRealFeelMagnitude(realFeel: number): Magnitude {
 
@@ -31,7 +31,7 @@ export function getStormMagnitude(stormRating: number): Magnitude {
 
 export function color(txt: string, color: number) {
     if (!color) return txt;
-    return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`;
+    return `<span class="${color}">${txt}</span>`;
 }
 
 export function underline(txt: string) {

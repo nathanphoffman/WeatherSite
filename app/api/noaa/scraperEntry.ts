@@ -40,27 +40,5 @@ export async function run(): Promise<{[key: string]: string[]}> {
     });
 
     return obj;
-/*
-    const arr = [];
-
-    // this unwinds the seperate arrays of days into an array of objects with days as the keys for output with table library
-    Object.keys(obj).map((day) => {
-        obj[day].forEach((x, i) => {
-            const newData = { [day]: x };
-            if (!arr[i]) arr.push(newData);
-            else arr[i] = { ...arr[i], ...newData };
-        });
-    });
-
-    const weatherTable = new Table();
-
-    arr.forEach(a => weatherTable.addRow(a))
-
-    weatherTable.printTable();
-    info.printInfo();
-*/
-
-
-
 
 }

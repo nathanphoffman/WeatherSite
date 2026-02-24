@@ -1,5 +1,5 @@
-import { BLINK, BRIGHT, color, GREEN, RED, WHITE, YELLOW } from "./color";
-import { HUMIDITY, Magnitude, Postfix, PostfixLetter } from "../types/general";
+import { BRIGHT, color, GREEN, RED, WHITE, YELLOW } from "./color";
+import { Magnitude, Postfix, PostfixLetter } from "../types/general";
 
 export function getWithColor(magnitude: Magnitude, str: string) {
 
