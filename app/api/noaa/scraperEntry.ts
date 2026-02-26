@@ -3,7 +3,6 @@
 import { getDayOfTheWeek, splitIntoGroupsOf3 } from "./utility";
 //import { Table } from 'console-table-printer';
 import { getWeatherLines } from "./output";
-import { getParseScrapedData } from "./scraper";
 
 export async function run(): Promise<{[key: string]: string[]}> {
 

@@ -1,4 +1,4 @@
-import { ChanceRanges } from "../config";
+import { ChanceRanges, LAT_MULTIPLIER } from "../config";
 import { Magnitude, MagnitudeRange } from "../types/general";
 import { getAverage } from "../utility";
 

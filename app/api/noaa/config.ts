@@ -8,6 +8,10 @@ export const latLon = {
     h: [40.2761,-76.8845], //harrisburg
 };
 
+export const LAT_MULTIPLIER = 1_000_000;
+export const LONG_MULTIPLIER = 1_000_000;
+
+
 export function getChosenLocation() {
     const argument = (process.argv as any[])?.[2];
     const chosenLocation = !argument ? "default" : argument;
@@ -17,13 +21,13 @@ export function getChosenLocation() {
 export function getLat() {
     const chosenLocation = getChosenLocation();
     const chosenLatLon = latLon[chosenLocation];
-    return chosenLatLon[0];
+    return String(chosenLatLon[0]);
 }
 
 export function getLon() {
     const chosenLocation = getChosenLocation();
     const chosenLatLon = latLon[chosenLocation];
-    return chosenLatLon[1];
+    return String(chosenLatLon[1]);
 }
 
 
