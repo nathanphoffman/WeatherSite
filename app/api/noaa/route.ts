@@ -32,7 +32,7 @@ export async function GET() {
 
             console.log("Completed fetch against NOAA");
         }
-        else cached = savedRecord;
+        else cached = JSON.parse(savedRecord.forecast);
     }
 
     return new Response(JSON.stringify({ cached, ran }), {

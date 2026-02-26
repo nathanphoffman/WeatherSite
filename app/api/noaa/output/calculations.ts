@@ -13,7 +13,7 @@ export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magn
 
 export function isInRange(value: number | string, range: number[] | string) {
     if (typeof value === 'string' && typeof range === 'string') return value === range;
-    else if (typeof value === 'number' && typeof range === 'string') return ChanceRanges[value] === range;
+    else if (typeof value === 'number' && typeof range === 'string') return ChanceRanges[Number(value) as Magnitude] === range;
     else if (typeof value === 'number' && typeof range === 'object' && range.length === 2) {
         if (range[0] === -1 && value <= range[1]) return true;
         if (range[1] === -1 && value >= range[0]) return true;
@@ -24,7 +24,7 @@ export function isInRange(value: number | string, range: number[] | string) {
     
 export function getMagnitude(value: number | string, range: MagnitudeRange): Magnitude {
     //const magnitude = Object.keys(range).find(key => Number(key) === Number(value));
-    const magnitude = Object.keys(range).find(key => isInRange(value, range[key]));
+    const magnitude = Object.keys(range).find(key => isInRange(value, range[Number(key) as Magnitude]));
 
     // !! adjust typing going forward
     return magnitude as any as Magnitude;

@@ -50,7 +50,7 @@ export function saveLatLongForecast(weather: Weather) {
         .run(storageIntegerLat, storageIntegerLong, unixSeconds, JSON.stringify(forecast));
 }
 
-export function getSavedLatLongForecast(lat: string, long: string, unixSecondsAgeLimit: number): string {
+export function getSavedLatLongForecast(lat: string, long: string, unixSecondsAgeLimit: number): Weather {
     const db = openWeatherTableConnection();
 
     const storageIntegerLat = Math.round(Number(lat) * LAT_MULTIPLIER);

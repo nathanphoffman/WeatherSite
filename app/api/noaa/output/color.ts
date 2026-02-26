@@ -29,7 +29,7 @@ export function getStormMagnitude(stormRating: number): Magnitude {
     else return 4;
 }
 
-export function color(txt: string, color: number) {
+export function color(txt: string, color: string) {
     if (!color) return txt;
     return `<span class="${color}">${txt}</span>`;
 }
