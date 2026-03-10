@@ -7,7 +7,7 @@ let cached: any = undefined;
 
 // app/api/hello/route.ts
 export async function runMe() {
-
+/*
     let ran: Boolean = false;
 
     const lat = getLat();
@@ -36,6 +36,10 @@ export async function runMe() {
     }
 
     return {cached, ran};
+    */
+
+    const cached = await run();
+    return { cached }
 }
 
 function getNowInSeconds() {
