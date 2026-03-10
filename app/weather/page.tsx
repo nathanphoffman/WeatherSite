@@ -1,15 +1,18 @@
 import styles from './styles.module.css'
+import { getLat, getLon } from '../api/noaa/config'
+import { getSavedLatLongForecast, saveLatLongForecast } from '../api/noaa/database'
+import { runMe } from '../api/noaa/start'
+
+export const dynamic = 'force-dynamic'
 
 export default async function Page() {
-  
-  const data = await fetch('http://localhost:3000/api/noaa')
-  const weather = await data.json()
-  console.log(weather);
 
-  const weatherDiv = Object.keys(weather.cached).map((key) => {
+  const record = await runMe();
+  const weather = record.cached;
+  const weatherDiv = Object.keys(weather).map((key) => {
 
     // @ts-ignore
-    const weatherByThreeHours = weather.cached[key].map(
+    const weatherByThreeHours = weather[key].map(
       (threeHourEntry: string, i: number) => <div key={key + String(i)} dangerouslySetInnerHTML={{ __html: threeHourEntry }}></div>
     );
 
