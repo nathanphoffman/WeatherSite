@@ -1,5 +1,5 @@
 import axios from "axios";
-import { JSDOM } from "jsdom";
+import { parse } from "node-html-parser";
 import { getChosenLocation, getLat, getLatLon, getLon, HEADER_ACCEPT, HEADER_USER_AGENT } from "./config";
 import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
@@ -24,9 +24,9 @@ export async function callOut(page: number) {
     };
 
     const response = await axios(config);
-    const dom = new JSDOM(response.data);
+    const dom = parse(response.data);
 
-    let tableNodeArr = [...dom.window.document.querySelectorAll('.contentArea > table:nth-child(3)')];
+    let tableNodeArr = dom.querySelectorAll('.contentArea > table:nth-child(3)');
     if (tableNodeArr.length === 1) {
         const table = tableNodeArr[0];
         return (row: number) => {
@@ -34,11 +34,11 @@ export async function callOut(page: number) {
             // NOAA renders two tables as a single table, each is 17 high, 
             // so we also pull 17 down to grab the second "table" of data and merge together
             // below both rows for a single piece of data are gathered (like humidity)
-            const row1 = [...table.querySelectorAll('tr')][row];
-            const row2 = [...table.querySelectorAll('tr')][row + 17];
+            const row1 = table.querySelectorAll('tr')[row];
+            const row2 = table.querySelectorAll('tr')[row + 17];
 
-            const row1Cells = [...row1.querySelectorAll('td > font > b')];
-            const row2Cells = [...row2.querySelectorAll('td > font > b')];
+            const row1Cells = row1.querySelectorAll('td > font > b');
+            const row2Cells = row2.querySelectorAll('td > font > b');
 
             const row1Content = row1Cells.map(x => String(x.textContent));
             const row2Content = row2Cells.map(x => String(x.textContent));
