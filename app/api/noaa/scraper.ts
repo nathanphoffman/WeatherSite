@@ -1,6 +1,6 @@
 import axios from "axios";
 import { parse } from "node-html-parser";
-import { getChosenLocation, getLat, getLatLon, getLon, HEADER_ACCEPT, HEADER_USER_AGENT } from "./config";
+import { getChosenLocation, getLat, getLon, HEADER_ACCEPT, HEADER_USER_AGENT } from "./config";
 import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
 

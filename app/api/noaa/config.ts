@@ -4,13 +4,22 @@ export const latLon = {
     default: [40.1852, -75.538], //royersford
     ny: [40.7198, -73.993], //nyc
     p: [39.99310, -74.78790], //philly
-    hillsgrove: [41.39127,-76.75871],
-    h: [40.2761,-76.8845], //harrisburg
+    hillsgrove: [41.39127, -76.75871],
+    h: [40.2761, -76.8845], //harrisburg
 };
 
 export const LAT_MULTIPLIER = 1_000_000;
 export const LONG_MULTIPLIER = 1_000_000;
 
+export function getBlobConnectionInfo() {
+    const SITE_ID = process.env.SITE_ID; // netlify also calls this project id
+    const BLOB_TOKEN = process.env.BLOB_TOKEN;
+
+    if(!SITE_ID || !BLOB_TOKEN) return undefined;
+    else return {
+        SITE_ID, BLOB_TOKEN
+    }
+}
 
 export function getChosenLocation() {
     const argument = (process.argv as any[])?.[2];
@@ -76,7 +85,7 @@ export const RealFeelPreferences: RealFeelMin = {
     NiceMin: 65,
     CoolMin: 45,
     ColdMin: 30,
-    VeryColdMin: 5 
+    VeryColdMin: 5
     // Extremely Cold (bright red) is below ColdMin
 };
 

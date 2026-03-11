@@ -1,5 +1,6 @@
+/*
 import { getLat, getLon } from "./config";
-import { getSavedLatLongForecast, saveLatLongForecast } from "./database";
+import { getSavedLatLongForecast, saveLatLongForecast } from "./storage/database";
 import { run } from "./scraperEntry";
 
 let LAST_RUN = 0;
@@ -57,3 +58,4 @@ function minutesSinceLastRun() {
 function getLong() {
     throw new Error("Function not implemented.");
 }
+*/

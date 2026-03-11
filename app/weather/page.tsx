@@ -1,14 +1,12 @@
 import styles from './styles.module.css'
-import { getLat, getLon } from '../api/noaa/config'
-import { getSavedLatLongForecast, saveLatLongForecast } from '../api/noaa/database'
-import { runMe } from '../api/noaa/start'
+import { getForecast } from '../api/noaa/storage/main'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page() {
 
-  const record = await runMe();
-  const weather = record.cached;
+  const weather = await getForecast();
+  //const weather = JSON.parse(weatherStr);
   const weatherDiv = Object.keys(weather).map((key) => {
 
     // @ts-ignore
