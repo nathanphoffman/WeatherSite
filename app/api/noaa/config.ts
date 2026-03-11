@@ -12,7 +12,7 @@ export const LAT_MULTIPLIER = 1_000_000;
 export const LONG_MULTIPLIER = 1_000_000;
 
 export function getBlobConnectionInfo() {
-    const SITE_ID = process.env.SITE_ID; // netlify also calls this project id
+    const SITE_ID = process.env.BLOB_SITE_ID; // netlify also calls this project id
     const BLOB_TOKEN = process.env.BLOB_TOKEN;
 
     if(!SITE_ID || !BLOB_TOKEN) return undefined;
