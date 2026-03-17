@@ -1,9 +1,10 @@
-//import styles from './styles.module.css'
+import styles from './styles.module.css'
+import { getForecast } from '../api/noaa/storage/main'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page() {
-/*
+
   const weather = await getForecast();
   //const weather = JSON.parse(weatherStr);
   const weatherDiv = Object.keys(weather).map((key) => {
@@ -22,16 +23,5 @@ export default async function Page() {
   });
  
   return (<div className="wrapper">{weatherDiv}</div>);
-  */
-
-  return <section>
-
-    <h2>Select your city</h2>
-
-    <input type="text"></input>
-
-    <h2>Saved Cities:</h2>
-
-  </section>;
   
 }
