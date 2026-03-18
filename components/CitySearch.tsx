@@ -6,9 +6,10 @@ import { City } from '@/app/utils/cityParser';
 interface CitySearchProps {
     cities: City[];
     onSelect?: (city: City) => void;
+    onClear?: () => void;
 }
 
-export default function CitySearch({ cities, onSelect }: CitySearchProps) {
+export default function CitySearch({ cities, onSelect, onClear }: CitySearchProps) {
     const [query, setQuery] = useState('');
     const [allCities, setAllCities] = useState<City[]>(cities);
     const [allCitiesLoaded, setAllCitiesLoaded] = useState(false);
@@ -49,22 +50,42 @@ export default function CitySearch({ cities, onSelect }: CitySearchProps) {
     };
 
     return (
-        <div>
-            <input
-                type="text"
-                value={query}
-                onChange={onCityChange}
-                placeholder="Search for a city..."
-            />
+        <div className="p-4 flex justify-center">
+            <div className="relative">
+            <div className="flex items-center gap-2">
+                <input
+                    type="text"
+                    value={query}
+                    onChange={onCityChange}
+                    placeholder="Search for a city..."
+                    className="w-72 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
+                />
+                {query.length > 0 && (
+                    <button
+                        onClick={() => { setQuery(''); onClear?.(); }}
+                        className="flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800"
+                        aria-label="Clear"
+                    >
+                        ✕
+                    </button>
+                )}
+            </div>
             {filtered.length > 0 && (
-                <ul>
+                <ul className="absolute z-10 mt-1 w-72 bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
                     {filtered.map(c => (
-                        <a href="#" onClick={e=>populateInput(c)}><li key={`${c.city}-${c.state_id}`}>
-                            {c.city}, {c.state_id}
-                        </li></a>
+                        <li key={`${c.city}-${c.state_id}`}>
+                            <a
+                                href="#"
+                                onClick={e => { e.preventDefault(); populateInput(c); }}
+                                className="block px-4 py-2 text-lg text-gray-300 hover:bg-gray-800 hover:text-white"
+                            >
+                                {c.city}, {c.state_id}
+                            </a>
+                        </li>
                     ))}
                 </ul>
             )}
+            </div>
         </div>
     );
 }

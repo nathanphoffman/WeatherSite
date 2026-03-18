@@ -3,7 +3,7 @@ import { getMagnitude, convertNOAAChancesToAverageMagnitude, getRealFeelTemperat
 import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, getFreezeIconFromTemperatures, GREEN, YELLOW, RED, BRIGHT, WHITE } from '@/app/lib/noaa/output/color';
 import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
 import { getAverage } from '@/app/lib/noaa/utility';
-import { Magnitude, WIND_SPEED, HUMIDITY, THUNDER } from '@/app/lib/noaa/types/general';
+import { Magnitude } from '@/app/lib/noaa/types/general';
 
 const magnitudeColor: Record<Magnitude, string> = {
     0: GREEN,
@@ -59,14 +59,14 @@ export default function WeatherEntry({ group }: WeatherEntryProps) {
     const freezeIcon = getFreezeIconFromTemperatures(...temperature);
 
     return (
-        <div className="flex gap-3 items-baseline py-1 border-b border-gray-800 text-sm last:border-0">
+        <div className="flex gap-3 items-baseline py-1 border-b border-gray-800 text-base last:border-0">
             <span className="text-gray-500 w-12">{regularTime}</span>
             <span className={magnitudeColor[realFeelMagnitude]}>{realFeelTemperature}°</span>
-            {humidityMagnitude > 0 && <span className={magnitudeColor[humidityMagnitude]}>{HUMIDITY[humidityMagnitude]}</span>}
+            {humidityMagnitude > 0 && <span className={magnitudeColor[humidityMagnitude]}>H</span>}
             <span className={magnitudeColor[stormMagnitude]}>{stormRating}</span>
             {unstableWeather && <span>⚠️</span>}
-            {windMagnitude > 0 && <span className={magnitudeColor[windMagnitude]}>{WIND_SPEED[windMagnitude]}</span>}
-            {thunderMagnitude > 0 && <span className={magnitudeColor[thunderMagnitude]}>{THUNDER[thunderMagnitude]}</span>}
+            {windMagnitude > 0 && <span className={magnitudeColor[windMagnitude]}>W</span>}
+            {thunderMagnitude > 0 && <span className={magnitudeColor[thunderMagnitude]}>T</span>}
             <span>{happyFace}{freezeIcon}</span>
         </div>
     );

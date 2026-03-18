@@ -14,7 +14,7 @@ export default function HomeClient({ cities }: HomeClientProps) {
 
     return (
         <section>
-            <CitySearch cities={cities} onSelect={setSelectedCity} />
+            <CitySearch cities={cities} onSelect={setSelectedCity} onClear={() => setSelectedCity(null)} />
             {selectedCity && (
                 <Forecast lat={selectedCity.lat} lon={selectedCity.lng} />
             )}

@@ -38,9 +38,12 @@ export default function Forecast({ lat, lon }: ForecastProps) {
     if (!weather) return null;
 
     return (
-        <div className="flex flex-wrap gap-4 p-6">
+        <div className="flex flex-wrap justify-center gap-4 p-6">
             {Object.entries(weather).map(([forecastDate, groups]) => (
                 <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} />
+            ))}
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div key={`spacer-${i}`} className="w-[270px]" />
             ))}
         </div>
     );
