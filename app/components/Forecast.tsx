@@ -1,27 +1,17 @@
-import styles from './styles.module.css'
-import { getForecast } from '../api/noaa/storage/main'
+import { getForecast } from '@/app/api/noaa/storage/main';
+import WeatherDay from './WeatherDay';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
-export default async function Page() {
+export default async function Forecast() {
 
-  const weather = await getForecast();
-  //const weather = JSON.parse(weatherStr);
-  const weatherDiv = Object.keys(weather).map((key) => {
+    const weather = await getForecast();
 
-    // @ts-ignore
-    const weatherByThreeHours = weather[key].map(
-      (threeHourEntry: string, i: number) => <div key={key + String(i)} dangerouslySetInnerHTML={{ __html: threeHourEntry }}></div>
+    return (
+        <div className="flex flex-wrap gap-4 p-6">
+            {Object.entries(weather).map(([forecastDate, groups]) => (
+                <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} />
+            ))}
+        </div>
     );
-
-    return (<div className={styles.day} key={key}>
-      <h2 className="text-xl">{key}</h2>
-      {weatherByThreeHours}
-    </div>
-    );
-
-  });
- 
-  return (<div className="wrapper">{weatherDiv}</div>);
-  
 }

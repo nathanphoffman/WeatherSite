@@ -1,44 +1,48 @@
-// https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital
-
-import { getDayOfTheWeek, splitIntoGroupsOf3 } from "./utility";
-//import { Table } from 'console-table-printer';
-import { getWeatherLines } from "./output";
+import { getDayOfTheWeek, militaryHourToRegularHour, splitIntoGroupsOf3 } from "./utility";
 import { getParseScrapedData } from "./scraper";
+import { getParseApiData } from "./sources/noaaApi";
+import { DayForecast, ThreeHourGroup } from "./types/forecast";
+import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
-export async function run(): Promise<{[key: string]: string[]}> {
+export async function run(lat: string, lon: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
 
-    const { hourlyWeatherRows, uniqueDays } = await getParseScrapedData();
+    const { hourlyWeatherRows, uniqueDays } = source === 'api'
+        ? await getParseApiData(lat, lon)
+        : await getParseScrapedData();
+
+
+
+        // !! note: we need to rename this weather3 deal -- it now refers to singular hours
     const hourlyWeatherRowsGroupsOf3 = splitIntoGroupsOf3(hourlyWeatherRows);
-    const weatherLines = getWeatherLines(hourlyWeatherRowsGroupsOf3);
 
     let currentDay = uniqueDays[0];
-    const obj: {[key: string]: string[]} = {};
+    const obj: DayForecast = {};
 
     const today = getDayOfTheWeek(String(currentDay));
     obj[`${currentDay} ${today}`] = [];
     let dayTracker = 0;
 
-    weatherLines.forEach(({ middleHour, weatherLine, regularTime }, i, arr) => {
-
-        const prevMiddleHour = i === 0 ? 0 : arr[i - 1].middleHour;
+    hourlyWeatherRowsGroupsOf3.forEach((threeHours: ThreeHourWeatherModel[], i, arr) => {
+        const middleHour = threeHours[1].hour;
+        const prevMiddleHour = i === 0 ? 0 : arr[i - 1][1].hour;
         let dayOfTheWeek = getDayOfTheWeek(String(currentDay));
 
-        // days of the week are scraped separate from data so we detemine which days belong to which hours here
+        // days of the week are scraped separately from data so we determine which days belong to which hours here
         if (Number(prevMiddleHour) > Number(middleHour)) {
             currentDay = uniqueDays[++dayTracker];
             dayOfTheWeek = getDayOfTheWeek(String(currentDay));
         }
 
-        pushDay();
+        const group: ThreeHourGroup = {
+            regularTime: militaryHourToRegularHour(middleHour),
+            middleHour,
+            hours: threeHours as [ThreeHourWeatherModel, ThreeHourWeatherModel, ThreeHourWeatherModel],
+        };
 
-        function pushDay() {
-            const dayTitle = `${currentDay} ${dayOfTheWeek}`;
-            if(!obj[dayTitle]) obj[dayTitle] = [];
-            obj[dayTitle].push(`${regularTime}: ${weatherLine}`);
-        }
-
+        const dayTitle = `${currentDay} ${dayOfTheWeek}`;
+        if (!obj[dayTitle]) obj[dayTitle] = [];
+        obj[dayTitle].push(group);
     });
 
     return obj;
-
 }

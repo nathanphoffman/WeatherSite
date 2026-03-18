@@ -1,8 +1,50 @@
-.day {
-  float: left;
-  margin: 30px;
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px;
 }
 
-.wrapper {
-  margin: 2%;
+.day {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 180px;
+  flex: 1 1 180px;
+}
+
+.dayTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #a0a8c0;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2a2a4a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #13132a;
+  font-size: 0.85rem;
+  gap: 12px;
+}
+
+.entry:last-child {
+  border-bottom: none;
+}
+
+.time {
+  color: #6b7280;
+  white-space: nowrap;
+  min-width: 48px;
+}
+
+.data {
+  text-align: right;
 }

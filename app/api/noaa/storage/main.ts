@@ -1,26 +1,18 @@
-
-
-/*
-    const lat = getLat();
-    const long = getLon();
-*/
-
 import { getBlobConnectionInfo, getLat, getLon } from "../config";
 import { run } from "../scraperEntry";
 import { StorageSolution } from "../types/storage";
+import { DayForecast } from "../types/forecast";
 import { blobStorage } from "./blob";
 import { databaseStorage } from "./database";
 
-export async function getForecast(/*lat: string, long: string*/) {
+const CACHE_VERSION = 2;
 
-    const lat = getLat();
-    const long = getLon();
+export async function getForecast(lat?: string, lon?: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
+
+    const resolvedLat = lat ?? getLat();
+    const resolvedLon = lon ?? getLon();
 
     const nowInSeconds = new Date().getTime() / 1000;
-
-    //const memoizedCacheIsInvalid = (!cached || moreThan1HourHasPassed());
-
-    //if (memoizedCacheIsInvalid) {
 
     let storageSolution: StorageSolution | undefined = undefined;
     const blobConnectionInfo = getBlobConnectionInfo();
@@ -31,36 +23,26 @@ export async function getForecast(/*lat: string, long: string*/) {
     if (!storageSolution) throw "No storage method found to serve as a database for forecasts.";
 
     const oneHourAgo = nowInSeconds - 3600;
-    const savedRecord = await storageSolution.getSavedLatLongForecast(lat, long, oneHourAgo);
+    const savedRecord = await storageSolution.getSavedLatLongForecast(resolvedLat, resolvedLon, oneHourAgo);
 
     if (savedRecord) {
-        return JSON.parse(savedRecord);
-    }
-    else {
-        console.log("Running fetch against NOAA");
-        const forecast = await run();
-
-        await storageSolution.saveLatLongForecast({
-            lat, long, unixSeconds: nowInSeconds, forecast: JSON.stringify(forecast)
-        });
-
-        console.log("Completed fetch against NOAA");
-        return forecast;
+        const parsed = JSON.parse(savedRecord);
+        if (parsed.version === CACHE_VERSION) {
+            return parsed.data as DayForecast;
+        }
+        console.log("Cache version mismatch, re-fetching from NOAA");
     }
 
-}
-/*
-function getNowInSeconds() {
-    return (new Date()).getTime() / 1000;
-}
+    console.log("Running fetch against NOAA");
+    const forecast = await run(resolvedLat, resolvedLon, source);
 
-function moreThan1HourHasPassed() {
-    const mins = minutesSinceLastRun();
-    return mins > 60;
-}
+    await storageSolution.saveLatLongForecast({
+        lat: resolvedLat,
+        long: resolvedLon,
+        unixSeconds: nowInSeconds,
+        forecast: JSON.stringify({ version: CACHE_VERSION, data: forecast }),
+    });
 
-function minutesSinceLastRun() {
-    const deltaSeconds = LAST_RUN - getNowInSeconds();
-    return deltaSeconds / 60;
+    console.log("Completed fetch against NOAA");
+    return forecast;
 }
-    */
