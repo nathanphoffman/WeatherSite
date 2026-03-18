@@ -3,10 +3,11 @@
                            
 import CitySearch from "@/components/CitySearch";
 import { getPopulatedCities } from "./utils/cityParser";
+import Forecast from "./components/Forecast";
 
 export default async function Page() {
 
-
+/*
   const populatedCities = await getPopulatedCities();
 
   return <section>
@@ -18,5 +19,7 @@ export default async function Page() {
     <h2>Saved Cities:</h2>
 
   </section>;
+*/
 
+return <Forecast></Forecast>
 }
