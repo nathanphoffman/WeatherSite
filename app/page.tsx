@@ -1,37 +1,19 @@
 //import styles from './styles.module.css'
 
-export const dynamic = 'force-dynamic'
+                                                                                                                             
 
 export default async function Page() {
-/*
-  const weather = await getForecast();
-  //const weather = JSON.parse(weatherStr);
-  const weatherDiv = Object.keys(weather).map((key) => {
 
-    // @ts-ignore
-    const weatherByThreeHours = weather[key].map(
-      (threeHourEntry: string, i: number) => <div key={key + String(i)} dangerouslySetInnerHTML={{ __html: threeHourEntry }}></div>
-    );
-
-    return (<div className={styles.day} key={key}>
-      <h2 className="text-xl">{key}</h2>
-      {weatherByThreeHours}
-    </div>
-    );
-
-  });
- 
-  return (<div className="wrapper">{weatherDiv}</div>);
-  */
 
   return <section>
 
     <h2>Select your city</h2>
 
-    <input type="text"></input>
+    {/* 
+    <input type="text" value={city} onChange={(e) => setCity(e.target.value)}></input> */}
 
     <h2>Saved Cities:</h2>
 
   </section>;
-  
+
 }
