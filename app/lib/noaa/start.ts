@@ -5,43 +5,6 @@ import { run } from "./scraperEntry";
 let LAST_RUN = 0;
 let cached: any = undefined;
 
-// app/api/hello/route.ts
-export async function runMe() {
-/*
-    let ran: Boolean = false;
-
-    const lat = getLat();
-    const long = getLon();
-    const now = new Date().getTime() / 1000;
-
-    const memoizedCacheIsInvalid = (!cached || moreThan1HourHasPassed());
-
-    if (memoizedCacheIsInvalid) {
-
-        const oneHourAgo = now - 3600;
-        const savedRecord = getSavedLatLongForecast(lat, long, oneHourAgo)
-        if (!savedRecord) {
-            LAST_RUN = new Date().getTime() / 1000;
-            ran = true;
-            console.log("Running fetch against NOAA");
-            cached = await run();
-
-            saveLatLongForecast({
-                lat, long, unixSeconds: now, forecast: cached
-            });
-
-            console.log("Completed fetch against NOAA");
-        }
-        else cached = JSON.parse(savedRecord.forecast);
-    }
-
-    return {cached, ran};
-    */
-
-    const cached = await run();
-    return { cached }
-}
-
 function getNowInSeconds() {
     return (new Date()).getTime() / 1000;
 }

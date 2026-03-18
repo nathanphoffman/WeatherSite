@@ -1,7 +1,12 @@
 export default async function Page() {
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
-            <h1 className="text-2xl font-bold text-white">How to Read the Forecast</h1>
+            <div className="relative flex items-center justify-center">
+                <a href="/" className="absolute left-0 flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800" aria-label="Back to forecast">
+                    ↩
+                </a>
+                <h1 className="text-2xl font-bold text-white">How to Read the Forecast</h1>
+            </div>
 
             <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
                 <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Format</h2>

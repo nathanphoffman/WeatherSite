@@ -1,18 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { City } from '@/app/utils/cityParser';
 
 interface CitySearchProps {
     cities: City[];
+    initialCity?: City | null;
     onSelect?: (city: City) => void;
     onClear?: () => void;
 }
 
-export default function CitySearch({ cities, onSelect, onClear }: CitySearchProps) {
+export default function CitySearch({ cities, initialCity, onSelect, onClear }: CitySearchProps) {
     const [query, setQuery] = useState('');
     const [allCities, setAllCities] = useState<City[]>(cities);
     const [allCitiesLoaded, setAllCitiesLoaded] = useState(false);
+
+    useEffect(() => {
+        if (initialCity) setQuery(`${initialCity.city}, ${initialCity.state_id}`);
+    }, [initialCity]);
 
     const filtered = query.length > 0
         ? allCities.filter(c => c.city.toLowerCase().startsWith(query.toLowerCase())).slice(0, 3)
@@ -51,27 +56,24 @@ export default function CitySearch({ cities, onSelect, onClear }: CitySearchProp
 
     return (
         <div className="p-4 flex justify-center">
-            <div className="relative">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full max-w-sm">
+                <a
+                    href="/about"
+                    className="flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800"
+                    aria-label="About"
+                >
+                    ?
+                </a>
+                <div className="relative flex-1 min-w-0">
                 <input
                     type="text"
                     value={query}
                     onChange={onCityChange}
                     placeholder="Search for a city..."
-                    className="w-72 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
                 />
-                {query.length > 0 && (
-                    <button
-                        onClick={() => { setQuery(''); onClear?.(); }}
-                        className="flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800"
-                        aria-label="Clear"
-                    >
-                        ✕
-                    </button>
-                )}
-            </div>
-            {filtered.length > 0 && (
-                <ul className="absolute z-10 mt-1 w-72 bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
+                {filtered.length > 0 && (
+                <ul className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
                     {filtered.map(c => (
                         <li key={`${c.city}-${c.state_id}`}>
                             <a
@@ -85,6 +87,16 @@ export default function CitySearch({ cities, onSelect, onClear }: CitySearchProp
                     ))}
                 </ul>
             )}
+                </div>
+                {query.length > 0 && (
+                    <button
+                        onClick={() => { setQuery(''); onClear?.(); }}
+                        className="flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800"
+                        aria-label="Clear"
+                    >
+                        ✕
+                    </button>
+                )}
             </div>
         </div>
     );
