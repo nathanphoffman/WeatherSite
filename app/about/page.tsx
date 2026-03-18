@@ -1,6 +1,6 @@
 export default async function Page() {
     return (
-        <div className="max-w-2xl mx-auto p-6 space-y-6">
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
             <h1 className="text-2xl font-bold text-white">How to Read the Forecast</h1>
 
             <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
@@ -16,13 +16,21 @@ export default async function Page() {
 
             <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
                 <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Color Coding</h2>
-                <div className="flex flex-wrap gap-3 text-sm">
-                    <span className="text-green-400 font-semibold">Green — best / none</span>
-                    <span className="text-gray-400 font-semibold">Grey — decent / low</span>
-                    <span className="text-yellow-400 font-semibold">Yellow — moderate</span>
-                    <span className="text-red-400 font-semibold">Red — high</span>
-                    <span className="text-red-200 font-bold">Bright — worst / severe</span>
-                </div>
+                <ul className="space-y-1 text-sm">
+                    <li className="text-green-400 font-semibold">Green — best / none</li>
+                    <li className="text-gray-400 font-semibold">Grey — decent / low</li>
+                    <li className="text-yellow-400 font-semibold">Yellow — moderate</li>
+                    <li className="text-red-400 font-semibold">Red — high</li>
+                    <li className="text-red-200 font-bold">Bright — worst / severe</li>
+                </ul>
+            </section>
+
+            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-2">
+                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Smiley Face</h2>
+                <ul className="space-y-1 text-gray-300 text-sm">
+                    <li><span className="text-white font-semibold">😎</span> — RealFeel and storm rating are both green, and humidity is not a factor (excellent conditions)</li>
+                    <li><span className="text-white font-semibold">😊</span> — Conditions are decently nice, such as a grey and green combination</li>
+                </ul>
             </section>
 
             <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
@@ -37,23 +45,15 @@ export default async function Page() {
                         { range: '40–49', label: 'Storm', description: 'Precipitation effectively guaranteed, sky much darker.' },
                         { range: '50+', label: 'Strong Storm', description: 'Heavier precipitation and/or strong winds/thunder. Possible severe conditions — check other forecasts.' },
                     ].map(({ range, label, description }) => (
-                        <div key={range} className="py-3 flex gap-4">
+                        <div key={range} className="py-3 flex gap-4 items-start">
                             <span className="text-white font-mono w-14 shrink-0">{range}</span>
-                            <div>
+                            <div className="text-left">
                                 <span className="text-white font-semibold">{label}</span>
                                 <p className="text-gray-400 mt-0.5">{description}</p>
                             </div>
                         </div>
                     ))}
                 </div>
-            </section>
-
-            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-2">
-                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Smiley Face</h2>
-                <ul className="space-y-1 text-gray-300 text-sm">
-                    <li><span className="text-white font-semibold">😎</span> — RealFeel and storm rating are both green, and humidity is not a factor (excellent conditions)</li>
-                    <li><span className="text-white font-semibold">😊</span> — Conditions are decently nice, such as a grey and green combination</li>
-                </ul>
             </section>
         </div>
     );
