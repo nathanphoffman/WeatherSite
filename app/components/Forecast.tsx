@@ -1,4 +1,4 @@
-import { getForecast } from '@/app/api/noaa/storage/main';
+import { getForecast } from '@/app/lib/noaa/storage/main';
 import WeatherDay from './WeatherDay';
 
 export const dynamic = 'force-dynamic';

@@ -1,27 +1,60 @@
-
 export default async function Page() {
+    return (
+        <div className="max-w-2xl mx-auto p-6 space-y-6">
+            <h1 className="text-2xl font-bold text-white">How to Read the Forecast</h1>
 
-  return (
-  <ul>
-    <li>All weather is in the format: RealFeel(H) StormRating(W)(T) (SmileyFace)</li>
-    <li>RealFeel is rounded to the nearest 5, H will show if it is humid.</li>
-    <li>W will show if it is windy, and T will show if there is a chance of Thunderstorms.</li>
-    <li>The severity / chance of everything is color coded: bright red (worst / highest) to green (best / no) with grey being decent / low.</li>
-  </ul>
-  );
+            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Format</h2>
+                <p className="text-white font-mono text-lg">RealFeel(H) &nbsp;StormRating(W)(T) &nbsp;😊</p>
+                <ul className="space-y-1 text-gray-300 text-sm">
+                    <li><span className="text-white font-semibold">RealFeel</span> — temperature rounded to the nearest 5°</li>
+                    <li><span className="text-white font-semibold">(H)</span> — appears when humidity is high</li>
+                    <li><span className="text-white font-semibold">(W)</span> — appears when it is windy</li>
+                    <li><span className="text-white font-semibold">(T)</span> — appears when there is a chance of thunderstorms</li>
+                </ul>
+            </section>
 
-  /*
-  console.log("StormRating is a composite of: Cloud Cover, Precipitation, Wind, and Thunder, rounded to 1-1.5 signifigant figures, a guide is below:");
-  console.log(" - <10 Not Overcast: Max cloud cover is the number x 10% so 5 = 50%. Cloud cover can be a little lower if there is a W or T listed.")
-  console.log(" - 10-19 Overcast: If ~10 precipitation very unlikely, could also be partially clear if there is winds or thunder.");
-  console.log(" - 20-29 Drizzle/Flurry: Some precipitation possible. Definitely overcast.");
-  console.log(" - 30-39 Precipatory: Some precipitation likely, sky slightly darker.");
-  console.log(" - 40-49 Storm: Storm conditions, precipitation effectively guaranteed, sky much darker.");
-  console.log(" - 50+ Strong Storm: Stronger precipitation and/or stronger winds/thunder. Possible severe storm, check other forecasts.\n");
+            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Color Coding</h2>
+                <div className="flex flex-wrap gap-3 text-sm">
+                    <span className="text-green-400 font-semibold">Green — best / none</span>
+                    <span className="text-gray-400 font-semibold">Grey — decent / low</span>
+                    <span className="text-yellow-400 font-semibold">Yellow — moderate</span>
+                    <span className="text-red-400 font-semibold">Red — high</span>
+                    <span className="text-red-200 font-bold">Bright — worst / severe</span>
+                </div>
+            </section>
 
-  console.log("A smiley face with glasses will appear if: the realfeel & storm factor are considered good (green) AND it is not humid at all (excellent weather).");
-  console.log("A regular smiley face will appear if the conditions are decently nice such as a grey and green or an orange and green factor above.");
-  console.log("To prevent this text from showing, use the option -d to dismiss.");
-*/
+            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Storm Rating Guide</h2>
+                <p className="text-gray-400 text-sm">A composite of cloud cover, precipitation, wind, and thunder — rounded to 1–1.5 significant figures.</p>
+                <div className="divide-y divide-gray-800 text-sm">
+                    {[
+                        { range: '< 10', label: 'Not Overcast', description: 'Max cloud cover is rating × 10% (e.g. 5 = 50% clouds). May dip lower if W or T are present.' },
+                        { range: '10–19', label: 'Overcast', description: 'Near 10 means precipitation is unlikely. Could be partially clear if winds or thunder are present.' },
+                        { range: '20–29', label: 'Drizzle / Flurry', description: 'Some precipitation possible. Definitely overcast.' },
+                        { range: '30–39', label: 'Precipitation', description: 'Precipitation likely, sky noticeably darker.' },
+                        { range: '40–49', label: 'Storm', description: 'Precipitation effectively guaranteed, sky much darker.' },
+                        { range: '50+', label: 'Strong Storm', description: 'Heavier precipitation and/or strong winds/thunder. Possible severe conditions — check other forecasts.' },
+                    ].map(({ range, label, description }) => (
+                        <div key={range} className="py-3 flex gap-4">
+                            <span className="text-white font-mono w-14 shrink-0">{range}</span>
+                            <div>
+                                <span className="text-white font-semibold">{label}</span>
+                                <p className="text-gray-400 mt-0.5">{description}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
+            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-2">
+                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Smiley Face</h2>
+                <ul className="space-y-1 text-gray-300 text-sm">
+                    <li><span className="text-white font-semibold">😎</span> — RealFeel and storm rating are both green, and humidity is not a factor (excellent conditions)</li>
+                    <li><span className="text-white font-semibold">😊</span> — Conditions are decently nice, such as a grey and green combination</li>
+                </ul>
+            </section>
+        </div>
+    );
 }

@@ -5,8 +5,8 @@ import Papa from 'papaparse';
 
 // although unnecessary, top cities are broken out from all cities to keep data usage down,
 // all cities are only called if there are no matches to saved or top cities
-const ALL_CITIES_PATH = 'app/api/noaa/storage/all_uscities.csv';
-const POPULATED_CITIES_PATH = 'app/api/noaa/storage/populated_uscities.csv';
+const ALL_CITIES_PATH = 'app/lib/noaa/storage/all_uscities.csv';
+const POPULATED_CITIES_PATH = 'app/lib/noaa/storage/populated_uscities.csv';
 
 export interface City {
     city: string;

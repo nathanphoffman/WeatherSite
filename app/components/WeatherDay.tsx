@@ -1,4 +1,4 @@
-import { ThreeHourGroup } from '@/app/api/noaa/types/forecast';
+import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import WeatherEntry from './WeatherEntry';
 
 interface WeatherDayProps {

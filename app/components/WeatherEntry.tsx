@@ -1,9 +1,9 @@
-import { ThreeHourGroup } from '@/app/api/noaa/types/forecast';
-import { getMagnitude, convertNOAAChancesToAverageMagnitude, getRealFeelTemperature, getStormRating } from '@/app/api/noaa/output/calculations';
-import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, getFreezeIconFromTemperatures, GREEN, YELLOW, RED, BRIGHT, WHITE } from '@/app/api/noaa/output/color';
-import { HumidityRanges, WindRanges } from '@/app/api/noaa/config';
-import { getAverage } from '@/app/api/noaa/utility';
-import { Magnitude, WIND_SPEED, HUMIDITY, THUNDER } from '@/app/api/noaa/types/general';
+import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
+import { getMagnitude, convertNOAAChancesToAverageMagnitude, getRealFeelTemperature, getStormRating } from '@/app/lib/noaa/output/calculations';
+import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, getFreezeIconFromTemperatures, GREEN, YELLOW, RED, BRIGHT, WHITE } from '@/app/lib/noaa/output/color';
+import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
+import { getAverage } from '@/app/lib/noaa/utility';
+import { Magnitude, WIND_SPEED, HUMIDITY, THUNDER } from '@/app/lib/noaa/types/general';
 
 const magnitudeColor: Record<Magnitude, string> = {
     0: GREEN,

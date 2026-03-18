@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getForecast } from '@/app/api/noaa/storage/main';
-import { latLon } from '@/app/api/noaa/config';
+import { getForecast } from '@/app/lib/noaa/storage/main';
+import { latLon } from '@/app/lib/noaa/config';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
