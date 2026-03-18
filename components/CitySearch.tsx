@@ -5,9 +5,10 @@ import { City } from '@/app/utils/cityParser';
 
 interface CitySearchProps {
     cities: City[];
+    onSelect?: (city: City) => void;
 }
 
-export default function CitySearch({ cities }: CitySearchProps) {
+export default function CitySearch({ cities, onSelect }: CitySearchProps) {
     const [query, setQuery] = useState('');
     const [allCities, setAllCities] = useState<City[]>(cities);
     const [allCitiesLoaded, setAllCitiesLoaded] = useState(false);
@@ -42,9 +43,10 @@ export default function CitySearch({ cities }: CitySearchProps) {
         }
     };
 
-    const populateInput = async function (city: string) {
-        setQuery(city);
-    }
+    const populateInput = async function (city: City) {
+        setQuery(`${city.city}, ${city.state_id}`);
+        onSelect?.(city);
+    };
 
     return (
         <div>
@@ -57,7 +59,7 @@ export default function CitySearch({ cities }: CitySearchProps) {
             {filtered.length > 0 && (
                 <ul>
                     {filtered.map(c => (
-                        <a href="#" onClick={e=>populateInput(`${c.city}, ${c.state_id}`)}><li key={`${c.city}-${c.state_id}`}>
+                        <a href="#" onClick={e=>populateInput(c)}><li key={`${c.city}-${c.state_id}`}>
                             {c.city}, {c.state_id}
                         </li></a>
                     ))}

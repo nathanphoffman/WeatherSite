@@ -8,7 +8,7 @@ export async function run(lat: string, lon: string, source: 'scraper' | 'api' = 
 
     const { hourlyWeatherRows, uniqueDays } = source === 'api'
         ? await getParseApiData(lat, lon)
-        : await getParseScrapedData();
+        : await getParseScrapedData(lat, lon);
 
 
 
