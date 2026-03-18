@@ -1,16 +1,19 @@
 //import styles from './styles.module.css'
 
-                                                                                                                             
+                           
+import CitySearch from "@/components/CitySearch";
+import { getPopulatedCities } from "./utils/cityParser";
 
 export default async function Page() {
 
+
+  const populatedCities = await getPopulatedCities();
 
   return <section>
 
     <h2>Select your city</h2>
 
-    {/* 
-    <input type="text" value={city} onChange={(e) => setCity(e.target.value)}></input> */}
+    <CitySearch cities={populatedCities}></CitySearch>
 
     <h2>Saved Cities:</h2>
 
