@@ -62,7 +62,7 @@ export async function getParseApiData(lat: string, lon: string): Promise<{ hourl
     if (!forecastResult.ok) throw `NOAA forecast API failed: ${forecastResult.status}`;
     const forecastData = await forecastResult.json();
 
-    const periods = forecastData.properties.periods as any[];
+    const periods = forecastData.properties.periods;
     const seenDays = new Set<string>();
     const uniqueDays: string[] = [];
     const hourlyWeatherRows: ThreeHourWeatherModel[] = [];

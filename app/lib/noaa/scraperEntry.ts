@@ -22,7 +22,7 @@ export async function run(lat: string, lon: string, source: 'scraper' | 'api' = 
     obj[`${currentDay} ${today}`] = [];
     let dayTracker = 0;
 
-    hourlyWeatherRowsGroupsOf3.forEach((threeHours: ThreeHourWeatherModel[], i, arr) => {
+    hourlyWeatherRowsGroupsOf3?.forEach((threeHours: ThreeHourWeatherModel[], i, arr) => {
         const middleHour = threeHours[1].hour;
         const prevMiddleHour = i === 0 ? 0 : arr[i - 1][1].hour;
         let dayOfTheWeek = getDayOfTheWeek(String(currentDay));

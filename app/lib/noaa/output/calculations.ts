@@ -26,8 +26,8 @@ export function getMagnitude(value: number | string, range: MagnitudeRange): Mag
     //const magnitude = Object.keys(range).find(key => Number(key) === Number(value));
     const magnitude = Object.keys(range).find(key => isInRange(value, range[Number(key) as Magnitude]));
 
-    // !! adjust typing going forward
-    return magnitude as any as Magnitude;
+    if (magnitude === undefined) throw `no magnitude found for value: ${value}`;
+    return Number(magnitude) as Magnitude;
 }
 
 export function getRealFeelTemperature(temperature: number, humidity: number, wind: number, averageSkyCover: number, hour: number) {

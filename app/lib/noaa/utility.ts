@@ -1,13 +1,14 @@
 import { Magnitude } from "./types/general";
 
-// @ts-ignore
-export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] {
+
+export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] | undefined {
     const deepClone = [...arr];
     const take3 = deepClone.splice(0, 3);
-    // @ts-ignore
+
     if (arr.length < 3) return prev;
     else if (!prev || prev.length === 0) return splitIntoGroupsOf3(deepClone, [take3]);
     else if (prev && prev.length > 0 && arr.length > 2) return splitIntoGroupsOf3(deepClone, [...prev, take3]);
+    else return undefined;
 }
 
 export function getDayOfTheWeek(day: string) {
@@ -15,13 +16,8 @@ export function getDayOfTheWeek(day: string) {
     return new Date(day + "/" + new Date().getFullYear()).toLocaleString('en-us', { weekday: 'long' });
 }
 
-export function getAverage(...numbers: number[] | Magnitude[]) {
-    // !! fix this!
-    const average = Math.round(numbers.reduce((a, b) => {
-        const aa = Number(a);
-        const bb = Number(b);
-        return aa + bb as any;
-    }) / numbers.length);
+export function getAverage(...numbers: number[]) {
+    const average = Math.round(numbers.reduce((a, b) => Number(a) + Number(b)) / numbers.length);
     return average;
 }
 
@@ -31,10 +27,9 @@ export function militaryHourToRegularHour(mil: number): string {
     else if (mil === 0) return "12am";
     else return `${mil}am`;
 }
-// @ts-ignore
-export function pipe(fns) {
-    // @ts-ignore
-    return (x) => fns.reduce((acc, fn) => fn(acc), x);
+
+export function pipe(fns: ((t: any)=>any)[]) {
+    return (x: any) => fns.reduce((acc, fn) => fn(acc), x);
 }
 
 export function arrayNotEmpty(arr: any[]): boolean {
@@ -53,10 +48,9 @@ export function isNotNumber(input: unknown) {
     return isNaN(Number(input));
 }
 
-// @ts-ignore
-export function isWithin(min, max) {
+export function isWithin(min: number, max: number) {
     return (input: unknown) => {
-        return isNumber(input) && min <= Number(input) <= max;
+        return isNumber(input) && min <= Number(input) && Number(input) <= max;
     }
 }
 

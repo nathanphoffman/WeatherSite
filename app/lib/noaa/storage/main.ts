@@ -1,4 +1,4 @@
-import { getBlobConnectionInfo, getLat, getLon } from "../config";
+import { getBlobConnectionInfo } from "../config";
 import { run } from "../scraperEntry";
 import { StorageSolution } from "../types/storage";
 import { DayForecast } from "../types/forecast";
@@ -7,10 +7,12 @@ import { databaseStorage } from "./database";
 
 const CACHE_VERSION = 2;
 
-export async function getForecast(lat?: string, lon?: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
+export async function getForecast(lat?: string, long?: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
 
-    const resolvedLat = lat ?? getLat();
-    const resolvedLon = lon ?? getLon();
+    if(!lat || !long) throw "Latitude and/or longitude not provided";
+
+    const resolvedLat = lat;
+    const resolvedLon = long;
 
     const nowInSeconds = new Date().getTime() / 1000;
 
@@ -30,6 +32,7 @@ export async function getForecast(lat?: string, lon?: string, source: 'scraper' 
         if (parsed.version === CACHE_VERSION) {
             return parsed.data as DayForecast;
         }
+
         console.log("Cache version mismatch, re-fetching from NOAA");
     }
 

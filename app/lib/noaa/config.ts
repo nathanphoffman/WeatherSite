@@ -27,29 +27,6 @@ export function getChosenLocation() {
     return String(chosenLocation);
 }
 
-export function getLat() {
-    const chosenLocation = getChosenLocation();
-    // @ts-ignore
-    const chosenLatLon = latLon[chosenLocation];
-    return String(chosenLatLon[0]);
-}
-
-export function getLon() {
-    const chosenLocation = getChosenLocation();
-    // @ts-ignore
-    const chosenLatLon = latLon[chosenLocation];
-    return String(chosenLatLon[1]);
-}
-
-
-export function getLatLon() {
-    const chosenLocation = getChosenLocation();
-    // @ts-ignore
-    const chosenLatLon = latLon[chosenLocation];
-    const queryString = `lat=${chosenLatLon[0]}&lon=${chosenLatLon[1]}`;
-    return queryString;
-}
-
 const LESS = -1 as const;
 const MORE = -1 as const;
 

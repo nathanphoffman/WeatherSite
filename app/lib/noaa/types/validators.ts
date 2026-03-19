@@ -1,7 +1,7 @@
 import { CHANCE_FORECAST } from "./general";
 
 export function isChanceForecastValue(candidate: unknown) {
-    return CHANCE_FORECAST.includes(String(candidate) as any);
+    return (CHANCE_FORECAST as readonly string[]).includes(String(candidate));
 }
 
 export function isAboveAbsoluteZero(input: unknown) {
