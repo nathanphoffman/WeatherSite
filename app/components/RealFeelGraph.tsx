@@ -1,9 +1,16 @@
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
-import { getRealFeelTemperature, getMagnitude } from '@/app/lib/noaa/output/calculations';
-import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
+import { getRealFeelTemperature, getMagnitude, convertNOAAChancesToAverageMagnitude, getStormRating } from '@/app/lib/noaa/output/calculations';
+import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude } from '@/app/lib/noaa/output/color';
+import { HumidityRanges, WindRanges, RealFeelPreferences } from '@/app/lib/noaa/config';
+import { getAverage } from '@/app/lib/noaa/utility';
 
 interface RealFeelGraphProps {
     groups: ThreeHourGroup[];
+}
+
+interface ThresholdLine {
+    value: number;
+    color: string;
 }
 
 interface LineGraphProps {
@@ -15,6 +22,7 @@ interface LineGraphProps {
     minValue?: number;
     maxValue?: number;
     formatYLabel?: (value: number) => string;
+    thresholdLines?: ThresholdLine[];
 }
 
 const SVG_WIDTH = 238;
@@ -50,7 +58,7 @@ function formatHourLabel(hour: number): string {
     return hour < 12 ? `${hour}a` : `${hour - 12}p`;
 }
 
-function LineGraph({ title, points, color, labelIndices, height = 80, minValue, maxValue, formatYLabel }: LineGraphProps) {
+function LineGraph({ title, points, color, labelIndices, height = 80, minValue, maxValue, formatYLabel, thresholdLines }: LineGraphProps) {
     const plotWidth = SVG_WIDTH - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = height - PADDING_TOP - PADDING_BOTTOM;
 
@@ -90,6 +98,19 @@ function LineGraph({ title, points, color, labelIndices, height = 80, minValue, 
                 </text>
                 <line x1={PADDING_LEFT} y1={PADDING_TOP} x2={PADDING_LEFT + plotWidth} y2={PADDING_TOP} stroke="#1f2937" strokeWidth={1} />
                 <line x1={PADDING_LEFT} y1={PADDING_TOP + plotHeight} x2={PADDING_LEFT + plotWidth} y2={PADDING_TOP + plotHeight} stroke="#1f2937" strokeWidth={1} />
+                {thresholdLines?.filter((t) => t.value >= computedMin && t.value <= computedMax).map((threshold, index) => (
+                    <line
+                        key={index}
+                        x1={PADDING_LEFT}
+                        y1={yAt(threshold.value)}
+                        x2={PADDING_LEFT + plotWidth}
+                        y2={yAt(threshold.value)}
+                        stroke={threshold.color}
+                        strokeWidth={1}
+                        strokeDasharray="4,3"
+                        opacity={0.5}
+                    />
+                ))}
                 <path d={areaPath} fill={color} fillOpacity={0.1} />
                 <path d={linePath} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
                 {labelIndices.map((dataIndex) => {
@@ -131,6 +152,43 @@ export default function RealFeelGraph({ groups }: RealFeelGraphProps) {
 
     if (realFeelPoints.length === 0) return null;
 
+    const SMILEY_RANK: Record<string, number> = { '😎': 0, '🙂': 1 };
+    const smileys = groups.map((group) => {
+        const { middleHour, hours } = group;
+        const humidityMagnitude = getMagnitude(getAverage(...hours.map((h) => h.humidity)), HumidityRanges);
+        const windMagnitude = getMagnitude(getAverage(...hours.map((h) => h.wind)), WindRanges);
+        const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.thunder));
+        const rainMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.rain));
+        const snowMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.snow));
+        const averageSkyCover = getAverage(...hours.map((h) => h.skyCover));
+        const realFeel = getRealFeelTemperature(getAverage(...hours.map((h) => h.temperature)), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
+        const stormRating = getStormRating(averageSkyCover, getAverage(...hours.map((h) => h.precipChance)), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
+        return getHappyFaceFromMagnitude(humidityMagnitude, getRealFeelMagnitude(realFeel), getStormMagnitude(stormRating));
+    });
+    const bestSmiley = smileys.reduce<string | null>((best, smiley) => {
+        if (!(smiley in SMILEY_RANK)) return best;
+        if (best === null || SMILEY_RANK[smiley] < SMILEY_RANK[best]) return smiley;
+        return best;
+    }, null);
+
+    const realFeelThresholds: ThresholdLine[] = [
+        { value: RealFeelPreferences.ExtremelyHotMin, color: '#f43f5e' },
+        { value: RealFeelPreferences.VeryHotMin,      color: '#ef4444' },
+        { value: RealFeelPreferences.HotMin,          color: '#eab308' },
+        { value: RealFeelPreferences.WarmMin,         color: 'rgba(255,255,255,0.45)' },
+        { value: RealFeelPreferences.NiceMin,         color: '#22c55e' },
+        { value: RealFeelPreferences.CoolMin,         color: 'rgba(255,255,255,0.45)' },
+        { value: RealFeelPreferences.ColdMin,         color: '#eab308' },
+        { value: RealFeelPreferences.VeryColdMin,     color: '#ef4444' },
+    ];
+
+    const windThresholds: ThresholdLine[] = [
+        { value: 10, color: 'rgba(255,255,255,0.45)' },
+        { value: 16, color: '#eab308' },
+        { value: 23, color: '#ef4444' },
+        { value: 30, color: '#f43f5e' },
+    ];
+
     const highTemp = Math.max(...realFeelPoints.map((p) => p.value));
     const lowTemp = Math.min(...realFeelPoints.map((p) => p.value));
 
@@ -139,11 +197,22 @@ export default function RealFeelGraph({ groups }: RealFeelGraphProps) {
         Math.round((index / (labelCount - 1)) * (realFeelPoints.length - 1))
     );
 
+/*
+            <LineGraph
+                title="Wind Speed"
+                points={windPoints}
+                color="#a78bfa"
+                labelIndices={labelIndices}
+                minValue={0}
+                thresholdLines={windThresholds}
+            />
+*/
+
     return (
         <div>
             <div className="flex justify-between items-baseline mb-3">
-                <span className="text-6xl font-bold text-white">{highTemp}°</span>
-                <span className="text-6xl font-bold text-gray-400">{lowTemp}°</span>
+                <span className="text-4xl font-bold text-white">{highTemp}°</span>
+                <span className="text-4xl font-bold text-gray-400">{lowTemp}°</span>
             </div>
             <LineGraph
                 title="Real Feel"
@@ -152,8 +221,9 @@ export default function RealFeelGraph({ groups }: RealFeelGraphProps) {
                 labelIndices={labelIndices}
                 height={110}
                 formatYLabel={(value) => `${Math.round(value)}°`}
+                thresholdLines={realFeelThresholds}
             />
-             <LineGraph
+            <LineGraph
                 title="Cloud Cover"
                 points={skyCoverPoints}
                 color="#94a3b8"
@@ -162,13 +232,7 @@ export default function RealFeelGraph({ groups }: RealFeelGraphProps) {
                 maxValue={100}
                 formatYLabel={(value) => `${value}%`}
             />
-            <LineGraph
-                title="Wind Speed"
-                points={windPoints}
-                color="#a78bfa"
-                labelIndices={labelIndices}
-                minValue={0}
-            />
+
   
         </div>
     );

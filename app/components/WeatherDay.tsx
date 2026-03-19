@@ -22,7 +22,7 @@ export default function WeatherDay({ forecastDate, groups, allFlipped }: Weather
 
     return (
         <div
-            className={`flip-card w-[calc(100vw-3rem)] sm:w-[270px] cursor-pointer`}
+            className={`flip-card w-[calc(100vw-3rem)] sm:w-[290px] cursor-pointer`}
             onClick={() => setFlipped((previous) => !previous)}
         >
             <div className={`flip-card-inner${flipped ? ' flipped' : ''}`}>
@@ -35,6 +35,9 @@ export default function WeatherDay({ forecastDate, groups, allFlipped }: Weather
                     ))}
                 </div>
                 <div className={`flip-card-back ${faceClasses}`}>
+                    <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
+                        {forecastDate}
+                    </div>
                     <RealFeelGraph groups={groups} />
                 </div>
             </div>
