@@ -16,6 +16,8 @@ export default async function Page() {
                     <li><span className="text-white font-semibold">(H)</span> — appears when humidity is high</li>
                     <li><span className="text-white font-semibold">(W)</span> — appears when it is windy</li>
                     <li><span className="text-white font-semibold">(T)</span> — appears when there is a chance of thunderstorms</li>
+                    <li><span className="text-white font-semibold">⚠️</span> — A caution symbol shows if the storm factor is particularly unstable, this might be because of a quick storm increase or decrease or be a thunder shower that lasts only an hour and it otherwised averaged out, it is a warning that the data might be unreliable and to use caution.</li>
+
                 </ul>
             </section>
 

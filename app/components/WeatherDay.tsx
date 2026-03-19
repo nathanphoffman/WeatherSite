@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import WeatherEntry from './WeatherEntry';
+import RealFeelGraph from './RealFeelGraph';
 
 interface WeatherDayProps {
     forecastDate: string;
@@ -28,7 +29,9 @@ export default function WeatherDay({ forecastDate, groups }: WeatherDayProps) {
                         <WeatherEntry key={group.regularTime} group={group} />
                     ))}
                 </div>
-                <div className={`flip-card-back ${faceClasses}`} />
+                <div className={`flip-card-back ${faceClasses}`}>
+                    <RealFeelGraph groups={groups} />
+                </div>
             </div>
         </div>
     );

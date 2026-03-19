@@ -18,7 +18,7 @@ export default function Forecast({ lat, lon }: ForecastProps) {
         setLoading(true);
         setError(null);
         setWeather(null);
-        fetch(`/api/forecast?lat=${lat}&lon=${lon}`, { cache: 'no-store' })
+        fetch(`/api/forecast?lat=${lat}&lon=${lon}&source=api`, { cache: 'no-store' })
             .then(res => {
                 if (!res.ok) throw new Error('Failed to fetch forecast');
                 return res.json();
