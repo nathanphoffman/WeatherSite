@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import WeatherEntry from './WeatherEntry';
 import RealFeelGraph from './RealFeelGraph';
@@ -8,10 +8,15 @@ import RealFeelGraph from './RealFeelGraph';
 interface WeatherDayProps {
     forecastDate: string;
     groups: ThreeHourGroup[];
+    allFlipped: boolean;
 }
 
-export default function WeatherDay({ forecastDate, groups }: WeatherDayProps) {
+export default function WeatherDay({ forecastDate, groups, allFlipped }: WeatherDayProps) {
     const [flipped, setFlipped] = useState(false);
+
+    useEffect(() => {
+        setFlipped(allFlipped);
+    }, [allFlipped]);
 
     const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4";
 

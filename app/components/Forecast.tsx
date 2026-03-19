@@ -7,9 +7,10 @@ import WeatherDay from './WeatherDay';
 interface ForecastProps {
     lat: string;
     lon: string;
+    allFlipped: boolean;
 }
 
-export default function Forecast({ lat, lon }: ForecastProps) {
+export default function Forecast({ lat, lon, allFlipped }: ForecastProps) {
     const [weather, setWeather] = useState<DayForecast | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -40,7 +41,7 @@ export default function Forecast({ lat, lon }: ForecastProps) {
     return (
         <div className="flex flex-wrap justify-center gap-4 p-6">
             {Object.entries(weather).map(([forecastDate, groups]) => (
-                <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} />
+                <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} allFlipped={allFlipped} />
             ))}
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={`spacer-${i}`} className="w-[270px]" />

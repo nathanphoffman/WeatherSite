@@ -6,18 +6,116 @@ interface RealFeelGraphProps {
     groups: ThreeHourGroup[];
 }
 
+interface LineGraphProps {
+    title: string;
+    points: { hour: number; value: number }[];
+    color: string;
+    labelIndices: number[];
+    height?: number;
+    minValue?: number;
+    maxValue?: number;
+    formatYLabel?: (value: number) => string;
+}
+
+const SVG_WIDTH = 238;
+const PADDING_TOP = 16;
+const PADDING_BOTTOM = 20;
+const PADDING_LEFT = 28;
+const PADDING_RIGHT = 8;
+
+function smoothLinePath(coords: [number, number][]): string {
+    if (coords.length < 2) return '';
+    let path = `M ${coords[0][0].toFixed(1)},${coords[0][1].toFixed(1)}`;
+    for (let i = 0; i < coords.length - 1; i++) {
+        const previous = coords[i - 1] ?? coords[i];
+        const current = coords[i];
+        const next = coords[i + 1];
+        const afterNext = coords[i + 2] ?? next;
+        const cp1x = current[0] + (next[0] - previous[0]) / 6;
+        const cp1y = current[1] + (next[1] - previous[1]) / 6;
+        const cp2x = next[0] - (afterNext[0] - current[0]) / 6;
+        const cp2y = next[1] - (afterNext[1] - current[1]) / 6;
+        path += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${next[0].toFixed(1)},${next[1].toFixed(1)}`;
+    }
+    return path;
+}
+
+function smoothAreaPath(coords: [number, number][], baseline: number, firstX: number, lastX: number): string {
+    return `${smoothLinePath(coords)} L ${lastX.toFixed(1)},${baseline} L ${firstX.toFixed(1)},${baseline} Z`;
+}
+
 function formatHourLabel(hour: number): string {
     if (hour === 0 || hour === 24) return '12a';
     if (hour === 12) return '12p';
     return hour < 12 ? `${hour}a` : `${hour - 12}p`;
 }
 
+function LineGraph({ title, points, color, labelIndices, height = 80, minValue, maxValue, formatYLabel }: LineGraphProps) {
+    const plotWidth = SVG_WIDTH - PADDING_LEFT - PADDING_RIGHT;
+    const plotHeight = height - PADDING_TOP - PADDING_BOTTOM;
+
+    const values = points.map((p) => p.value);
+    const computedMin = minValue ?? Math.min(...values);
+    const computedMax = maxValue ?? Math.max(...values);
+    const valueRange = computedMax - computedMin || 1;
+
+    const hours = points.map((p) => p.hour);
+    const minHour = Math.min(...hours);
+    const maxHour = Math.max(...hours);
+    const hourRange = maxHour - minHour || 1;
+
+    const xAt = (hour: number) => PADDING_LEFT + ((hour - minHour) / hourRange) * plotWidth;
+    const yAt = (value: number) => PADDING_TOP + ((computedMax - value) / valueRange) * plotHeight;
+
+    const firstX = xAt(points[0].hour);
+    const lastX = xAt(points[points.length - 1].hour);
+    const baseline = PADDING_TOP + plotHeight;
+
+    const coords: [number, number][] = points.map((p) => [xAt(p.hour), yAt(p.value)]);
+    const linePath = smoothLinePath(coords);
+    const areaPath = smoothAreaPath(coords, baseline, firstX, lastX);
+
+    const defaultFormatYLabel = (value: number) => String(Math.round(value));
+
+    // !! this was outputted directly from claude and is a bit of a blackbox, come back to this
+    return (
+        <>
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1 mt-2">{title}</p>
+            <svg viewBox={`0 0 ${SVG_WIDTH} ${height}`} width="100%" height={height}>
+                <text x={PADDING_LEFT - 4} y={PADDING_TOP + 4} fontSize={9} fill="#6b7280" textAnchor="end">
+                    {(formatYLabel ?? defaultFormatYLabel)(computedMax)}
+                </text>
+                <text x={PADDING_LEFT - 4} y={PADDING_TOP + plotHeight + 4} fontSize={9} fill="#6b7280" textAnchor="end">
+                    {(formatYLabel ?? defaultFormatYLabel)(computedMin)}
+                </text>
+                <line x1={PADDING_LEFT} y1={PADDING_TOP} x2={PADDING_LEFT + plotWidth} y2={PADDING_TOP} stroke="#1f2937" strokeWidth={1} />
+                <line x1={PADDING_LEFT} y1={PADDING_TOP + plotHeight} x2={PADDING_LEFT + plotWidth} y2={PADDING_TOP + plotHeight} stroke="#1f2937" strokeWidth={1} />
+                <path d={areaPath} fill={color} fillOpacity={0.1} />
+                <path d={linePath} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+                {labelIndices.map((dataIndex) => {
+                    const point = points[dataIndex];
+                    return point ? (
+                        <text key={dataIndex} x={xAt(point.hour)} y={height - 4} fontSize={9} fill="#6b7280" textAnchor="middle">
+                            {formatHourLabel(point.hour)}
+                        </text>
+                    ) : null;
+                })}
+            </svg>
+        </>
+    );
+}
+
 export default function RealFeelGraph({ groups }: RealFeelGraphProps) {
-    const dataPoints = groups
+    const sortedHours = (selector: (hourData: ThreeHourGroup['hours'][number]) => number) =>
+        groups
+            .flatMap((group) => group.hours.map((hourData) => ({ hour: hourData.hour, value: selector(hourData) })))
+            .sort((a, b) => a.hour - b.hour);
+
+    const realFeelPoints = groups
         .flatMap((group) =>
             group.hours.map((hourData) => ({
                 hour: hourData.hour,
-                realFeel: getRealFeelTemperature(
+                value: getRealFeelTemperature(
                     hourData.temperature,
                     getMagnitude(hourData.humidity, HumidityRanges),
                     getMagnitude(hourData.wind, WindRanges),
@@ -28,105 +126,50 @@ export default function RealFeelGraph({ groups }: RealFeelGraphProps) {
         )
         .sort((a, b) => a.hour - b.hour);
 
-    if (dataPoints.length === 0) return null;
+    const windPoints = sortedHours((h) => h.wind);
+    const skyCoverPoints = sortedHours((h) => h.skyCover);
 
-    const svgWidth = 238;
-    const svgHeight = 110;
-    const paddingTop = 16;
-    const paddingBottom = 20;
-    const paddingLeft = 28;
-    const paddingRight = 8;
+    if (realFeelPoints.length === 0) return null;
 
-    const plotWidth = svgWidth - paddingLeft - paddingRight;
-    const plotHeight = svgHeight - paddingTop - paddingBottom;
+    const highTemp = Math.max(...realFeelPoints.map((p) => p.value));
+    const lowTemp = Math.min(...realFeelPoints.map((p) => p.value));
 
-    const temps = dataPoints.map((d) => d.realFeel);
-    const minTemp = Math.min(...temps);
-    const maxTemp = Math.max(...temps);
-    const tempRange = maxTemp - minTemp || 1;
-
-    const hours = dataPoints.map((d) => d.hour);
-    const minHour = Math.min(...hours);
-    const maxHour = Math.max(...hours);
-    const hourRange = maxHour - minHour || 1;
-
-    function xAt(hour: number): number {
-        return paddingLeft + ((hour - minHour) / hourRange) * plotWidth;
-    }
-
-    function yAt(temp: number): number {
-        return paddingTop + ((maxTemp - temp) / tempRange) * plotHeight;
-    }
-
-    const polylinePoints = dataPoints
-        .map((d) => `${xAt(d.hour).toFixed(1)},${yAt(d.realFeel).toFixed(1)}`)
-        .join(' ');
-
-    // area fill path: go down to baseline, across, back up
-    const firstX = xAt(dataPoints[0].hour);
-    const lastX = xAt(dataPoints[dataPoints.length - 1].hour);
-    const baseline = paddingTop + plotHeight;
-    const areaPath = `M ${firstX} ${baseline} L ${polylinePoints.split(' ').map((_, index) => {
-        const point = dataPoints[index];
-        return point ? `${xAt(point.hour).toFixed(1)},${yAt(point.realFeel).toFixed(1)}` : '';
-    }).filter(Boolean).join(' L ')} L ${lastX} ${baseline} Z`;
-
-    // label 3 evenly spaced x-axis points
     const labelCount = 3;
     const labelIndices = Array.from({ length: labelCount }, (_, index) =>
-        Math.round((index / (labelCount - 1)) * (dataPoints.length - 1))
+        Math.round((index / (labelCount - 1)) * (realFeelPoints.length - 1))
     );
 
     return (
         <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Real Feel</p>
-            <svg
-                viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                width="100%"
-                height={svgHeight}
-            >
-                {/* y-axis labels */}
-                <text x={paddingLeft - 4} y={paddingTop + 4} fontSize={9} fill="#6b7280" textAnchor="end">
-                    {Math.round(maxTemp)}°
-                </text>
-                <text x={paddingLeft - 4} y={paddingTop + plotHeight + 4} fontSize={9} fill="#6b7280" textAnchor="end">
-                    {Math.round(minTemp)}°
-                </text>
-
-                {/* horizontal grid lines */}
-                <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft + plotWidth} y2={paddingTop} stroke="#1f2937" strokeWidth={1} />
-                <line x1={paddingLeft} y1={paddingTop + plotHeight} x2={paddingLeft + plotWidth} y2={paddingTop + plotHeight} stroke="#1f2937" strokeWidth={1} />
-
-                {/* area fill */}
-                <path d={areaPath} fill="#3b82f6" fillOpacity={0.1} />
-
-                {/* line */}
-                <polyline
-                    points={polylinePoints}
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth={1.5}
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                />
-
-                {/* x-axis hour labels */}
-                {labelIndices.map((dataIndex) => {
-                    const point = dataPoints[dataIndex];
-                    return (
-                        <text
-                            key={dataIndex}
-                            x={xAt(point.hour)}
-                            y={svgHeight - 4}
-                            fontSize={9}
-                            fill="#6b7280"
-                            textAnchor="middle"
-                        >
-                            {formatHourLabel(point.hour)}
-                        </text>
-                    );
-                })}
-            </svg>
+            <div className="flex justify-between items-baseline mb-3">
+                <span className="text-6xl font-bold text-white">{highTemp}°</span>
+                <span className="text-6xl font-bold text-gray-400">{lowTemp}°</span>
+            </div>
+            <LineGraph
+                title="Real Feel"
+                points={realFeelPoints}
+                color="#3b82f6"
+                labelIndices={labelIndices}
+                height={110}
+                formatYLabel={(value) => `${Math.round(value)}°`}
+            />
+             <LineGraph
+                title="Cloud Cover"
+                points={skyCoverPoints}
+                color="#94a3b8"
+                labelIndices={labelIndices}
+                minValue={0}
+                maxValue={100}
+                formatYLabel={(value) => `${value}%`}
+            />
+            <LineGraph
+                title="Wind Speed"
+                points={windPoints}
+                color="#a78bfa"
+                labelIndices={labelIndices}
+                minValue={0}
+            />
+  
         </div>
     );
 }
