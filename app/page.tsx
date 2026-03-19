@@ -1,7 +1,7 @@
 import { getPopulatedCities } from './utils/cityParser';
-import HomeClient from './components/HomeClient';
+import CityForecastLookup from './components/CityForecastLookup/CityForecastLookup';
 
 export default async function Page() {
     const cities = await getPopulatedCities();
-    return <HomeClient cities={cities} />;
+    return <CityForecastLookup cities={cities} />;
 }

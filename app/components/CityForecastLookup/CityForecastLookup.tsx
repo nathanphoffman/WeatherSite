@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import CitySearch from '@/components/CitySearch';
-import Forecast from './Forecast';
+import Forecast from '../Forecast/Forecast';
 import { City } from '@/app/utils/cityParser';
 
 const STORAGE_KEY = 'lastCity';
 
-interface HomeClientProps {
+interface CityForecastLookupProps {
     cities: City[];
 }
 
-export default function HomeClient({ cities }: HomeClientProps) {
+export default function CityForecastLookup({ cities }: CityForecastLookupProps) {
     const [selectedCity, setSelectedCity] = useState<City | null>(null);
     const [allFlipped, setAllFlipped] = useState(false);
 

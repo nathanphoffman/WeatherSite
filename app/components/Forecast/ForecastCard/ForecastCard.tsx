@@ -5,14 +5,14 @@ import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import WeatherEntry from './WeatherEntry';
 import RealFeelGraph from './RealFeelGraph';
 
-interface WeatherDayProps {
+interface ForecastCardProps {
     forecastDate: string;
     groups: ThreeHourGroup[];
     allGroups: ThreeHourGroup[];
     allFlipped: boolean;
 }
 
-export default function WeatherDay({ forecastDate, groups, allGroups, allFlipped }: WeatherDayProps) {
+export default function ForecastCard({ forecastDate, groups, allGroups, allFlipped }: ForecastCardProps) {
     const [flipped, setFlipped] = useState(false);
     const [expanded, setExpanded] = useState(false);
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { DayForecast } from '@/app/lib/noaa/types/forecast';
-import WeatherDay from './WeatherDay';
+import ForecastCard from './ForecastCard/ForecastCard';
 
 interface ForecastProps {
     lat: string;
@@ -43,9 +43,13 @@ export default function Forecast({ lat, lon, allFlipped }: ForecastProps) {
             {(() => {
                 const allGroups = Object.values(weather).flat();
                 return Object.entries(weather).map(([forecastDate, groups]) => (
-                    <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} />
+                    <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} />
                 ));
             })()}
+            {/* 
+                This spacing was necessary to prevent the last odd numbered card from centering on the wrap, it pushes it to the left by adding spacing cards 
+                !! Might be worth identifying a better solution to this
+            */}
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={`spacer-${i}`} className="w-[270px]" />
             ))}

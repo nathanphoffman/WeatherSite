@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #444;
+  --background: #0a0a0a;
   --foreground: #eee;
 }
 
@@ -24,6 +24,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
+  overflow:visible;
 }
 
 .flip-card {
