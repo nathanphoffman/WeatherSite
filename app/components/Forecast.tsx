@@ -40,9 +40,12 @@ export default function Forecast({ lat, lon, allFlipped }: ForecastProps) {
 
     return (
         <div className="flex flex-wrap justify-center gap-4 p-6">
-            {Object.entries(weather).map(([forecastDate, groups]) => (
-                <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} allFlipped={allFlipped} />
-            ))}
+            {(() => {
+                const allGroups = Object.values(weather).flat();
+                return Object.entries(weather).map(([forecastDate, groups]) => (
+                    <WeatherDay key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} />
+                ));
+            })()}
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={`spacer-${i}`} className="w-[270px]" />
             ))}

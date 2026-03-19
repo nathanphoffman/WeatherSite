@@ -55,3 +55,16 @@ body {
   transform: rotateY(180deg);
 }
 
+.flip-card-expanded .flip-card-inner {
+  height: auto;
+}
+
+.flip-card-expanded .flip-card-front {
+  display: none;
+}
+
+.flip-card-expanded .flip-card-back {
+  position: relative;
+  inset: auto;
+}
+
