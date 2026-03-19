@@ -12,8 +12,12 @@ export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] | undefined
 }
 
 export function getDayOfTheWeek(day: string) {
-    // !! need to fix this as it will not work on january dates
-    return new Date(day + "/" + new Date().getFullYear()).toLocaleString('en-us', { weekday: 'long' });
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+    const dayMonth = Number(day.split("/")[0]);
+    const yearOfDate = dayMonth < currentMonth ? currentYear + 1 : currentYear;
+    return new Date(day + "/" + yearOfDate).toLocaleString('en-us', { weekday: 'long' });
 }
 
 export function getAverage(...numbers: number[]) {
@@ -76,7 +80,7 @@ export function candidateToType<T>(candidate: unknown, validators: ((candidate: 
 
     if (arrayNotEmpty(failedFunctions)) {
         console.log("VALIDATION FAILED!");
-        throw `value ${candidate} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(',')}`;4
+        throw `value ${candidate} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(',')}`;
     }
     else return candidate as T;
 }

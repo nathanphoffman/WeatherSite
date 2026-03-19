@@ -10,8 +10,6 @@ export async function run(lat: string, lon: string, source: 'scraper' | 'api' = 
         ? await getParseApiData(lat, lon)
         : await getParseScrapedData(lat, lon);
 
-
-
         // !! note: we need to rename this weather3 deal -- it now refers to singular hours
     const hourlyWeatherRowsGroupsOf3 = splitIntoGroupsOf3(hourlyWeatherRows);
 
