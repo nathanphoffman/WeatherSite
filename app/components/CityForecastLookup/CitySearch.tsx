@@ -14,6 +14,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
     const [query, setQuery] = useState('');
     const [allCities, setAllCities] = useState<City[]>(cities);
     const [allCitiesLoaded, setAllCitiesLoaded] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (initialCity) setQuery(`${initialCity.city}, ${initialCity.state_id}`);
@@ -34,17 +35,24 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
             const filtered = allCities.filter(c => c.city.toLowerCase().startsWith(value.toLowerCase()));
 
             if (filtered.length < 3) {
+                setLoading(true);
 
-                const res = await fetch('/api/cities');
-                const { allCities: fetchedCities } = await res.json();
+                setTimeout(async () => {
+                    const res = await fetch('/api/cities');
+                    
 
-                setAllCities((prev) => {
-                    const existing = new Set(prev.map(c => `${c.city}-${c.state_id}`));
-                    const unique = fetchedCities.filter((c: City) => !existing.has(`${c.city}-${c.state_id}`));
-                    return [...prev, ...unique];
-                });
+                    const { allCities: fetchedCities } = await res.json();
 
-                setAllCitiesLoaded(true);
+                    setAllCities((prev) => {
+                        const existing = new Set(prev.map(c => `${c.city}-${c.state_id}`));
+                        const unique = fetchedCities.filter((c: City) => !existing.has(`${c.city}-${c.state_id}`));
+                        return [...prev, ...unique];
+                    });
+
+                    setLoading(false);
+                    setAllCitiesLoaded(true);
+                    
+                }, 1000);
             }
         }
     };
@@ -65,28 +73,29 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                     ?
                 </a>
                 <div className="relative flex-1 min-w-0">
-                <input
-                    type="text"
-                    value={query}
-                    onChange={onCityChange}
-                    placeholder="Search for a city..."
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
-                />
-                {filtered.length > 0 && (
-                <ul className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
-                    {filtered.map(c => (
-                        <li key={`${c.city}-${c.state_id}`}>
-                            <a
-                                href="#"
-                                onClick={e => { e.preventDefault(); populateInput(c); }}
-                                className="block px-4 py-2 text-lg text-gray-300 hover:bg-gray-800 hover:text-white"
-                            >
-                                {c.city}, {c.state_id}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            )}
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={onCityChange}
+                        placeholder="Search for a city..."
+                        className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
+                    />
+                    {(filtered.length > 0 || loading )&& (
+                        <ul className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
+                            {loading && "(Loading more cities...)"}
+                            {!loading && filtered.map(c => (
+                                <li key={`${c.city}-${c.state_id}`}>
+                                    <a
+                                        href="#"
+                                        onClick={e => { e.preventDefault(); populateInput(c); }}
+                                        className="block px-4 py-2 text-lg text-gray-300 hover:bg-gray-800 hover:text-white"
+                                    >
+                                        {c.city}, {c.state_id}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
                 {query.length > 0 && (
                     <button

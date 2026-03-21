@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import CitySearch from '@/components/CitySearch';
+import CitySearch from '@/app/components/CityForecastLookup/CitySearch';
 import Forecast from '../Forecast/Forecast';
 import { City } from '@/app/utils/cityParser';
 
