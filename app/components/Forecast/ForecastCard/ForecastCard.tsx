@@ -35,7 +35,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
         flipTimerRef.current = setTimeout(() => {
             setFlipped(false);
             setCardExpanded(false);
-        }, 400);
+        }, 150);
     };
 
     // Flip to graph side, then after flip completes expand graphs (same animation as clicking "more")
@@ -45,7 +45,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
         expandTimerRef.current = setTimeout(() => {
             setCardExpanded(true);
             setGraphsOpen(true);
-        }, 650);
+        }, 250);
     };
 
     useEffect(() => {

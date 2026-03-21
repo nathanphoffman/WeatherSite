@@ -449,7 +449,7 @@ export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpand
                 {expanded ? '▲ less' : '▼ more'}
             </button>
 
-            <div style={{ display: 'grid', gridTemplateRows: expanded ? '1fr' : '0fr', transition: 'grid-template-rows 0.4s ease' }}>
+            <div style={{ display: 'grid', gridTemplateRows: expanded ? '1fr' : '0fr', transition: 'grid-template-rows 0.2s ease' }}>
                 <div style={{ overflow: 'hidden' }}>
                     <LineGraph
                         title="Cloud Cover"
