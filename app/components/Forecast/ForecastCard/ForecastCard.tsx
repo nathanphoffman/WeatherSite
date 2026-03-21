@@ -18,44 +18,85 @@ interface ForecastCardProps {
 
 export default function ForecastCard({ forecastDate, groups, allGroups, allFlipped, flipNonce, allExpanded, onFlipChange, onExpandChange }: ForecastCardProps) {
     const [flipped, setFlipped] = useState(false);
-    const [expanded, setExpanded] = useState(false);
+    const [cardExpanded, setCardExpanded] = useState(false);
+    const [graphsOpen, setGraphsOpen] = useState(false);
+    const flipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const expandTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const scheduleExpand = () => {
+    const clearTimers = () => {
+        if (flipTimerRef.current) clearTimeout(flipTimerRef.current);
         if (expandTimerRef.current) clearTimeout(expandTimerRef.current);
-        expandTimerRef.current = setTimeout(() => setExpanded(true), 650);
     };
 
-    const cancelAndCollapse = () => {
-        if (expandTimerRef.current) clearTimeout(expandTimerRef.current);
-        setExpanded(false);
+    // Collapse graphs (0.4s animation), then flip to forecast side
+    const collapseAndFlip = () => {
+        clearTimers();
+        setGraphsOpen(false);
+        flipTimerRef.current = setTimeout(() => {
+            setFlipped(false);
+            setCardExpanded(false);
+        }, 400);
+    };
+
+    // Flip to graph side, then after flip completes expand graphs (same animation as clicking "more")
+    const flipAndExpand = () => {
+        clearTimers();
+        setFlipped(true);
+        expandTimerRef.current = setTimeout(() => {
+            setCardExpanded(true);
+            setGraphsOpen(true);
+        }, 650);
     };
 
     useEffect(() => {
+        clearTimers();
         setFlipped(allFlipped);
         if (!allFlipped) {
-            cancelAndCollapse();
+            setGraphsOpen(false);
+            setCardExpanded(false);
         } else if (allExpanded) {
-            scheduleExpand();
+            expandTimerRef.current = setTimeout(() => {
+                setCardExpanded(true);
+                setGraphsOpen(true);
+            }, 650);
         }
     }, [flipNonce]);
+
+    useEffect(() => {
+        if (allExpanded && flipped && !graphsOpen) {
+            setCardExpanded(true);
+            setGraphsOpen(true);
+        } else if (!allExpanded && graphsOpen) {
+            setGraphsOpen(false);
+            setCardExpanded(false);
+        }
+    }, [allExpanded]);
 
     useEffect(() => {
         onFlipChange?.(flipped);
     }, [flipped]);
 
-    const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10";
+    const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[410px]";
 
     return (
         <div
-            className={`flip-card w-[calc(100vw-3rem)] sm:w-[290px] cursor-pointer${expanded && flipped ? ' flip-card-expanded' : ''}`}
+            className={`flip-card w-[calc(100vw-3rem)] sm:w-[290px] cursor-pointer${cardExpanded && flipped ? ' flip-card-expanded' : ''}`}
             onClick={() => {
-                const nextFlipped = !flipped;
-                setFlipped(nextFlipped);
-                if (!nextFlipped) {
-                    cancelAndCollapse();
-                } else if (allExpanded) {
-                    scheduleExpand();
+                if (!flipped) {
+                    if (allExpanded) {
+                        flipAndExpand();
+                    } else {
+                        clearTimers();
+                        setFlipped(true);
+                    }
+                } else {
+                    if (graphsOpen) {
+                        collapseAndFlip();
+                    } else {
+                        clearTimers();
+                        setFlipped(false);
+                        setCardExpanded(false);
+                    }
                 }
             }}
         >
@@ -72,7 +113,16 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
                     <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
                         {forecastDate}
                     </div>
-                    <RealFeelGraph groups={groups} allGroups={allGroups} allExpanded={allExpanded} onExpandChange={(value) => { setExpanded(value); onExpandChange?.(value); }} />
+                    <RealFeelGraph
+                        groups={groups}
+                        allGroups={allGroups}
+                        allExpanded={graphsOpen}
+                        onExpandChange={(value) => {
+                            setGraphsOpen(value);
+                            setCardExpanded(value);
+                            onExpandChange?.(value);
+                        }}
+                    />
                 </div>
             </div>
         </div>
