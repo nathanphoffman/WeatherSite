@@ -4,7 +4,7 @@ import { getAverage } from "../utility";
 
 export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magnitude {
     const magnitudes = chances.map((chance) => getMagnitude(chance, ChanceRanges));
-    console.log(magnitudes);
+    //console.log(magnitudes);
     const averageMag = getAverage(...magnitudes);
     if (averageMag > 4) return 4 as Magnitude;
     else if (averageMag >= 0) return averageMag as Magnitude;

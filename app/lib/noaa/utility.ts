@@ -15,9 +15,9 @@ export function getDayOfTheWeek(day: string) {
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
-    const dayMonth = Number(day.split("/")[0]);
+    const [dayMonth, dayOfMonth] = day.split("/").map(Number);
     const yearOfDate = dayMonth < currentMonth ? currentYear + 1 : currentYear;
-    return new Date(day + "/" + yearOfDate).toLocaleString('en-us', { weekday: 'long' });
+    return new Date(yearOfDate, dayMonth - 1, dayOfMonth).toLocaleString('en-us', { weekday: 'long' });
 }
 
 export function getAverage(...numbers: number[]) {

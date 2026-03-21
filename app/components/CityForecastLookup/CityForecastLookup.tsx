@@ -14,6 +14,19 @@ interface CityForecastLookupProps {
 export default function CityForecastLookup({ cities }: CityForecastLookupProps) {
     const [selectedCity, setSelectedCity] = useState<City | null>(null);
     const [allFlipped, setAllFlipped] = useState(false);
+    const [flipNonce, setFlipNonce] = useState(0);
+    const [flippedCount, setFlippedCount] = useState(0);
+    const [totalCards, setTotalCards] = useState(0);
+
+    const handleFlipCountChange = (flippedCount: number, totalCount: number) => {
+        setFlippedCount(flippedCount);
+        setTotalCards(totalCount);
+    };
+
+    const flipAll = (value: boolean) => {
+        setAllFlipped(value);
+        setFlipNonce((previous) => previous + 1);
+    };
 
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -35,15 +48,21 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
             <CitySearch cities={cities} initialCity={selectedCity} onSelect={selectCity} onClear={clearCity} />
             {selectedCity && (
                 <>
-                    <div className="flex justify-center mt-3">
+                    <div className="flex justify-center gap-2 mt-3">
                         <button
-                            onClick={() => setAllFlipped((previous) => !previous)}
-                            className="text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-lg px-4 py-1.5 transition-colors"
+                            onClick={() => flipAll(false)}
+                            className={`text-sm border rounded-lg px-4 py-1.5 transition-colors ${totalCards > 0 && flippedCount === 0 ? 'text-white border-gray-500' : 'text-gray-400 hover:text-white border-gray-700 hover:border-gray-500'}`}
                         >
-                            {allFlipped ? 'View Forecasts' : 'View Graphs'}
+                            View Forecasts
+                        </button>
+                        <button
+                            onClick={() => flipAll(true)}
+                            className={`text-sm border rounded-lg px-4 py-1.5 transition-colors ${totalCards > 0 && flippedCount === totalCards ? 'text-white border-gray-500' : 'text-gray-400 hover:text-white border-gray-700 hover:border-gray-500'}`}
+                        >
+                            View Graphs
                         </button>
                     </div>
-                    <Forecast lat={selectedCity.lat} lon={selectedCity.lng} allFlipped={allFlipped} />
+                    <Forecast lat={selectedCity.lat} lon={selectedCity.lng} allFlipped={allFlipped} flipNonce={flipNonce} onFlipCountChange={handleFlipCountChange} />
                 </>
             )}
         </section>

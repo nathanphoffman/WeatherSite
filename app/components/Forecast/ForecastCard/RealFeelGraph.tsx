@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { getRealFeelTemperature, getMagnitude, convertNOAAChancesToAverageMagnitude, getStormRating } from '@/app/lib/noaa/output/calculations';
 import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude } from '@/app/lib/noaa/output/color';
@@ -10,6 +10,7 @@ import { getAverage } from '@/app/lib/noaa/utility';
 interface RealFeelGraphProps {
     groups: ThreeHourGroup[];
     allGroups?: ThreeHourGroup[];
+    allExpanded: boolean;
     onExpandChange?: (expanded: boolean) => void;
 }
 
@@ -257,8 +258,12 @@ function MultiLineGraph({ title, series, labelIndices, height = 80, minValue, ma
     );
 }
 
-export default function RealFeelGraph({ groups, allGroups, onExpandChange }: RealFeelGraphProps) {
+export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpandChange }: RealFeelGraphProps) {
     const [expanded, setExpanded] = useState(false);
+
+    useEffect(() => {
+        setExpanded(allExpanded);
+    }, [allExpanded]);
 
     const handleExpand = (event: React.MouseEvent) => {
         event.stopPropagation();
@@ -444,8 +449,8 @@ export default function RealFeelGraph({ groups, allGroups, onExpandChange }: Rea
                 {expanded ? '▲ less' : '▼ more'}
             </button>
 
-            {expanded && (
-                <>
+            <div style={{ display: 'grid', gridTemplateRows: expanded ? '1fr' : '0fr', transition: 'grid-template-rows 0.4s ease' }}>
+                <div style={{ overflow: 'hidden' }}>
                     <LineGraph
                         title="Cloud Cover"
                         points={skyCoverPoints}
@@ -481,8 +486,8 @@ export default function RealFeelGraph({ groups, allGroups, onExpandChange }: Rea
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}
                     />
-                </>
-            )}
+                </div>
+            </div>
         </div>
     );
 }
