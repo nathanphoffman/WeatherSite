@@ -68,11 +68,12 @@ export async function getParseApiData(lat: string, lon: string): Promise<{ hourl
     const hourlyWeatherRows: ThreeHourWeatherModel[] = [];
 
     for (const period of periods) {
-        const startDate = new Date(period.startTime);
-        const month = startDate.getMonth() + 1;
-        const day = startDate.getDate();
+        const [datePart, timePart] = (period.startTime as string).split('T');
+        const [, monthStr, dayStr] = datePart.split('-');
+        const month = parseInt(monthStr, 10);
+        const day = parseInt(dayStr, 10);
         const forecastDate = `${month}/${day}`;
-        const hour = startDate.getHours();
+        const hour = parseInt(timePart.split(':')[0], 10);
 
         if (!seenDays.has(forecastDate)) {
             seenDays.add(forecastDate);

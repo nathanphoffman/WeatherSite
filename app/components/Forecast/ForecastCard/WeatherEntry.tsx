@@ -60,7 +60,7 @@ export default function WeatherEntry({ group }: WeatherEntryProps) {
 
     return (
         <div className="flex gap-3 items-baseline py-1 border-b border-gray-800 text-xl last:border-0">
-            <span className="text-gray-500 w-12">{regularTime}</span>
+            <span className="text-gray-500 w-12 mr-1">{regularTime}</span>
             <span className={magnitudeColor[realFeelMagnitude]}>{realFeelTemperature}°</span>
             {humidityMagnitude > 0 && <span className={magnitudeColor[humidityMagnitude]}>H</span>}
             <span className={magnitudeColor[stormMagnitude]}>{stormRating}</span>
