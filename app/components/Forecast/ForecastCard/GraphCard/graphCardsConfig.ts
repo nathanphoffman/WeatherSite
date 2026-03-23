@@ -1,18 +1,25 @@
 import { useRef, useState, useEffect } from 'react';
 
-export const getGraphDimensions = () => ({
+export const GRAPH_DIMENSIONS = {
     SVG_WIDTH: 238,
     SVG_HEIGHT: 80,
     PADDING_TOP: 16,
     PADDING_BOTTOM: 20,
     PADDING_LEFT: 28,
     PADDING_RIGHT: 20, // slightly smaller as it doesn't have y-axis labels
-});
+};
+
+export interface ThresholdLine {
+    value: number;
+    color: string;
+    showYLabel?: boolean;
+}
+
+export const defaultFormatYLabel = (value: number) => String(Math.round(value));
 
 export function useContainerWidth() {
     const ref = useRef<HTMLDivElement>(null);
-    const { SVG_WIDTH } = getGraphDimensions();
-    const [width, setWidth] = useState(SVG_WIDTH);
+    const [width, setWidth] = useState(GRAPH_DIMENSIONS.SVG_WIDTH);
     useEffect(() => {
         if (!ref.current) return;
         const observer = new ResizeObserver(entries => {
@@ -52,12 +59,12 @@ export function formatHourLabel(hour: number): string {
 }
 
 export function buildAxisHelpers(allHours: number[], computedMin: number, computedMax: number, plotWidth: number, plotHeight: number) {
-    const { PADDING_LEFT, PADDING_TOP } = getGraphDimensions();
+    const { PADDING_LEFT, PADDING_TOP } = GRAPH_DIMENSIONS;
     const minHour = Math.min(...allHours);
     const maxHour = Math.max(...allHours);
     const hourRange = maxHour - minHour || 1;
     const valueRange = computedMax - computedMin || 1;
     const xAt = (hour: number) => PADDING_LEFT + ((hour - minHour) / hourRange) * plotWidth;
     const yAt = (value: number) => PADDING_TOP + ((computedMax - value) / valueRange) * plotHeight;
-    return { xAt, yAt, minHour, maxHour };
+    return { xAt, yAt };
 }

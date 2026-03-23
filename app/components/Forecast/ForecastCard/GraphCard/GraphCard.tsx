@@ -29,6 +29,27 @@ function chanceToPercent(chance: string): number {
     return CHANCE_TO_PERCENT[chance] ?? 0;
 }
 
+type HourData = ThreeHourGroup['hours'][number];
+
+const toRealFeel = (hourData: HourData) =>
+    getRealFeelTemperature(
+        hourData.temperature,
+        getMagnitude(hourData.humidity, HumidityRanges),
+        getMagnitude(hourData.wind, WindRanges),
+        hourData.skyCover,
+        hourData.hour
+    );
+
+const toStormRating = (hourData: HourData) =>
+    getStormRating(
+        hourData.skyCover,
+        hourData.precipChance,
+        getMagnitude(hourData.rain, ChanceRanges),
+        getMagnitude(hourData.snow, ChanceRanges),
+        getMagnitude(hourData.wind, WindRanges),
+        getMagnitude(hourData.thunder, ChanceRanges)
+    );
+
 export default function GraphCard({ groups, allGroups, allExpanded, currentHour, onExpandChange }: GraphCardProps) {
     const [expanded, setExpanded] = useState(false);
 
@@ -43,7 +64,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
         onExpandChange?.(next);
     };
 
-    const sortedHours = (selector: (hourData: ThreeHourGroup['hours'][number]) => number) =>
+    const sortedHours = (selector: (hourData: HourData) => number) =>
         groups
             .flatMap((group) => group.hours.map((hourData) => ({ hour: hourData.hour, value: selector(hourData) })))
             .sort((a, b) => a.hour - b.hour);
@@ -51,42 +72,12 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     const clipToCurrentHour = (points: { hour: number; value: number }[]) =>
         currentHour !== undefined ? points.filter((point) => point.hour >= currentHour) : points;
 
-    const realFeelPoints = clipToCurrentHour(groups
-        .flatMap((group) =>
-            group.hours.map((hourData) => ({
-                hour: hourData.hour,
-                value: getRealFeelTemperature(
-                    hourData.temperature,
-                    getMagnitude(hourData.humidity, HumidityRanges),
-                    getMagnitude(hourData.wind, WindRanges),
-                    hourData.skyCover,
-                    hourData.hour
-                ),
-            }))
-        )
-        .sort((a, b) => a.hour - b.hour));
-
+    const realFeelPoints = clipToCurrentHour(sortedHours(toRealFeel));
+    const stormRatingPoints = clipToCurrentHour(sortedHours(toStormRating));
     const windPoints = clipToCurrentHour(sortedHours((h) => h.wind));
     const skyCoverPoints = clipToCurrentHour(sortedHours((h) => h.skyCover));
     const humidityPoints = clipToCurrentHour(sortedHours((h) => h.humidity));
     const precipChancePoints = clipToCurrentHour(sortedHours((h) => h.precipChance));
-
-    const stormRatingPoints = clipToCurrentHour(groups
-        .flatMap((group) =>
-            group.hours.map((hourData) => ({
-                hour: hourData.hour,
-                value: getStormRating(
-                    hourData.skyCover,
-                    hourData.precipChance,
-                    getMagnitude(hourData.rain, ChanceRanges),
-                    getMagnitude(hourData.snow, ChanceRanges),
-                    getMagnitude(hourData.wind, WindRanges),
-                    getMagnitude(hourData.thunder, ChanceRanges)
-                ),
-            }))
-        )
-        .sort((a, b) => a.hour - b.hour));
-
     const rainPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.rain)));
     const snowPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.snow)));
     const thunderPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.thunder)));
@@ -123,13 +114,6 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
         { value: RealFeelPreferences.VeryColdMin, color: '#ef4444' },
     ];
 
-    const humidityThresholds: ThresholdLine[] = [
-        { value: 61, color: 'rgba(255,255,255,0.45)' },
-        { value: 73, color: '#eab308' },
-        { value: 85, color: '#ef4444' },
-        { value: 97, color: '#f43f5e' },
-    ];
-
     const stormThresholds: ThresholdLine[] = [
         { value: StormPreferences.AverageMin, color: 'rgba(255,255,255,0.45)' },
         { value: StormPreferences.PoorMin, color: '#eab308' },
@@ -147,25 +131,12 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     const highTemp = Math.max(...realFeelPoints.map((p) => p.value));
     const lowTemp = Math.min(...realFeelPoints.map((p) => p.value));
 
-    const computeRealFeel = (group: ThreeHourGroup) =>
-        group.hours.map((hourData) =>
-            getRealFeelTemperature(
-                hourData.temperature,
-                getMagnitude(hourData.humidity, HumidityRanges),
-                getMagnitude(hourData.wind, WindRanges),
-                hourData.skyCover,
-                hourData.hour
-            )
-        );
-
-    const scaleGroups = allGroups ?? groups;
-    const allRealFeelValues = scaleGroups.flatMap(computeRealFeel);
+    const allRealFeelValues = (allGroups ?? groups).flatMap((group) => group.hours.map(toRealFeel));
     const globalHighTemp = Math.max(...allRealFeelValues);
     const globalLowTemp = Math.min(...allRealFeelValues);
 
-    const labelCount = 3;
-    const labelIndices = Array.from({ length: labelCount }, (_, index) =>
-        Math.round((index / (labelCount - 1)) * (realFeelPoints.length - 1))
+    const labelIndices = Array.from({ length: 3 }, (_, index) =>
+        Math.round((index / 2) * (realFeelPoints.length - 1))
     );
 
     return (
