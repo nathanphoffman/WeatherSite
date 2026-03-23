@@ -66,12 +66,16 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
         });
     };
 
+    const now = new Date();
+    const todayDate = `${now.getMonth() + 1}/${now.getDate()}`;
+    const currentHour = now.getHours();
+
     return (
         <div className="flex flex-wrap justify-center gap-4 p-6">
             {(() => {
                 const allGroups = Object.values(weather).flat();
                 return Object.entries(weather).map(([forecastDate, groups]) => (
-                    <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} onFlipChange={(flipped) => handleCardFlipChange(forecastDate, flipped)} onExpandChange={setAllExpanded} />
+                    <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} currentHour={forecastDate === todayDate ? currentHour : undefined} onFlipChange={(flipped) => handleCardFlipChange(forecastDate, flipped)} onExpandChange={setAllExpanded} />
                 ));
             })()}
             {/* 

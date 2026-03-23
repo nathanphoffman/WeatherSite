@@ -32,7 +32,9 @@ export default function WeatherEntry({ group }: WeatherEntryProps) {
     const lowestStorm = Math.min(...allThreeStormRatings);
     const highestStorm = Math.max(...allThreeStormRatings);
     const stormDelta = highestStorm - lowestStorm;
-    const unstableWeather = stormDelta >= lowestStorm + 5;
+
+    // there is no point showing unstable weather if it is unstable because of a 2, 1, 8 say
+    const unstableWeather = highestStorm > 10 && (stormDelta >= lowestStorm + 5);
 
     const humidity = hours.map(h => h.humidity);
     const wind = hours.map(h => h.wind);

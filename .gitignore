@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 *.sqlite
+
+# testing out claude agents but not ready to publish them
+*.claude/*

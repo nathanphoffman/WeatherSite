@@ -11,6 +11,7 @@ interface RealFeelGraphProps {
     groups: ThreeHourGroup[];
     allGroups?: ThreeHourGroup[];
     allExpanded: boolean;
+    currentHour?: number;
     onExpandChange?: (expanded: boolean) => void;
 }
 
@@ -258,7 +259,7 @@ function MultiLineGraph({ title, series, labelIndices, height = 80, minValue, ma
     );
 }
 
-export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpandChange }: RealFeelGraphProps) {
+export default function RealFeelGraph({ groups, allGroups, allExpanded, currentHour, onExpandChange }: RealFeelGraphProps) {
     const [expanded, setExpanded] = useState(false);
 
     useEffect(() => {
@@ -276,7 +277,10 @@ export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpand
             .flatMap((group) => group.hours.map((hourData) => ({ hour: hourData.hour, value: selector(hourData) })))
             .sort((a, b) => a.hour - b.hour);
 
-    const realFeelPoints = groups
+    const clipToCurrentHour = (points: { hour: number; value: number }[]) =>
+        currentHour !== undefined ? points.filter((point) => point.hour >= currentHour) : points;
+
+    const realFeelPoints = clipToCurrentHour(groups
         .flatMap((group) =>
             group.hours.map((hourData) => ({
                 hour: hourData.hour,
@@ -289,14 +293,14 @@ export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpand
                 ),
             }))
         )
-        .sort((a, b) => a.hour - b.hour);
+        .sort((a, b) => a.hour - b.hour));
 
-    const windPoints = sortedHours((h) => h.wind);
-    const skyCoverPoints = sortedHours((h) => h.skyCover);
-    const humidityPoints = sortedHours((h) => h.humidity);
-    const precipChancePoints = sortedHours((h) => h.precipChance);
+    const windPoints = clipToCurrentHour(sortedHours((h) => h.wind));
+    const skyCoverPoints = clipToCurrentHour(sortedHours((h) => h.skyCover));
+    const humidityPoints = clipToCurrentHour(sortedHours((h) => h.humidity));
+    const precipChancePoints = clipToCurrentHour(sortedHours((h) => h.precipChance));
 
-    const stormRatingPoints = groups
+    const stormRatingPoints = clipToCurrentHour(groups
         .flatMap((group) =>
             group.hours.map((hourData) => ({
                 hour: hourData.hour,
@@ -310,11 +314,11 @@ export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpand
                 ),
             }))
         )
-        .sort((a, b) => a.hour - b.hour);
+        .sort((a, b) => a.hour - b.hour));
 
-    const rainPoints = sortedHours((h) => chanceToPercent(h.rain));
-    const snowPoints = sortedHours((h) => chanceToPercent(h.snow));
-    const thunderPoints = sortedHours((h) => chanceToPercent(h.thunder));
+    const rainPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.rain)));
+    const snowPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.snow)));
+    const thunderPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.thunder)));
 
     if (realFeelPoints.length === 0) return null;
 
@@ -436,9 +440,9 @@ export default function RealFeelGraph({ groups, allGroups, allExpanded, onExpand
                 color="#a855f7"
                 labelIndices={labelIndices}
                 minValue={0}
-                maxValue={50}
+                maxValue={75}
                 logScale
-                logStrength={0.5}
+                logStrength={0.4}
                 thresholdLines={[{ value: 10, color: 'rgba(255,255,255,0.45)', showYLabel: true }]}
             />
 
