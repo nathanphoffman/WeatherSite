@@ -1,3 +1,27 @@
+import { labelConfig } from './labelConfig';
+
+interface LabelProps {
+    x: number;
+    y: number;
+    value: string;
+}
+
+function TopLabel({ x, y, value }: LabelProps) {
+    return (
+        <text x={x} y={y} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="end">
+            {value}
+        </text>
+    );
+}
+
+function BottomLabel({ x, y, value }: LabelProps) {
+    return (
+        <text x={x} y={y} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="end">
+            {value}
+        </text>
+    );
+}
+
 interface YAxisLabelsProps {
     paddingLeft: number;
     paddingTop: number;
@@ -8,14 +32,14 @@ interface YAxisLabelsProps {
 }
 
 export default function YAxisLabels({ paddingLeft, paddingTop, plotHeight, computedMin, computedMax, formatYLabel }: YAxisLabelsProps) {
+    const xWithPadding = paddingLeft - labelConfig.offset;
+
     return (
         <>
-            <text x={paddingLeft - 4} y={paddingTop + 4} fontSize={11} fill="#6b7280" textAnchor="end">
-                {formatYLabel(computedMax)}
-            </text>
-            <text x={paddingLeft - 4} y={paddingTop + plotHeight + 4} fontSize={11} fill="#6b7280" textAnchor="end">
-                {formatYLabel(computedMin)}
-            </text>
+            <TopLabel x={xWithPadding} y={paddingTop + labelConfig.offset} value={formatYLabel(computedMax)} />
+
+            {/* adding plotHeight actually increases distance downwards making it the bottom label just to the side and below the chart */}
+            <BottomLabel x={xWithPadding} y={paddingTop + plotHeight + labelConfig.offset} value={formatYLabel(computedMin)} />
         </>
     );
 }

@@ -10,7 +10,7 @@ export interface MultiLineSeries {
 export interface MultiLineGraphProps {
     title: string;
     series: MultiLineSeries[];
-    labelIndices: number[];
+    indicesToLabel: number[];
     height?: number;
     minValue?: number;
     maxValue?: number;
@@ -18,7 +18,7 @@ export interface MultiLineGraphProps {
     thresholdLines?: ThresholdLine[];
 }
 
-export default function MultiLineGraph({ title, series, labelIndices, height, minValue, maxValue, formatYLabel, thresholdLines }: MultiLineGraphProps) {
+export default function MultiLineGraph({ title, series, indicesToLabel, height, minValue, maxValue, formatYLabel, thresholdLines }: MultiLineGraphProps) {
     const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = GRAPH_DIMENSIONS;
     const { ref: containerRef, width: svgWidth } = useContainerWidth();
     const resolvedHeight = height ?? SVG_HEIGHT;
@@ -50,7 +50,7 @@ export default function MultiLineGraph({ title, series, labelIndices, height, mi
                 yAt={yAt}
                 xAt={xAt}
                 referencePoints={referencePoints}
-                labelIndices={labelIndices}
+                indicesToLabel={indicesToLabel}
             >
                 {series.map((s, seriesIndex) => {
                     const coords: [number, number][] = s.points.map((p) => [xAt(p.hour), yAt(p.value)]);

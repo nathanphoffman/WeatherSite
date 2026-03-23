@@ -26,10 +26,9 @@ export function getAverage(...numbers: number[]) {
 }
 
 export function militaryHourToRegularHour(mil: number): string {
-    if (mil === 12) return "12pm";
-    else if (mil > 12) return `${mil - 12}pm`;
-    else if (mil === 0) return "12am";
-    else return `${mil}am`;
+    if (mil === 0 || mil === 24) return '12a';
+    if (mil === 12) return '12p';
+    return mil < 12 ? `${mil}a` : `${mil - 12}p`;
 }
 
 export function pipe(fns: ((t: any)=>any)[]) {

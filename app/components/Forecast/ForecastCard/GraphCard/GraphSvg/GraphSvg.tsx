@@ -21,7 +21,7 @@ interface GraphSvgProps {
     yAt: (value: number) => number;
     xAt: (hour: number) => number;
     referencePoints: { hour: number }[];
-    labelIndices: number[];
+    indicesToLabel: number[];
     skipFirstLabel?: boolean;
     children: ReactNode;
 }
@@ -29,7 +29,7 @@ interface GraphSvgProps {
 export default function GraphSvg({
     title, containerRef, svgWidth, height, plotWidth, plotHeight,
     computedMin, computedMax, formatYLabel, thresholdLines, yAt, xAt,
-    referencePoints, labelIndices, skipFirstLabel, children,
+    referencePoints, indicesToLabel, skipFirstLabel, children,
 }: GraphSvgProps) {
     const { PADDING_LEFT, PADDING_TOP } = GRAPH_DIMENSIONS;
     const format = formatYLabel ?? defaultFormatYLabel;
@@ -45,7 +45,7 @@ export default function GraphSvg({
                         <ThresholdLines thresholds={thresholdLines} computedMin={computedMin} computedMax={computedMax} paddingLeft={PADDING_LEFT} plotWidth={plotWidth} yAt={yAt} formatYLabel={format} />
                     )}
                     {children}
-                    <XAxisLabels referencePoints={referencePoints} labelIndices={labelIndices} skipFirstLabel={skipFirstLabel} height={height} xAt={xAt} />
+                    <XAxisLabels referencePoints={referencePoints} indicesToLabel={indicesToLabel} skipFirstLabel={skipFirstLabel} height={height} xAt={xAt} />
                 </svg>
             </div>
         </>

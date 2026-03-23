@@ -7,7 +7,7 @@ export interface LineGraphProps {
     title: string;
     points: { hour: number; value: number }[];
     color: string;
-    labelIndices: number[];
+    indicesToLabel: number[];
     height?: number;
     minValue?: number;
     maxValue?: number;
@@ -17,7 +17,7 @@ export interface LineGraphProps {
 }
 
 // !! this was outputted directly from claude and is a bit of a blackbox, come back to this
-export default function LineGraph({ title, points, color, labelIndices, height, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
+export default function LineGraph({ title, points, color, indicesToLabel, height, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
     const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = GRAPH_DIMENSIONS;
     const { ref: containerRef, width: svgWidth } = useContainerWidth();
     const resolvedHeight = height ?? SVG_HEIGHT;
@@ -62,7 +62,7 @@ export default function LineGraph({ title, points, color, labelIndices, height, 
             yAt={yAt}
             xAt={xAt}
             referencePoints={points}
-            labelIndices={labelIndices}
+            indicesToLabel={indicesToLabel}
             skipFirstLabel
         >
             <path d={smoothAreaPath(coords, baseline, firstX, lastX)} fill={color} fillOpacity={0.1} />

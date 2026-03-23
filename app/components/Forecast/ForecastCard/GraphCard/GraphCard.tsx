@@ -135,7 +135,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     const globalHighTemp = Math.max(...allRealFeelValues);
     const globalLowTemp = Math.min(...allRealFeelValues);
 
-    const labelIndices = Array.from({ length: 3 }, (_, index) =>
+    const indicesToLabel = Array.from({ length: 3 }, (_, index) =>
         Math.round((index / 2) * (realFeelPoints.length - 1))
     );
 
@@ -150,7 +150,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                 title="Real Feel"
                 points={realFeelPoints}
                 color="#3b82f6"
-                labelIndices={labelIndices}
+                indicesToLabel={indicesToLabel}
                 height={110}
                 minValue={globalLowTemp}
                 maxValue={globalHighTemp}
@@ -161,7 +161,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                 title="Storm Rating"
                 points={stormRatingPoints}
                 color="#a855f7"
-                labelIndices={labelIndices}
+                indicesToLabel={indicesToLabel}
                 minValue={0}
                 maxValue={75}
                 logStrength={0.4}
@@ -181,7 +181,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         title="Cloud Cover"
                         points={skyCoverPoints}
                         color="#94a3b8"
-                        labelIndices={labelIndices}
+                        indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}
@@ -190,7 +190,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         title="Precip Chance"
                         points={precipChancePoints}
                         color="#60a5fa"
-                        labelIndices={labelIndices}
+                        indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}
@@ -199,7 +199,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         title="Wind Speed"
                         points={windPoints}
                         color="#a78bfa"
-                        labelIndices={labelIndices}
+                        indicesToLabel={indicesToLabel}
                         minValue={0}
                         thresholdLines={windThresholds}
                     />
@@ -207,7 +207,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         title="Humidity"
                         points={humidityPoints}
                         color="#06b6d4"
-                        labelIndices={labelIndices}
+                        indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}
@@ -220,7 +220,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                             { points: snowPoints, color: '#e2e8f0', label: 'Snow' },
                             { points: thunderPoints, color: '#fbbf24', label: 'Thunder' },
                         ]}
-                        labelIndices={labelIndices}
+                        indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}

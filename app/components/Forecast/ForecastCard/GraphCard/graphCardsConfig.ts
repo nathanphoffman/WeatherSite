@@ -52,12 +52,6 @@ export function smoothAreaPath(coords: [number, number][], baseline: number, fir
     return `${smoothLinePath(coords)} L ${lastX.toFixed(1)},${baseline} L ${firstX.toFixed(1)},${baseline} Z`;
 }
 
-export function formatHourLabel(hour: number): string {
-    if (hour === 0 || hour === 24) return '12a';
-    if (hour === 12) return '12p';
-    return hour < 12 ? `${hour}a` : `${hour - 12}p`;
-}
-
 export function buildAxisHelpers(allHours: number[], computedMin: number, computedMax: number, plotWidth: number, plotHeight: number) {
     const { PADDING_LEFT, PADDING_TOP } = GRAPH_DIMENSIONS;
     const minHour = Math.min(...allHours);
