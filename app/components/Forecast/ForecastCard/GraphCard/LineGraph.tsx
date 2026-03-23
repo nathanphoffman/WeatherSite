@@ -1,5 +1,5 @@
 import { GRAPH_DIMENSIONS, ThresholdLine, useContainerWidth, smoothLinePath, smoothAreaPath, buildAxisHelpers } from './graphCardsConfig';
-import GraphFrame from './GraphFrame';
+import GraphSvg from './GraphSvg/GraphSvg';
 
 export type { ThresholdLine };
 
@@ -48,7 +48,7 @@ export default function LineGraph({ title, points, color, labelIndices, height, 
     const coords: [number, number][] = points.map((p) => [xAt(p.hour), yAt(p.value)]);
 
     return (
-        <GraphFrame
+        <GraphSvg
             title={title}
             containerRef={containerRef}
             svgWidth={svgWidth}
@@ -67,6 +67,6 @@ export default function LineGraph({ title, points, color, labelIndices, height, 
         >
             <path d={smoothAreaPath(coords, baseline, firstX, lastX)} fill={color} fillOpacity={0.1} />
             <path d={smoothLinePath(coords)} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
-        </GraphFrame>
+        </GraphSvg>
     );
 }

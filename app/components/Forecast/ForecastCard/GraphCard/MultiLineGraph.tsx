@@ -1,5 +1,5 @@
 import { GRAPH_DIMENSIONS, ThresholdLine, useContainerWidth, smoothLinePath, buildAxisHelpers } from './graphCardsConfig';
-import GraphFrame from './GraphFrame';
+import GraphSvg from './GraphSvg/GraphSvg';
 
 export interface MultiLineSeries {
     points: { hour: number; value: number }[];
@@ -36,7 +36,7 @@ export default function MultiLineGraph({ title, series, labelIndices, height, mi
 
     return (
         <>
-            <GraphFrame
+            <GraphSvg
                 title={title}
                 containerRef={containerRef}
                 svgWidth={svgWidth}
@@ -66,7 +66,7 @@ export default function MultiLineGraph({ title, series, labelIndices, height, mi
                         />
                     );
                 })}
-            </GraphFrame>
+            </GraphSvg>
             <div className="flex gap-3 mt-1">
                 {series.map((s, index) => (
                     <div key={index} className="flex items-center gap-1">
