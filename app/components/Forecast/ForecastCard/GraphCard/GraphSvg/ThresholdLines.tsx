@@ -25,7 +25,7 @@ export default function ThresholdLines({ thresholds, computedMin, computedMax, p
                         y2={yAt(threshold.value)}
                         stroke={threshold.color}
                         strokeWidth={1}
-                        strokeDasharray="4,3"
+                        strokeDasharray="4,3" /* Makes the line dashed */
                         opacity={0.85}
                     />
 
