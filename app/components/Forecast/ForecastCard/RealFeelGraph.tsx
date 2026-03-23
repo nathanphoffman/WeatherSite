@@ -31,7 +31,6 @@ interface LineGraphProps {
     maxValue?: number;
     formatYLabel?: (value: number) => string;
     thresholdLines?: ThresholdLine[];
-    logScale?: boolean;
     logStrength?: number;
 }
 
@@ -108,7 +107,7 @@ function buildAxisHelpers(allHours: number[], computedMin: number, computedMax: 
 }
 
 // !! this was outputted directly from claude and is a bit of a blackbox, come back to this
-function LineGraph({ title, points, color, labelIndices, height = 80, minValue, maxValue, formatYLabel, thresholdLines, logScale, logStrength = 1 }: LineGraphProps) {
+function LineGraph({ title, points, color, labelIndices, height = 80, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
     const plotWidth = SVG_WIDTH - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = height - PADDING_TOP - PADDING_BOTTOM;
 
@@ -118,7 +117,7 @@ function LineGraph({ title, points, color, labelIndices, height = 80, minValue, 
 
     const { xAt, yAt: linearYAt } = buildAxisHelpers(points.map((p) => p.hour), computedMin, computedMax, plotWidth, plotHeight);
 
-    const yAt = logScale
+    const yAt = !!logStrength
         ? (value: number) => {
             const linearNormalized = (value - computedMin) / (computedMax - computedMin || 1);
             const logMin = Math.log(computedMin + 1);
@@ -441,7 +440,6 @@ export default function RealFeelGraph({ groups, allGroups, allExpanded, currentH
                 labelIndices={labelIndices}
                 minValue={0}
                 maxValue={75}
-                logScale
                 logStrength={0.4}
                 thresholdLines={[{ value: 10, color: 'rgba(255,255,255,0.45)', showYLabel: true }]}
             />
