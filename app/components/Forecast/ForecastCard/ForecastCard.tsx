@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import WeatherEntry from './WeatherEntry';
-import RealFeelGraph from './RealFeelGraph';
+import GraphCard from './GraphCard/GraphCard';
 
 interface ForecastCardProps {
     forecastDate: string;
@@ -114,7 +114,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
                     <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
                         {forecastDate}
                     </div>
-                    <RealFeelGraph
+                    <GraphCard
                         groups={groups}
                         allGroups={allGroups}
                         allExpanded={graphsOpen}
