@@ -1,8 +1,28 @@
-export const SVG_WIDTH = 238;
-export const PADDING_TOP = 16;
-export const PADDING_BOTTOM = 20;
-export const PADDING_LEFT = 28;
-export const PADDING_RIGHT = 8;
+import { useRef, useState, useEffect } from 'react';
+
+export const getGraphDimensions = () => ({
+    SVG_WIDTH: 238,
+    SVG_HEIGHT: 80,
+    PADDING_TOP: 16,
+    PADDING_BOTTOM: 20,
+    PADDING_LEFT: 28,
+    PADDING_RIGHT: 20, // slightly smaller as it doesn't have y-axis labels
+});
+
+export function useContainerWidth() {
+    const ref = useRef<HTMLDivElement>(null);
+    const { SVG_WIDTH } = getGraphDimensions();
+    const [width, setWidth] = useState(SVG_WIDTH);
+    useEffect(() => {
+        if (!ref.current) return;
+        const observer = new ResizeObserver(entries => {
+            setWidth(entries[0].contentRect.width);
+        });
+        observer.observe(ref.current);
+        return () => observer.disconnect();
+    }, []);
+    return { ref, width };
+}
 
 export function smoothLinePath(coords: [number, number][]): string {
     if (coords.length < 2) return '';
@@ -32,6 +52,7 @@ export function formatHourLabel(hour: number): string {
 }
 
 export function buildAxisHelpers(allHours: number[], computedMin: number, computedMax: number, plotWidth: number, plotHeight: number) {
+    const { PADDING_LEFT, PADDING_TOP } = getGraphDimensions();
     const minHour = Math.min(...allHours);
     const maxHour = Math.max(...allHours);
     const hourRange = maxHour - minHour || 1;

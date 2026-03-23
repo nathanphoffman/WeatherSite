@@ -1,4 +1,4 @@
-import { SVG_WIDTH, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM, smoothLinePath, formatHourLabel, buildAxisHelpers } from './graphCardsConfig';
+import { getGraphDimensions, useContainerWidth, smoothLinePath, formatHourLabel, buildAxisHelpers } from './graphCardsConfig';
 import { ThresholdLine } from './LineGraph';
 
 export interface MultiLineSeries {
@@ -18,9 +18,12 @@ export interface MultiLineGraphProps {
     thresholdLines?: ThresholdLine[];
 }
 
-export default function MultiLineGraph({ title, series, labelIndices, height = 80, minValue, maxValue, formatYLabel, thresholdLines }: MultiLineGraphProps) {
-    const plotWidth = SVG_WIDTH - PADDING_LEFT - PADDING_RIGHT;
-    const plotHeight = height - PADDING_TOP - PADDING_BOTTOM;
+export default function MultiLineGraph({ title, series, labelIndices, height, minValue, maxValue, formatYLabel, thresholdLines }: MultiLineGraphProps) {
+    const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = getGraphDimensions();
+    const { ref: containerRef, width: svgWidth } = useContainerWidth();
+    const resolvedHeight = height ?? SVG_HEIGHT;
+    const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
+    const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
     const allValues = series.flatMap((s) => s.points.map((p) => p.value));
     const allHours = series.flatMap((s) => s.points.map((p) => p.hour));
@@ -35,7 +38,8 @@ export default function MultiLineGraph({ title, series, labelIndices, height = 8
     return (
         <>
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-1 mt-2">{title}</p>
-            <svg viewBox={`0 0 ${SVG_WIDTH} ${height}`} width="100%" height={height}>
+            <div ref={containerRef}>
+            <svg viewBox={`0 0 ${svgWidth} ${resolvedHeight}`} width="100%" height={resolvedHeight}>
                 <text x={PADDING_LEFT - 4} y={PADDING_TOP + 4} fontSize={11} fill="#6b7280" textAnchor="end">
                     {(formatYLabel ?? defaultFormatYLabel)(computedMax)}
                 </text>
@@ -74,12 +78,13 @@ export default function MultiLineGraph({ title, series, labelIndices, height = 8
                 {labelIndices.map((dataIndex) => {
                     const point = referencePoints[dataIndex];
                     return point ? (
-                        <text key={dataIndex} x={xAt(point.hour)} y={height - 4} fontSize={11} fill="#6b7280" textAnchor="middle">
+                        <text key={dataIndex} x={xAt(point.hour)} y={resolvedHeight - 4} fontSize={11} fill="#6b7280" textAnchor="middle">
                             {formatHourLabel(point.hour)}
                         </text>
                     ) : null;
                 })}
             </svg>
+            </div>
             <div className="flex gap-3 mt-1">
                 {series.map((s, index) => (
                     <div key={index} className="flex items-center gap-1">

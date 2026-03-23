@@ -1,4 +1,4 @@
-import { SVG_WIDTH, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM, smoothLinePath, smoothAreaPath, formatHourLabel, buildAxisHelpers } from './graphCardsConfig';
+import { getGraphDimensions, useContainerWidth, smoothLinePath, smoothAreaPath, formatHourLabel, buildAxisHelpers } from './graphCardsConfig';
 
 export interface ThresholdLine {
     value: number;
@@ -20,9 +20,12 @@ export interface LineGraphProps {
 }
 
 // !! this was outputted directly from claude and is a bit of a blackbox, come back to this
-export default function LineGraph({ title, points, color, labelIndices, height = 80, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
-    const plotWidth = SVG_WIDTH - PADDING_LEFT - PADDING_RIGHT;
-    const plotHeight = height - PADDING_TOP - PADDING_BOTTOM;
+export default function LineGraph({ title, points, color, labelIndices, height, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
+    const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = getGraphDimensions();
+    const { ref: containerRef, width: svgWidth } = useContainerWidth();
+    const resolvedHeight = height ?? SVG_HEIGHT;
+    const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
+    const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
     const values = points.map((p) => p.value);
     const computedMin = minValue ?? Math.min(...values);
@@ -54,7 +57,8 @@ export default function LineGraph({ title, points, color, labelIndices, height =
     return (
         <>
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-1 mt-2">{title}</p>
-            <svg viewBox={`0 0 ${SVG_WIDTH} ${height}`} width="100%" height={height}>
+            <div ref={containerRef}>
+            <svg viewBox={`0 0 ${svgWidth} ${resolvedHeight}`} width="100%" height={resolvedHeight}>
                 <text x={PADDING_LEFT - 4} y={PADDING_TOP + 4} fontSize={11} fill="#6b7280" textAnchor="end">
                     {(formatYLabel ?? defaultFormatYLabel)(computedMax)}
                 </text>
@@ -87,12 +91,13 @@ export default function LineGraph({ title, points, color, labelIndices, height =
                 {labelIndices.slice(1).map((dataIndex) => {
                     const point = points[dataIndex];
                     return point ? (
-                        <text key={dataIndex} x={xAt(point.hour)} y={height - 4} fontSize={11} fill="#6b7280" textAnchor="middle">
+                        <text key={dataIndex} x={xAt(point.hour)} y={resolvedHeight - 4} fontSize={11} fill="#6b7280" textAnchor="middle">
                             {formatHourLabel(point.hour)}
                         </text>
                     ) : null;
                 })}
             </svg>
+            </div>
         </>
     );
 }
