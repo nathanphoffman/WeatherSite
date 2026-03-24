@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
-import WeatherEntry from './WeatherEntry';
+import ThreeHourForecastCard from './ThreeHourForecastCard/ThreeHourForecastCard';
 import GraphCard from './GraphCard/GraphCard';
 
 interface ForecastCardProps {
@@ -106,9 +106,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
                     <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
                         {forecastDate}
                     </div>
-                    {groups.map((group) => (
-                        <WeatherEntry key={group.regularTime} group={group} />
-                    ))}
+                    <ThreeHourForecastCard groups={groups} />
                 </div>
                 <div className={`flip-card-back ${faceClasses}`}>
                     <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">

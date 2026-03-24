@@ -13,11 +13,11 @@ const magnitudeColor: Record<Magnitude, string> = {
     4: BRIGHT,
 };
 
-interface WeatherEntryProps {
+interface ThreeHourEntryProps {
     group: ThreeHourGroup;
 }
 
-export default function WeatherEntry({ group }: WeatherEntryProps) {
+export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const { regularTime, middleHour, hours } = group;
 
     const allThreeStormRatings = hours.map((weatherRow) => {
