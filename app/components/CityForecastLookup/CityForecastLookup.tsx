@@ -6,6 +6,7 @@ import Forecast from '../Forecast/Forecast';
 import { City } from '@/app/utils/cityParser';
 
 const STORAGE_KEY = 'lastCity';
+const STORAGE_KEY_CACHED_CITIES = 'cachedCities';
 
 interface CityForecastLookupProps {
     cities: City[];
@@ -28,12 +29,27 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
         setFlipNonce((previous) => previous + 1);
     };
 
+    const getCachedCitiesFromStorage = (): City[] => {
+        const cachedCitiesFromStorage = localStorage.getItem(STORAGE_KEY_CACHED_CITIES);
+        return cachedCitiesFromStorage ? JSON.parse(cachedCitiesFromStorage) : [];
+    }
+
+    const addSelectedCityToLookupCache = (city: City) => {
+        const cachedCitiesFromStorage = getCachedCitiesFromStorage();
+        const matchedCity = cachedCitiesFromStorage.find(x=>x.city === city.city);
+        if(!matchedCity) {
+            const newCityList = [city, ...cachedCitiesFromStorage];
+            localStorage.setItem(STORAGE_KEY_CACHED_CITIES, JSON.stringify(newCityList));
+        }
+    }
+
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) setSelectedCity(JSON.parse(saved));
     }, []);
 
     const selectCity = (city: City) => {
+        addSelectedCityToLookupCache(city);
         setSelectedCity(city);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(city));
     };
@@ -43,9 +59,13 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
         localStorage.removeItem(STORAGE_KEY);
     };
 
+    const cachedCities = getCachedCitiesFromStorage();
+    const cachedCityNames = new Set(cachedCities.map((city) => city.city));
+    const cachedAndPopularCities = [...cachedCities, ...cities.filter((city) => !cachedCityNames.has(city.city))];
+
     return (
         <section>
-            <CitySearch cities={cities} initialCity={selectedCity} onSelect={selectCity} onClear={clearCity} />
+            <CitySearch cities={cachedAndPopularCities} initialCity={selectedCity} onSelect={selectCity} onClear={clearCity} />
             {selectedCity && (
                 <>
                     <div className="flex justify-center gap-2 mt-3">
