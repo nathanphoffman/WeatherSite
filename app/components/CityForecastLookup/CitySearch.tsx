@@ -82,7 +82,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                     />
                     {(filtered.length > 0 || loading )&& (
                         <ul className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
-                            {loading && "(Loading more cities...)"}
+                            {loading && (<li>(Loading more cities...)</li>)}
                             {!loading && filtered.map(c => (
                                 <li key={`${c.city}-${c.state_id}`}>
                                     <a
