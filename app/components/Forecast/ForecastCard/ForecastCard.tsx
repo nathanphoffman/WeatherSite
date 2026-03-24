@@ -77,7 +77,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
         onFlipChange?.(flipped);
     }, [flipped]);
 
-    const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[410px]";
+    const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[430px]";
 
     return (
         <div

@@ -149,7 +149,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
 
     return (
         <div>
-            <div className="flex justify-between items-baseline mb-3">
+            <div className="flex justify-between items-baseline">
                 <span className="text-4xl font-bold text-white">{dailyHighRealFeel}°</span>
                 <span className="text-4xl font-bold text-gray-400">{dailyLowRealFeel}°</span>
             </div>
