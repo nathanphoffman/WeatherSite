@@ -1,4 +1,5 @@
 import { ThresholdLine } from '../graphCardsConfig';
+import { thresholdConfig } from './thresholdConfig';
 
 interface ThresholdLinesProps {
     thresholds: ThresholdLine[];
@@ -24,14 +25,14 @@ export default function ThresholdLines({ thresholds, computedMin, computedMax, p
                         x2={paddingLeft + plotWidth}
                         y2={yAt(threshold.value)}
                         stroke={threshold.color}
-                        strokeWidth={1}
-                        strokeDasharray="4,3" /* Makes the line dashed */
-                        opacity={0.85}
+                        strokeWidth={thresholdConfig.strokeWidth}
+                        strokeDasharray={thresholdConfig.strokeDasharray} /* Makes the line dashed */
+                        opacity={thresholdConfig.opacity}
                     />
 
                     {/* This was a later addition needed used to emphasize a threshold in some cases like cloud cover being 10, I find this useful in log-based scales */}
                     {threshold.showYLabel && (
-                        <text x={paddingLeft - 4} y={yAt(threshold.value) + 4} fontSize={11} fill="#6b7280" textAnchor="end">
+                        <text x={paddingLeft - thresholdConfig.label.offset} y={yAt(threshold.value) + thresholdConfig.label.offset} fontSize={thresholdConfig.label.fontSize} fill={thresholdConfig.label.fill} textAnchor="end">
                             {formatYLabel(threshold.value)}
                         </text>
                     )}

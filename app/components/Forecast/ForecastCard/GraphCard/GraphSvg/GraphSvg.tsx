@@ -36,7 +36,7 @@ export default function GraphSvg({
 
     return (
         <>
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1 mt-2">{title}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide mt-6">{title}</p>
             <div ref={containerRef}>
                 <svg viewBox={`0 0 ${svgWidth} ${height}`} width="100%" height={height}>
                     <GraphBorders paddingLeft={PADDING_LEFT} paddingTop={PADDING_TOP} plotWidth={plotWidth} plotHeight={plotHeight} />

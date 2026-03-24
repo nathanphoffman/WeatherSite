@@ -5,8 +5,8 @@ export const GRAPH_DIMENSIONS = {
     SVG_HEIGHT: 80,
     PADDING_TOP: 16,
     PADDING_BOTTOM: 20,
-    PADDING_LEFT: 28,
-    PADDING_RIGHT: 20, // slightly smaller as it doesn't have y-axis labels
+    PADDING_LEFT: 40,
+    PADDING_RIGHT: 30, // slightly smaller as it doesn't have y-axis labels
 };
 
 export interface ThresholdLine {
@@ -79,7 +79,7 @@ export function smoothLinePath(points: [number, number][]): string {
         const curvePullNearStart = `${curvePullNearStartX.toFixed(1)},${curvePullNearStartY.toFixed(1)}`;
         const curvePullNearEnd   = `${curvePullNearEndX.toFixed(1)},${curvePullNearEndY.toFixed(1)}`;
         const destination        = `${segmentEnd[0].toFixed(1)},${segmentEnd[1].toFixed(1)}`;
-        
+
         // "C" tells the browser: draw a cubic Bezier curve using these two pull points, ending at the destination
         svgPath += ` C ${curvePullNearStart} ${curvePullNearEnd} ${destination}`;
     }

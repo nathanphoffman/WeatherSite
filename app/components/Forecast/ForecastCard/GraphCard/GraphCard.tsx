@@ -49,6 +49,8 @@ const toStormRating = (hourData: HourData) =>
         getMagnitude(hourData.wind, WindRanges),
         getMagnitude(hourData.thunder, ChanceRanges)
     );
+    
+const toWindSpeed = (hourData: HourData) => hourData.wind;
 
 export default function GraphCard({ groups, allGroups, allExpanded, currentHour, onExpandChange }: GraphCardProps) {
     const [expanded, setExpanded] = useState(false);
@@ -128,12 +130,18 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
         { value: 30, color: '#f43f5e' },
     ];
 
-    const highTemp = Math.max(...realFeelPoints.map((p) => p.value));
-    const lowTemp = Math.min(...realFeelPoints.map((p) => p.value));
+    const dailyHighRealFeel = Math.max(...realFeelPoints.map((p) => p.value));
+    const dailyLowRealFeel = Math.min(...realFeelPoints.map((p) => p.value));
 
-    const allRealFeelValues = (allGroups ?? groups).flatMap((group) => group.hours.map(toRealFeel));
-    const globalHighTemp = Math.max(...allRealFeelValues);
-    const globalLowTemp = Math.min(...allRealFeelValues);
+    function getWeeklyHighAndLow(dataExtractionFn: (hourData: HourData)=>any) {
+        const weeklyValues = (allGroups ?? groups).flatMap((group) => group.hours.map(dataExtractionFn));
+        const weeklyHigh = Math.max(...weeklyValues);
+        const weeklyLow = Math.min(...weeklyValues);
+        return {weeklyHigh, weeklyLow };
+    }
+
+    const weeklyHighAndLowRealFeel = getWeeklyHighAndLow(toRealFeel);
+    const weeklyHighAndLowWindSpeed = getWeeklyHighAndLow(toWindSpeed);
 
     const indicesToLabel = Array.from({ length: 3 }, (_, index) =>
         Math.round((index / 2) * (realFeelPoints.length - 1))
@@ -142,8 +150,8 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     return (
         <div>
             <div className="flex justify-between items-baseline mb-3">
-                <span className="text-4xl font-bold text-white">{highTemp}°</span>
-                <span className="text-4xl font-bold text-gray-400">{lowTemp}°</span>
+                <span className="text-4xl font-bold text-white">{dailyHighRealFeel}°</span>
+                <span className="text-4xl font-bold text-gray-400">{dailyLowRealFeel}°</span>
             </div>
 
             <LineGraph
@@ -152,8 +160,8 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                 color="#3b82f6"
                 indicesToLabel={indicesToLabel}
                 height={110}
-                minValue={globalLowTemp}
-                maxValue={globalHighTemp}
+                minValue={weeklyHighAndLowRealFeel.weeklyLow}
+                maxValue={weeklyHighAndLowRealFeel.weeklyHigh}
                 formatYLabel={(value) => `${Math.round(value)}°`}
                 thresholdLines={realFeelThresholds}
             />
@@ -162,6 +170,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                 points={stormRatingPoints}
                 color="#a855f7"
                 indicesToLabel={indicesToLabel}
+                height={90}
                 minValue={0}
                 maxValue={75}
                 logStrength={0.4}
@@ -198,9 +207,10 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                     <LineGraph
                         title="Wind Speed"
                         points={windPoints}
+                        minValue={weeklyHighAndLowWindSpeed.weeklyLow}
+                        maxValue={weeklyHighAndLowWindSpeed.weeklyHigh}
                         color="#a78bfa"
                         indicesToLabel={indicesToLabel}
-                        minValue={0}
                         thresholdLines={windThresholds}
                     />
                     <LineGraph
