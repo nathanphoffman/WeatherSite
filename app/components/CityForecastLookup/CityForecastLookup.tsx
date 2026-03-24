@@ -18,6 +18,7 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
     const [flipNonce, setFlipNonce] = useState(0);
     const [flippedCount, setFlippedCount] = useState(0);
     const [totalCards, setTotalCards] = useState(0);
+    const [cachedAndPopularCities, setCachedAndPopularCities] = useState(cities);
 
     const handleFlipCountChange = (flippedCount: number, totalCount: number) => {
         setFlippedCount(flippedCount);
@@ -46,6 +47,10 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) setSelectedCity(JSON.parse(saved));
+
+        const cachedCities = getCachedCitiesFromStorage();
+        const cachedCityNames = new Set(cachedCities.map((city) => city.city));
+        setCachedAndPopularCities([...cachedCities, ...cachedAndPopularCities.filter((city) => !cachedCityNames.has(city.city))]);
     }, []);
 
     const selectCity = (city: City) => {
@@ -58,10 +63,6 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
         setSelectedCity(null);
         localStorage.removeItem(STORAGE_KEY);
     };
-
-    const cachedCities = getCachedCitiesFromStorage();
-    const cachedCityNames = new Set(cachedCities.map((city) => city.city));
-    const cachedAndPopularCities = [...cachedCities, ...cities.filter((city) => !cachedCityNames.has(city.city))];
 
     return (
         <section>
