@@ -82,6 +82,7 @@ export async function getParseScrapedData(lat: string, lon: string) {
         wind: windColumns[i],
         humidity: humidityColumns[i],
         precipChance: precipChanceColumns[i],
+        precipAmount: 0,
         rain: rainColumns[i],
         snow: snowColumns[i],
         thunder: thunderColumns[i],

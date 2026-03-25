@@ -18,7 +18,10 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
     const [citySelected, setCitySelected] = useState(false);
 
     useEffect(() => {
-        if (initialCity) setQuery(`${initialCity.city}, ${initialCity.state_id}`);
+        if (initialCity) {
+            setQuery(`${initialCity.city}, ${initialCity.state_id}`);
+            setCitySelected(true);
+        }
     }, [initialCity]);
 
     // because cities is loaded into a state object on this component, the parent component does not force cities back into allCities state
@@ -57,7 +60,6 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                 setTimeout(async () => {
                     const res = await fetch('/api/cities');
                     
-
                     const { allCities: fetchedCities } = await res.json();
 
                     setAllCities((prev) => {

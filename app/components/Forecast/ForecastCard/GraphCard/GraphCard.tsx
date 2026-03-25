@@ -80,6 +80,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     const skyCoverPoints = clipToCurrentHour(sortedHours((h) => h.skyCover));
     const humidityPoints = clipToCurrentHour(sortedHours((h) => h.humidity));
     const precipChancePoints = clipToCurrentHour(sortedHours((h) => h.precipChance));
+    const precipAmountPoints = clipToCurrentHour(sortedHours((h) => h.precipAmount ?? 0));
     const rainPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.rain)));
     const snowPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.snow)));
     const thunderPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.thunder)));
@@ -221,6 +222,16 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         minValue={0}
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}
+                    />
+
+                    <LineGraph
+                        title="Precipitation"
+                        points={precipAmountPoints}
+                        color="#38bdf8"
+                        indicesToLabel={indicesToLabel}
+                        minValue={0}
+                        maxValue={Math.max(...precipAmountPoints.map((p) => p.value).filter(isFinite), 0.5)}
+                        formatYLabel={(value) => `${value.toFixed(2)}"`}
                     />
 
                     <MultiLineGraph

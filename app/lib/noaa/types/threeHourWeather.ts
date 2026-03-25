@@ -5,6 +5,7 @@ import { is24OrLess, isAboveAbsoluteZero, isBelowBoiling, isBelowSpeedOfSound, i
 type Fahrenheit = number;
 type Percent = number;
 type AirMilesPerHour = number;
+type Inches = number;
 
 // !! unknown number should be updated here
 export interface ThreeHourWeatherModel {
@@ -13,6 +14,7 @@ export interface ThreeHourWeatherModel {
     wind: AirMilesPerHour,
     humidity: Percent,
     precipChance: Percent,
+    precipAmount: Inches,
     rain: ChanceForeast,
     snow: ChanceForeast,
     thunder: ChanceForeast,
@@ -27,11 +29,11 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate
             wind: formAirMilesPerHour(candidate.wind),
             humidity: formPercent(candidate.humidity),
             precipChance: formPercent(candidate.precipChance),
+            precipAmount: formInches(candidate.precipAmount),
             rain: formChanceForecast(candidate.rain),
             snow: formChanceForecast(candidate.snow),
             thunder: formChanceForecast(candidate.thunder),
-            hour: formHour(candidate.hour)
-            ,
+            hour: formHour(candidate.hour),
         };
 
         function formChanceForecast(candidate: unknown): ChanceForeast {
@@ -48,6 +50,10 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate
 
         function formAirMilesPerHour(candidate: unknown): AirMilesPerHour {
             return candidateToType<AirMilesPerHour>(candidate, [isNumber, isNotNegative, isBelowSpeedOfSound]);
+        }
+
+        function formInches(candidate: unknown): Inches {
+            return candidateToType<Inches>(candidate, [isNumber, isNotNegative]);
         }
 
         function formHour(candidate: unknown): Hour {

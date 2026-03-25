@@ -46,6 +46,28 @@ function inferThunder(shortForecast: string, precipChance: number): ChanceForeas
     return '--';
 }
 
+function parseDurationHours(duration: string): number {
+    const match = duration.match(/PT(\d+)H/);
+    return match ? parseInt(match[1], 10) : 1;
+}
+
+function buildPrecipMapMm(values: { validTime: string; value: number | null }[]): Map<string, number> {
+    const map = new Map<string, number>();
+    for (const { validTime, value } of values) {
+        if (value === null) continue;
+        const [startTimeStr, durationStr] = validTime.split('/');
+        const durationHours = parseDurationHours(durationStr);
+        const perHourMm = value / durationHours;
+        const startTime = new Date(startTimeStr);
+        for (let i = 0; i < durationHours; i++) {
+            const hourTime = new Date(startTime.getTime() + i * 3600 * 1000);
+            const key = hourTime.toISOString().slice(0, 13);
+            map.set(key, perHourMm);
+        }
+    }
+    return map;
+}
+
 export async function getParseApiData(lat: string, lon: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
     const headers = {
         'User-Agent': 'WeatherSite/1.0 (weather app)',
@@ -57,10 +79,18 @@ export async function getParseApiData(lat: string, lon: string): Promise<{ hourl
     if (!pointsResult.ok) throw `NOAA points API failed: ${pointsResult.status}`;
     const pointsData = await pointsResult.json();
     const forecastHourlyUrl = pointsData.properties.forecastHourly;
+    const forecastGridDataUrl = pointsData.properties.forecastGridData;
 
-    const forecastResult = await fetch(forecastHourlyUrl, { headers });
+    const [forecastResult, gridDataResult] = await Promise.all([
+        fetch(forecastHourlyUrl, { headers }),
+        fetch(forecastGridDataUrl, { headers }),
+    ]);
     if (!forecastResult.ok) throw `NOAA forecast API failed: ${forecastResult.status}`;
     const forecastData = await forecastResult.json();
+    const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
+    const precipMap = gridData
+        ? buildPrecipMapMm(gridData.properties.quantitativePrecipitation?.values ?? [])
+        : new Map<string, number>();
 
     const periods = forecastData.properties.periods;
     const seenDays = new Set<string>();
@@ -90,17 +120,22 @@ export async function getParseApiData(lat: string, lon: string): Promise<{ hourl
         const shortForecast: string = period.shortForecast ?? '';
         const skyCover = inferSkyCover(shortForecast);
 
-        hourlyWeatherRows.push({
+        const periodUtcKey = new Date(period.startTime).toISOString().slice(0, 13);
+        const precipAmountMm = precipMap.get(periodUtcKey) ?? 0;
+        const precipAmount = Math.round((precipAmountMm / 25.4) * 100) / 100;
+
+        hourlyWeatherRows.push(ThreeHourWeatherModel.formModelFromCandidate({
             temperature,
             skyCover,
             wind: windSpeed,
             humidity,
             precipChance,
+            precipAmount,
             rain: inferRain(shortForecast, temperature, precipChance),
             snow: inferSnow(shortForecast, temperature, precipChance),
             thunder: inferThunder(shortForecast, precipChance),
             hour,
-        });
+        }));
     }
 
     return { hourlyWeatherRows, uniqueDays };
