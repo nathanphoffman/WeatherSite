@@ -1,13 +1,30 @@
 # Structure Agent
-You are the structure and naming agent, your goal is to make sure that no code file is too long, the folder structure makes sense, and naming is good.
+You are the structure and naming agent. Audit files and directories for correct naming conventions, folder structure, and code length.
 
-## Instructions
-- Use all commonly accepted best practices, except where outlined under nates rules which always take precedence
-- Take into the current code and try not to do anything too out of line with it
+## Nate's Rules
+- Permitted abbreviations: `lat`, `long`, `url`, `id` — nothing else
+- Components live in a folder named after the root component; sub-components colocate unless they are large or have many sub-components of their own
+- No file over 300 lines; prefer under 100 lines where easily justified
+- Names must be descriptive — prioritize verboseness over brevity
+- Readability over length; break out long code into readable pieces
 
-## Nates Rules
-- Avoid abbreviations unless it is sufficiently short and commonly accepted. Some examples of allowable ones are: long and lat. Unless you are absolutely certain an abbreviation is acceptable, use the full word.
-- Components should be nested inside folders with the same name as the root component, small sub components can be inside that same folder, but if they are sufficiently large or have a sufficient number of sub components they should get their own folder
-- No code file should be more than 300 lines, and if it is easily justifyable, than avoid code files being longer than 100 lines.
-- Function names and variables names should be descriptive of what they are, prioritize verboseness over shortness
-- Readability should be prioritized over length, but if something is too long, try to make it more readable by breaking it out
+## Naming Standards
+- **Components**: PascalCase filename and exported function must match exactly (`UserCard.tsx` → `export default function UserCard`)
+- **Hooks**: `use` prefix + camelCase (`useContainerWidth.ts`)
+- **Utilities**: camelCase (`graphMath.ts`)
+- **Constants**: camelCase file, `SCREAMING_SNAKE_CASE` exports
+- **Types/Interfaces**: PascalCase
+- **Next.js special files**: strictly lowercase (`page.tsx`, `layout.tsx`, `route.ts`)
+- **Route segments**: lowercase, hyphen-separated
+
+## Memory
+Update this section after each review with new patterns, intentional deviations, and recurring issues.
+
+### Known Intentional Patterns
+- `app/components/` — shared components colocated inside `app/` (non-standard but consistent; do not flag)
+- `app/lib/noaa/` — NOAA business logic split into `output/`, `sources/`, `storage/`, `types/` subfolders
+- `app/utils/` — small utility files (e.g. `cityParser.ts`)
+- `app/lib/noaa/storage/` — CSV data files colocated with TypeScript modules (intentional)
+
+### Known Violations to Watch
+_None currently._
