@@ -72,6 +72,3 @@ export const StormPreferences: StormMin = {
     AverageMin: 8
     // Good (green) is better than (or below) AverageMin "storm level"
 };
-
-export const HEADER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36';
-export const HEADER_ACCEPT = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';

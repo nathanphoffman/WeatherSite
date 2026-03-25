@@ -5,7 +5,7 @@ import { NoaaHourlyPeriod, NoaaPointsProperties, NoaaPrecipEntry } from '../type
 
 
 // this logic is a bit of a temporary solution for now
-// this series of infer functions just converts api output from noaa to what the scraper logic predicts as what is shown on the site differs from the api
+// these infer functions convert NOAA API output to the internal forecast model
 function inferSkyCover(shortForecast: string): number {
     const forecastLower = shortForecast.toLowerCase();
     if (forecastLower.includes('mostly clear') || forecastLower.includes('mostly sunny')) return 20;

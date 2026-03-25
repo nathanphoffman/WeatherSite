@@ -11,12 +11,10 @@
   "dependencies": {
     "@netlify/blobs": "^10.7.1",
     "@types/papaparse": "^5.5.2",
-    "axios": "^1.7.7",
     "better-sqlite3": "^12.6.2",
     "clean": "^4.0.2",
     "csv-parse": "^6.1.0",
     "next": "^16.1.6",
-    "node-html-parser": "^7.1.0",
     "papaparse": "^5.5.3",
     "react": "19.2.3",
     "react-dom": "19.2.3"

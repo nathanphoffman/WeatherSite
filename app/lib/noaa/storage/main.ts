@@ -1,5 +1,5 @@
 import { getBlobConnectionInfo } from "../config";
-import { buildDayForecast } from "../scraperEntry";
+import { buildDayForecast } from "../forecastBuilder";
 import { StorageSolution } from "../types/storage";
 import { DayForecast } from "../types/forecast";
 import { WeatherModel } from "../types/databaseModels";
@@ -8,7 +8,7 @@ import { databaseStorage } from "./database";
 
 const CACHE_VERSION = 2;
 
-export async function getForecast(lat?: string, long?: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
+export async function getForecast(lat?: string, long?: string): Promise<DayForecast> {
 
     if(!lat || !long) throw new Error("Latitude and/or longitude not provided");
 
@@ -35,7 +35,7 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
     }
 
     console.log("Running fetch against NOAA");
-    const forecast = await buildDayForecast(lat, long, source);
+    const forecast = await buildDayForecast(lat, long);
 
     const weatherRecord = WeatherModel.formModelFromCandidate({
         lat: lat,
