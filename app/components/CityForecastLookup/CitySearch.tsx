@@ -99,7 +99,11 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                         className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
                     />
                     {!citySelected && (filtered.length > 0 || loading) && (
-                        <ul className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
+                        /* Covers the screen vieport so that the Simple Map credits link is not clickable */
+                        <div className="fixed inset-0 z-10" onClick={() => setCitySelected(true)} />
+                    )}
+                    {!citySelected && (filtered.length > 0 || loading) && (
+                        <ul className="absolute z-20 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
                             {loading && (<li>(Loading more cities...)</li>)}
                             {!loading && filtered.map(c => (
                                 <li key={`${c.city}-${c.state_id}`}>

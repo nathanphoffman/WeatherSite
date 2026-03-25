@@ -28,6 +28,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <footer className="mt-8 pb-4 text-center text-sm text-gray-600">
+          City data provided by <a href="https://simplemaps.com/data/countries" className="underline hover:text-gray-400" target="_blank" rel="noopener noreferrer">Simple Maps</a>
+        </footer>
       </body>
     </html>
   );
