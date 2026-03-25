@@ -1,4 +1,6 @@
-import { GRAPH_DIMENSIONS, ThresholdLine, useContainerWidth, smoothLinePath, buildAxisHelpers } from './graphCardsConfig';
+import { GRAPH_DIMENSIONS, ThresholdLine } from './graphCardsConfig';
+import { useContainerWidth } from './useContainerWidth';
+import { smoothLinePath, buildAxisHelpers } from './graphMath';
 import GraphSvg from './GraphSvg/GraphSvg';
 
 export interface MultiLineSeries {

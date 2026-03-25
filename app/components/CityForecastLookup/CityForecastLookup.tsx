@@ -7,6 +7,8 @@ import { City } from '@/app/utils/cityParser';
 
 const STORAGE_KEY = 'lastCity';
 const STORAGE_KEY_CACHED_CITIES = 'cachedCities';
+const STORAGE_VERSION = 2;
+const STORAGE_VERSION_KEY = 'storageVersion';
 
 interface CityForecastLookupProps {
     cities: City[];
@@ -45,6 +47,13 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
     }
 
     useEffect(() => {
+        const storedVersion = Number(localStorage.getItem(STORAGE_VERSION_KEY));
+        if (storedVersion !== STORAGE_VERSION) {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STORAGE_KEY_CACHED_CITIES);
+            localStorage.setItem(STORAGE_VERSION_KEY, String(STORAGE_VERSION));
+        }
+
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) setSelectedCity(JSON.parse(saved));
 
@@ -83,7 +92,7 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
                             View Graphs
                         </button>
                     </div>
-                    <Forecast lat={selectedCity.lat} lon={selectedCity.lng} allFlipped={allFlipped} flipNonce={flipNonce} onFlipCountChange={handleFlipCountChange} />
+                    <Forecast lat={selectedCity.lat} lon={selectedCity.long} allFlipped={allFlipped} flipNonce={flipNonce} onFlipCountChange={handleFlipCountChange} />
                 </>
             )}
         </section>

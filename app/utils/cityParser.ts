@@ -13,7 +13,7 @@ export interface City {
     state_id: string;
     state_name: string;
     lat: string;
-    lng: string;
+    long: string;
 }
 
 function getAbsolutePath(relativePath: string) : string {
@@ -28,6 +28,7 @@ async function readCsv(relativePath: string): Promise<City[]> {
     const { data } = Papa.parse<City>(contents, {
         header: true,
         skipEmptyLines: true,
+        transformHeader: (header) => header === 'lng' ? 'long' : header,
     });
 
     return data;
