@@ -21,10 +21,15 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
         if (initialCity) setQuery(`${initialCity.city}, ${initialCity.state_id}`);
     }, [initialCity]);
 
+    // because cities is loaded into a state object on this component, the parent component does not force cities back into allCities state
+    useEffect(() => {
+        setAllCities(cities);
+    }, [cities]);
+
     const filterCities = (cityList: City[], value: string): City[] => {
         const lower = value.toLowerCase();
-        if (lower.includes(',')) {
-            const [cityPart, statePart] = lower.split(',').map(s => s.trim());
+        if (lower.includes(',') || lower.includes(' ')) {
+            const [cityPart, statePart] = lower.split(/[, ]+/, 2).map(s => s.trim());
             return cityList.filter(c =>
                 c.city.toLowerCase().startsWith(cityPart) &&
                 c.state_id.toLowerCase().startsWith(statePart)
