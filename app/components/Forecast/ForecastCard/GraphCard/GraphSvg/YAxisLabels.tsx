@@ -6,15 +6,7 @@ interface LabelProps {
     value: string;
 }
 
-function TopLabel({ x, y, value }: LabelProps) {
-    return (
-        <text x={x} y={y} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="end">
-            {value}
-        </text>
-    );
-}
-
-function BottomLabel({ x, y, value }: LabelProps) {
+export function YAxisLabel({ x, y, value }: LabelProps) {
     return (
         <text x={x} y={y} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="end">
             {value}
@@ -36,10 +28,10 @@ export default function YAxisLabels({ paddingLeft, paddingTop, plotHeight, compu
 
     return (
         <>
-            <TopLabel x={xWithPadding} y={paddingTop + labelConfig.offset} value={formatYLabel(computedMax)} />
+            <YAxisLabel x={xWithPadding} y={paddingTop + labelConfig.offset} value={formatYLabel(computedMax)} />
 
             {/* adding plotHeight actually increases distance downwards making it the bottom label just to the side and below the chart */}
-            <BottomLabel x={xWithPadding} y={paddingTop + plotHeight + labelConfig.offset} value={formatYLabel(computedMin)} />
+            <YAxisLabel x={xWithPadding} y={paddingTop + plotHeight + labelConfig.offset} value={formatYLabel(computedMin)} />
         </>
     );
 }

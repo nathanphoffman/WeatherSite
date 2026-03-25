@@ -69,17 +69,24 @@ export function hasValue(input: unknown) {
     return input !== undefined && input !== null && input !== "";
 }
 
-export function isString(input: unknown) {
+export function isStringNotNumber(input: unknown) {
     return hasValue(input) && isNotNumber(input);
 }
 
-export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[]) {
+export function isStringType(input: unknown) {
+    return typeof input === 'string' && input !== '';
+}
+
+// !! review this
+export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[], fieldName?: string) {
     const failedFunctionsOrUndefined = validators.map((validator) => validator(candidate) ? undefined : validator.name);
     const failedFunctions = stripUndefined(failedFunctionsOrUndefined);
 
     if (arrayNotEmpty(failedFunctions)) {
-        console.log("VALIDATION FAILED!");
-        throw `value ${candidate} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(',')}`;
+        const fieldInfo = fieldName ? ` field="${fieldName}"` : "";
+        console.log(`VALIDATION FAILED!${fieldInfo} value=${candidate}`);
+        const fieldLabel = fieldName ? ` for field "${fieldName}"` : "";
+        throw new Error(`value ${candidate}${fieldLabel} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(",")}`);
     }
     else return candidate as T;
 }

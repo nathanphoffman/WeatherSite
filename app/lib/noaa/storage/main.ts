@@ -2,6 +2,7 @@ import { getBlobConnectionInfo } from "../config";
 import { buildDayForecast } from "../scraperEntry";
 import { StorageSolution } from "../types/storage";
 import { DayForecast } from "../types/forecast";
+import { WeatherModel } from "../types/databaseModels";
 import { blobStorage } from "./blob";
 import { databaseStorage } from "./database";
 
@@ -9,7 +10,7 @@ const CACHE_VERSION = 2;
 
 export async function getForecast(lat?: string, long?: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
 
-    if(!lat || !long) throw "Latitude and/or longitude not provided";
+    if(!lat || !long) throw new Error("Latitude and/or longitude not provided");
 
     const nowInSeconds = new Date().getTime() / 1000;
 
@@ -19,7 +20,7 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
     if (blobConnectionInfo) storageSolution = blobStorage;
     else storageSolution = databaseStorage;
 
-    if (!storageSolution) throw "No storage method found to serve as a database for forecasts.";
+    if (!storageSolution) throw new Error("No storage method found to serve as a database for forecasts.");
 
     const oneHourAgo = nowInSeconds - 3600;
     const savedRecord = await storageSolution.getSavedLatLongForecast(lat, long, oneHourAgo);
@@ -36,12 +37,14 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
     console.log("Running fetch against NOAA");
     const forecast = await buildDayForecast(lat, long, source);
 
-    await storageSolution.saveLatLongForecast({
+    const weatherRecord = WeatherModel.formModelFromCandidate({
         lat: lat,
         long: long,
         unixSeconds: nowInSeconds,
         forecast: JSON.stringify({ version: CACHE_VERSION, data: forecast }),
     });
+
+    await storageSolution.saveLatLongForecast(weatherRecord);
 
     console.log("Completed fetch against NOAA");
     return forecast;

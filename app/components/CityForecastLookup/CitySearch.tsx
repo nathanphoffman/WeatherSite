@@ -83,7 +83,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
     };
 
     return (
-        <div className="p-4 flex justify-center">
+        <nav className="p-4 flex justify-center">
             <div className="flex items-center gap-2 w-full max-w-sm">
                 <a
                     href="/about"
@@ -106,16 +106,16 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                     )}
                     {!citySelected && (filtered.length > 0 || loading) && (
                         <ul className="absolute z-20 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
-                            {loading && (<li>(Loading more cities...)</li>)}
+                            {loading && (<li className="block px-4 py-2 text-lg text-gray-300">(Loading more cities...)</li>)}
                             {!loading && filtered.map(c => (
                                 <li key={`${c.city}-${c.state_id}`}>
-                                    <a
-                                        href="#"
-                                        onClick={e => { e.preventDefault(); populateInput(c); }}
-                                        className="block px-4 py-2 text-lg text-gray-300 hover:bg-gray-800 hover:text-white"
+                                    <button
+                                        type="button"
+                                        onClick={() => populateInput(c)}
+                                        className="block w-full text-left px-4 py-2 text-lg text-gray-300 hover:bg-gray-800 hover:text-white"
                                     >
                                         {c.city}, {c.state_id}
-                                    </a>
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -131,6 +131,6 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                     </button>
                 )}
             </div>
-        </div>
+        </nav>
     );
 }

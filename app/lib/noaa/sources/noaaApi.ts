@@ -1,16 +1,17 @@
 import { ChanceForecast } from '../types/general';
 import { ThreeHourWeatherModel } from '../types/threeHourWeather';
+import { NoaaHourlyPeriod, NoaaPointsProperties, NoaaPrecipEntry } from '../types/noaaApiModels';
 
 
 
 // this logic is a bit of a temporary solution for now
 // this series of infer functions just converts api output from noaa to what the scraper logic predicts as what is shown on the site differs from the api
 function inferSkyCover(shortForecast: string): number {
-    const f = shortForecast.toLowerCase();
-    if (f.includes('mostly clear') || f.includes('mostly sunny')) return 20;
-    if (f.includes('clear') || f.includes('sunny')) return 5;
-    if (f.includes('partly')) return 50;
-    if (f.includes('mostly cloudy')) return 75;
+    const forecastLower = shortForecast.toLowerCase();
+    if (forecastLower.includes('mostly clear') || forecastLower.includes('mostly sunny')) return 20;
+    if (forecastLower.includes('clear') || forecastLower.includes('sunny')) return 5;
+    if (forecastLower.includes('partly')) return 50;
+    if (forecastLower.includes('mostly cloudy')) return 75;
     return 90;
 }
 
@@ -19,13 +20,16 @@ function precipProbToChance(prob: number): ChanceForecast {
     if (prob <= 25) return 'SChc';
     if (prob <= 50) return 'Chc';
     if (prob <= 75) return 'Lkly';
+    // 'Ocnl' is used here as the app's maximum probability tier, not in NOAA's literal
+    // "Occasionally" sense. The ChanceForecast type does not include 'Def' (Definite),
+    // so 'Ocnl' serves as the top tier for >75% probability by intentional design.
     return 'Ocnl';
 }
 
 function inferRain(shortForecast: string, temperature: number, precipChance: number): ChanceForecast {
     if (precipChance <= 0) return '--';
-    const f = shortForecast.toLowerCase();
-    if (temperature >= 35 || f.includes('rain') || f.includes('shower') || f.includes('drizzle')) {
+    const forecastLower = shortForecast.toLowerCase();
+    if (temperature >= 35 || forecastLower.includes('rain') || forecastLower.includes('shower') || forecastLower.includes('drizzle')) {
         return precipProbToChance(precipChance);
     }
     return '--';
@@ -33,16 +37,16 @@ function inferRain(shortForecast: string, temperature: number, precipChance: num
 
 function inferSnow(shortForecast: string, temperature: number, precipChance: number): ChanceForecast {
     if (precipChance <= 0) return '--';
-    const f = shortForecast.toLowerCase();
-    if (temperature < 33 || f.includes('snow') || f.includes('flurr') || f.includes('blizzard')) {
+    const forecastLower = shortForecast.toLowerCase();
+    if (temperature < 33 || forecastLower.includes('snow') || forecastLower.includes('flurr') || forecastLower.includes('blizzard')) {
         return precipProbToChance(precipChance);
     }
     return '--';
 }
 
 function inferThunder(shortForecast: string, precipChance: number): ChanceForecast {
-    const f = shortForecast.toLowerCase();
-    if (f.includes('thunder')) return precipProbToChance(precipChance);
+    const forecastLower = shortForecast.toLowerCase();
+    if (forecastLower.includes('thunder')) return precipProbToChance(precipChance);
     return '--';
 }
 
@@ -51,7 +55,7 @@ function parseDurationHours(duration: string): number {
     return match ? parseInt(match[1], 10) : 1;
 }
 
-function buildPrecipMapMm(values: { validTime: string; value: number | null }[]): Map<string, number> {
+function buildPrecipMapMm(values: NoaaPrecipEntry[]): Map<string, number> {
     const map = new Map<string, number>();
     for (const { validTime, value } of values) {
         if (value === null) continue;
@@ -68,7 +72,7 @@ function buildPrecipMapMm(values: { validTime: string; value: number | null }[])
     return map;
 }
 
-export async function getParseApiData(lat: string, long: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
+export async function fetchAndParseNoaaForecast(lat: string, long: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
     const headers = {
         'User-Agent': 'WeatherSite/1.0 (weather app)',
         'Accept': 'application/geo+json',
@@ -78,9 +82,7 @@ export async function getParseApiData(lat: string, long: string): Promise<{ hour
     const pointsResult = await fetch(`https://api.weather.gov/points/${lat},${long}`, { headers });
     if (!pointsResult.ok) throw new Error(`NOAA points API failed: ${pointsResult.status}`);
     const pointsData = await pointsResult.json();
-    const forecastHourlyUrl = pointsData.properties?.forecastHourly;
-    const forecastGridDataUrl = pointsData.properties?.forecastGridData;
-    if (!forecastHourlyUrl) throw new Error(`NOAA points response missing forecastHourly URL`);
+    const { forecastHourlyUrl, forecastGridDataUrl } = NoaaPointsProperties.formModelFromCandidate(pointsData.properties ?? {});
 
     const [forecastResult, gridDataResult] = await Promise.all([
         fetch(forecastHourlyUrl, { headers }),
@@ -89,22 +91,26 @@ export async function getParseApiData(lat: string, long: string): Promise<{ hour
     if (!forecastResult.ok) throw new Error(`NOAA forecast API failed: ${forecastResult.status}`);
     const forecastData = await forecastResult.json();
     const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
-    const precipMap = gridData
-        ? buildPrecipMapMm(gridData.properties.quantitativePrecipitation?.values ?? [])
-        : new Map<string, number>();
+    const precipEntries: NoaaPrecipEntry[] = gridData
+        ? (gridData.properties.quantitativePrecipitation?.values ?? []).map(
+            (entry: unknown) => NoaaPrecipEntry.formModelFromCandidate(entry as { validTime?: unknown; value?: unknown })
+          )
+        : [];
+    const precipMap = buildPrecipMapMm(precipEntries);
 
     const periods = forecastData.properties.periods;
     const seenDays = new Set<string>();
     const uniqueDays: string[] = [];
     const hourlyWeatherRows: ThreeHourWeatherModel[] = [];
 
-    for (const period of periods) {
-        const [datePart, timePart] = (period.startTime as string).split('T');
-        const [, monthStr, dayStr] = datePart.split('-');
-        const month = parseInt(monthStr, 10);
-        const day = parseInt(dayStr, 10);
+    for (const rawPeriod of periods) {
+        const period = NoaaHourlyPeriod.formModelFromCandidate(rawPeriod);
+        const [datePortion, timePortion] = period.startTime.split('T');
+        const [, monthString, dayString] = datePortion.split('-');
+        const month = parseInt(monthString, 10);
+        const day = parseInt(dayString, 10);
         const forecastDate = `${month}/${day}`;
-        const hour = parseInt(timePart.split(':')[0], 10);
+        const hour = parseInt(timePortion.split(':')[0], 10);
 
         if (!seenDays.has(forecastDate)) {
             seenDays.add(forecastDate);
@@ -115,10 +121,10 @@ export async function getParseApiData(lat: string, long: string): Promise<{ hour
             ? Math.round(period.temperature * 9 / 5 + 32)
             : period.temperature;
 
+        // NOAA returns windSpeed as a string like "5 mph" or "10 mph"; parseInt handles the " mph" suffix correctly.
+        // Upper-bound range validation is not applied here — it occurs downstream in ThreeHourWeatherModel.formModelFromCandidate via isBelowSpeedOfSound.
         const windSpeed = parseInt(period.windSpeed) || 0;
-        const humidity = period.relativeHumidity?.value ?? 50;
-        const precipChance = period.probabilityOfPrecipitation?.value ?? 0;
-        const shortForecast: string = period.shortForecast ?? '';
+        const { humidity, precipChance, shortForecast } = period;
         const skyCover = inferSkyCover(shortForecast);
 
         const periodUtcKey = new Date(period.startTime).toISOString().slice(0, 13);

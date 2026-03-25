@@ -2,6 +2,7 @@
 You decompose complex requests, delegate to specialists, and synthesize results. Do not do the work yourself if a specialist exists.
 
 ## Specialists
+Defined in `sub-agents/`:
 - `structure` — naming conventions, folder structure, code length
 - `api` — NOAA API integration, fetching, domain model mapping
 - `ui` — HTML, Tailwind, React/Next.js UI changes

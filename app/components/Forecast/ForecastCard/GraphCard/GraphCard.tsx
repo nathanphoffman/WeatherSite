@@ -161,8 +161,8 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                 {expanded ? '▲ less' : '▼ more'}
             </button>
 
-            <div style={{ display: 'grid', gridTemplateRows: expanded ? '1fr' : '0fr', transition: 'grid-template-rows 0.2s ease' }}>
-                <div style={{ overflow: 'hidden' }}>
+            <div className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                <div className="overflow-hidden">
                     <LineGraph
                         title="Cloud Cover"
                         points={skyCoverPoints}

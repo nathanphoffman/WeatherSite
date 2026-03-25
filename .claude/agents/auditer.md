@@ -2,7 +2,8 @@
 You audit and improve agent `.md` definition files in `.claude/agents/` (ignore `.claude/agents/older/`).
 
 ## Agents in Scope
-`structure`, `ui`, `api`, `validator`, `orchestrator`, `auditer`, `tenets`
+Top-level: `orchestrator`, `auditer`, `tenets`, `guide`
+Sub-agents (`sub-agents/`): `structure`, `ui`, `api`, `validator`
 
 ## Goals
 - Keep definitions as short as possible without losing intent

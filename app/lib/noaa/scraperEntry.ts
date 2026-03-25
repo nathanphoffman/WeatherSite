@@ -1,13 +1,13 @@
 import { getDayOfTheWeek, militaryHourToRegularHour, splitIntoGroupsOf3 } from "./utility";
 import { getParseScrapedData } from "./scraper";
-import { getParseApiData } from "./sources/noaaApi";
+import { fetchAndParseNoaaForecast } from "./sources/noaaApi";
 import { DayForecast, ThreeHourGroup } from "./types/forecast";
 import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
 export async function buildDayForecast(lat: string, long: string, source: 'scraper' | 'api' = 'scraper'): Promise<DayForecast> {
 
     const { hourlyWeatherRows, uniqueDays } = source === 'api'
-        ? await getParseApiData(lat, long)
+        ? await fetchAndParseNoaaForecast(lat, long)
         : await getParseScrapedData(lat, long);
 
         // !! note: we need to rename this weather3 deal -- it now refers to singular hours

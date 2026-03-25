@@ -1,0 +1,38 @@
+{
+  "id": "https://api.weather.gov/points/40.1852,-75.538",
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-75.538, 40.1852]
+  },
+  "properties": {
+    "@id": "https://api.weather.gov/points/40.1852,-75.538",
+    "@type": "wx:Point",
+    "cwa": "PHI",
+    "forecastOffice": "https://api.weather.gov/offices/PHI",
+    "gridId": "PHI",
+    "gridX": 35,
+    "gridY": 84,
+    "forecast": "https://api.weather.gov/gridpoints/PHI/35,84/forecast",
+    "forecastHourly": "https://api.weather.gov/gridpoints/PHI/35,84/forecast/hourly",
+    "forecastGridData": "https://api.weather.gov/gridpoints/PHI/35,84",
+    "observationStations": "https://api.weather.gov/gridpoints/PHI/35,84/stations",
+    "relativeLocation": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-75.538885, 40.186326]
+      },
+      "properties": {
+        "city": "Royersford",
+        "state": "PA",
+        "distance": { "unitCode": "wmoUnit:m", "value": 146.04233397888 },
+        "bearing": { "unitCode": "wmoUnit:degree_(angle)", "value": 149 }
+      }
+    },
+    "forecastZone": "https://api.weather.gov/zones/forecast/PAZ103",
+    "county": "https://api.weather.gov/zones/county/PAC091",
+    "timeZone": "America/New_York",
+    "radarStation": "KDIX"
+  }
+}

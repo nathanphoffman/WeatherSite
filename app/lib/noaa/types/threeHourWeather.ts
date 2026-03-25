@@ -1,6 +1,6 @@
 import { Candidate, ChanceForecast, DomainModel, Hour } from "./general";
-import { candidateToType, isNumber, isNotNegative, isString } from "../utility";
-import { is24OrLess, isAboveAbsoluteZero, isBelowBoiling, isBelowReasonablePrecipitation, isBelowSpeedOfSound, isChanceForecastValue, isNoMoreThan100 } from "./validators";
+import { candidateToType, isNumber, isNotNegative, isStringNotNumber } from "../utility";
+import { is24HourClockValue, isAboveAbsoluteZero, isBelowRealisticMaxTemperature, isBelowReasonablePrecipitation, isBelowSpeedOfSound, isChanceForecastValue, isNoMoreThan100 } from "./validators";
 
 type Fahrenheit = number;
 type Percent = number;
@@ -24,40 +24,40 @@ export interface ThreeHourWeatherModel {
 export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate<ThreeHourWeatherModel>> = {
     formModelFromCandidate(candidate: Candidate<ThreeHourWeatherModel>): ThreeHourWeatherModel {
         return {
-            temperature: formFahrenheit(candidate.temperature),
-            skyCover: formPercent(candidate.skyCover),
-            wind: formAirMilesPerHour(candidate.wind),
-            humidity: formPercent(candidate.humidity),
-            precipChance: formPercent(candidate.precipChance),
-            precipAmount: formInches(candidate.precipAmount),
-            rain: formChanceForecast(candidate.rain),
-            snow: formChanceForecast(candidate.snow),
-            thunder: formChanceForecast(candidate.thunder),
-            hour: formHour(candidate.hour),
+            temperature: formFahrenheit("temperature", candidate.temperature),
+            skyCover: formPercent("skyCover", candidate.skyCover),
+            wind: formAirMilesPerHour("wind", candidate.wind),
+            humidity: formPercent("humidity", candidate.humidity),
+            precipChance: formPercent("precipChance", candidate.precipChance),
+            precipAmount: formInches("precipAmount", candidate.precipAmount),
+            rain: formChanceForecast("rain", candidate.rain),
+            snow: formChanceForecast("snow", candidate.snow),
+            thunder: formChanceForecast("thunder", candidate.thunder),
+            hour: formHour("hour", candidate.hour),
         };
 
-        function formChanceForecast(candidate: unknown): ChanceForecast {
-            return candidateToType<ChanceForecast>(candidate, [isString, isChanceForecastValue]);
+        function formChanceForecast(fieldName: string, candidate: unknown): ChanceForecast {
+            return candidateToType<ChanceForecast>(candidate, [isStringNotNumber, isChanceForecastValue], fieldName);
         }
 
-        function formFahrenheit(candidate: unknown): Fahrenheit {
-            return candidateToType<Fahrenheit>(candidate, [isNumber, isAboveAbsoluteZero, isBelowBoiling]);
+        function formFahrenheit(fieldName: string, candidate: unknown): Fahrenheit {
+            return candidateToType<Fahrenheit>(candidate, [isNumber, isAboveAbsoluteZero, isBelowRealisticMaxTemperature], fieldName);
         }
 
-        function formPercent(candidate: unknown): Percent {
-            return candidateToType<Percent>(candidate, [isNumber, isNotNegative, isNoMoreThan100]);
+        function formPercent(fieldName: string, candidate: unknown): Percent {
+            return candidateToType<Percent>(candidate, [isNumber, isNotNegative, isNoMoreThan100], fieldName);
         }
 
-        function formAirMilesPerHour(candidate: unknown): AirMilesPerHour {
-            return candidateToType<AirMilesPerHour>(candidate, [isNumber, isNotNegative, isBelowSpeedOfSound]);
+        function formAirMilesPerHour(fieldName: string, candidate: unknown): AirMilesPerHour {
+            return candidateToType<AirMilesPerHour>(candidate, [isNumber, isNotNegative, isBelowSpeedOfSound], fieldName);
         }
 
-        function formInches(candidate: unknown): Inches {
-            return candidateToType<Inches>(candidate, [isNumber, isNotNegative, isBelowReasonablePrecipitation]);
+        function formInches(fieldName: string, candidate: unknown): Inches {
+            return candidateToType<Inches>(candidate, [isNumber, isNotNegative, isBelowReasonablePrecipitation], fieldName);
         }
 
-        function formHour(candidate: unknown): Hour {
-            return candidateToType<Hour>(candidate, [isNumber, isNotNegative, is24OrLess]);
+        function formHour(fieldName: string, candidate: unknown): Hour {
+            return candidateToType<Hour>(candidate, [isNumber, isNotNegative, is24HourClockValue], fieldName);
         }
     }
 }

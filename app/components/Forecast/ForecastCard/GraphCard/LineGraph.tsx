@@ -18,7 +18,6 @@ export interface LineGraphProps {
     logStrength?: number;
 }
 
-// !! this was outputted directly from claude and is a bit of a blackbox, come back to this
 export default function LineGraph({ title, points, color, indicesToLabel, height, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
     const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = GRAPH_DIMENSIONS;
     const { ref: containerRef, width: svgWidth } = useContainerWidth();

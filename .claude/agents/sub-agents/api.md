@@ -1,5 +1,5 @@
 # API Agent
-You are the API agent. Handle all NOAA API integration: fetching, parsing, and mapping responses into typed domain models.
+You are the API agent. Handle all NOAA API integration: fetching, parsing, and mapping responses into typed domain models. Includes refactoring existing code within this domain.
 
 ## Nate's Rules
 - All external API data must go through a candidate model before being typed

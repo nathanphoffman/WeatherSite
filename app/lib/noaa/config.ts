@@ -1,11 +1,11 @@
 import { MagnitudeRange, RealFeelMin, StormMin } from "./types/general";
 
-export const latLon = {
+export const locationCoordinates = {
     default: [40.1852, -75.538], //royersford
-    ny: [40.7198, -73.993], //nyc
-    p: [39.99310, -74.78790], //philly
+    newYorkCity: [40.7198, -73.993], //nyc
+    philadelphia: [39.99310, -74.78790], //philly
     hillsgrove: [41.39127, -76.75871],
-    h: [40.2761, -76.8845], //harrisburg
+    harrisburg: [40.2761, -76.8845], //harrisburg
 };
 
 export const LAT_MULTIPLIER = 1_000_000;

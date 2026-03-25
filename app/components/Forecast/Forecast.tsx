@@ -71,20 +71,13 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
     const currentHour = now.getHours();
 
     return (
-        <section className="flex flex-wrap justify-center gap-4 p-6">
+        <section className="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-4 p-6">
             {(() => {
                 const allGroups = Object.values(weather).flat();
                 return Object.entries(weather).map(([forecastDate, groups]) => (
                     <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} currentHour={forecastDate === todayDate ? currentHour : undefined} onFlipChange={(flipped) => handleCardFlipChange(forecastDate, flipped)} onExpandChange={setAllExpanded} />
                 ));
             })()}
-            {/* 
-                This spacing was necessary to prevent the last odd numbered card from centering on the wrap, it pushes it to the left by adding spacing cards 
-                !! Might be worth identifying a better solution to this
-            */}
-            {Array.from({ length: 6 }).map((_, i) => (
-                <div key={`spacer-${i}`} className="w-[270px]" />
-            ))}
         </section>
     );
 }

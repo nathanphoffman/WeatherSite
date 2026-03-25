@@ -1,14 +1,12 @@
 import { LAT_MULTIPLIER, LONG_MULTIPLIER } from "../config";
 import { Weather } from "../types/databaseModels";
 import { StorageSolution } from "../types/storage";
+import Database from 'better-sqlite3';
 
-// lib/db.js
-const sqlite3 = require('better-sqlite3');
-
-let _db: any = undefined;
+let _db: Database.Database | undefined = undefined;
 
 export function openDatabaseConnection() {
-    if (!_db) _db = new sqlite3("./database.sqlite", { verbose: console.log });
+    if (!_db) _db = new Database("./database.sqlite", { verbose: console.log });
     return _db;
 }
 
