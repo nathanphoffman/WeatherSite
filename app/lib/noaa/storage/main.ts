@@ -11,9 +11,6 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
 
     if(!lat || !long) throw "Latitude and/or longitude not provided";
 
-    const resolvedLat = lat;
-    const resolvedLon = long;
-
     const nowInSeconds = new Date().getTime() / 1000;
 
     let storageSolution: StorageSolution | undefined = undefined;
@@ -25,7 +22,7 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
     if (!storageSolution) throw "No storage method found to serve as a database for forecasts.";
 
     const oneHourAgo = nowInSeconds - 3600;
-    const savedRecord = await storageSolution.getSavedLatLongForecast(resolvedLat, resolvedLon, oneHourAgo);
+    const savedRecord = await storageSolution.getSavedLatLongForecast(lat, long, oneHourAgo);
 
     if (savedRecord) {
         const parsed = JSON.parse(savedRecord);
@@ -37,11 +34,11 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
     }
 
     console.log("Running fetch against NOAA");
-    const forecast = await buildDayForecast(resolvedLat, resolvedLon, source);
+    const forecast = await buildDayForecast(lat, long, source);
 
     await storageSolution.saveLatLongForecast({
-        lat: resolvedLat,
-        long: resolvedLon,
+        lat: lat,
+        long: long,
         unixSeconds: nowInSeconds,
         forecast: JSON.stringify({ version: CACHE_VERSION, data: forecast }),
     });

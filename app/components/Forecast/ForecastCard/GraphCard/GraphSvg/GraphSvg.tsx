@@ -1,5 +1,5 @@
 import { RefObject, ReactNode } from 'react';
-import { GRAPH_DIMENSIONS, ThresholdLine, defaultFormatYLabel } from '../graphCardsConfig';
+import { GRAPH_DIMENSIONS, ThresholdLine, defaultFormatYLabel } from '../graphConfig';
 import GraphBorders from './GraphBorders';
 import YAxisLabels from './YAxisLabels';
 import ThresholdLines from './ThresholdLines';

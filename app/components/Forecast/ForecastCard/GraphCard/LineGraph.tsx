@@ -1,4 +1,4 @@
-import { GRAPH_DIMENSIONS, ThresholdLine } from './graphCardsConfig';
+import { GRAPH_DIMENSIONS, ThresholdLine } from './graphConfig';
 import { useContainerWidth } from './useContainerWidth';
 import { smoothLinePath, smoothAreaPath, buildAxisHelpers } from './graphMath';
 import GraphSvg from './GraphSvg/GraphSvg';

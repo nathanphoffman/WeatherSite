@@ -15,20 +15,20 @@ export type MagnitudeRange = {
 export type HourlyNumbers = number[];
 
 export type RealFeelMin = {
-    ExtremelyHotMin: number,
-    VeryHotMin: number,
-    HotMin: number,
-    WarmMin: number,
-    NiceMin: number,
-    CoolMin: number,
-    ColdMin: number,
-    VeryColdMin: number
+    ExtremelyHotMin: number;
+    VeryHotMin: number;
+    HotMin: number;
+    WarmMin: number;
+    NiceMin: number;
+    CoolMin: number;
+    ColdMin: number;
+    VeryColdMin: number;
 }
 export type StormMin = {
-    VeryBadMin: number,
-    BadMin: number,
-    PoorMin: number,
-    AverageMin: number
+    VeryBadMin: number;
+    BadMin: number;
+    PoorMin: number;
+    AverageMin: number;
 }
 
 export type Candidate<T> = {

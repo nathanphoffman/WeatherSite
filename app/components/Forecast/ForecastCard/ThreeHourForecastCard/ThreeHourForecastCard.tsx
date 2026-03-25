@@ -5,7 +5,7 @@ interface ThreeHourForecastCardProps {
     groups: ThreeHourGroup[];
 }
 
-export default function ThreeHourForecast({ groups }: ThreeHourForecastCardProps) {
+export default function ThreeHourForecastCard({ groups }: ThreeHourForecastCardProps) {
     return (
         <>
             {groups.map((group) => (

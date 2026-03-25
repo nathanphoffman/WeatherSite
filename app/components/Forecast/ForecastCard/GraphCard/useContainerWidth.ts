@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { GRAPH_DIMENSIONS } from './graphCardsConfig';
+import { GRAPH_DIMENSIONS } from './graphConfig';
 
 export function useContainerWidth() {
     const ref = useRef<HTMLDivElement>(null);

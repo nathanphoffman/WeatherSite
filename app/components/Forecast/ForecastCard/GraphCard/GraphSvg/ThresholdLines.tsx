@@ -1,4 +1,4 @@
-import { ThresholdLine } from '../graphCardsConfig';
+import { ThresholdLine } from '../graphConfig';
 import { thresholdConfig } from './thresholdConfig';
 
 interface ThresholdLinesProps {

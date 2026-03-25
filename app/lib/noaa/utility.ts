@@ -44,7 +44,7 @@ export function stripUndefined(arr: any[]): any[] {
 }
 
 export function isNumber(input: unknown) {
-    return !isNotNumber(input)
+    return !isNotNumber(input);
 }
 
 export function isNotNumber(input: unknown) {
@@ -54,7 +54,7 @@ export function isNotNumber(input: unknown) {
 export function isWithin(min: number, max: number) {
     return (input: unknown) => {
         return isNumber(input) && min <= Number(input) && Number(input) <= max;
-    }
+    };
 }
 
 export function isPositive(input: unknown) {

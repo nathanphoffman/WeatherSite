@@ -1,4 +1,4 @@
-import { GRAPH_DIMENSIONS } from './graphCardsConfig';
+import { GRAPH_DIMENSIONS } from './graphConfig';
 
 // Almost all of this was 100% Claude, this is a bit of a black box, but I have commented some myself and used AI to add comments to better explain itself
 // At the end of the day this is more of a mathematician function and less a coding one
