@@ -6,13 +6,9 @@ export type ChanceForecast = typeof CHANCE_FORECAST[number];
 
 export type Magnitude = 0 | 1 | 2 | 3 | 4;
 
-export type ThreeHourAverage = number;
-
 export type MagnitudeRange = {
     [key in Magnitude]: number[] | ChanceForecast
 }
-
-export type HourlyNumbers = number[];
 
 export type RealFeelMin = {
     ExtremelyHotMin: number;
@@ -36,8 +32,6 @@ export type Candidate<T> = {
 };
 
 export type Hour = number;
-
-export type UnknownNumber = number;
 
 export interface DomainModel<T,Y> {
     formModelFromCandidate(candidate: Y): T;

@@ -7,7 +7,7 @@ export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magn
     const averageMag = getAverage(...magnitudes);
     if (averageMag > 4) return 4 as Magnitude;
     else if (averageMag >= 0) return averageMag as Magnitude;
-    else throw "the average chance calculation was beyond the expected range of values";
+    else throw new Error("the average chance calculation was beyond the expected range of values");
 }
 
 export function isInRange(value: number | string, range: number[] | string) {
@@ -18,14 +18,14 @@ export function isInRange(value: number | string, range: number[] | string) {
         if (range[1] === -1 && value >= range[0]) return true;
         else return range[0] <= value && value <= range[1];
     }
-    else throw "an unexpected type was encountered when performing a range comparison";
+    else throw new Error("an unexpected type was encountered when performing a range comparison");
 }
     
 export function getMagnitude(value: number | string, range: MagnitudeRange): Magnitude {
     //const magnitude = Object.keys(range).find(key => Number(key) === Number(value));
     const magnitude = Object.keys(range).find(key => isInRange(value, range[Number(key) as Magnitude]));
 
-    if (magnitude === undefined) throw `no magnitude found for value: ${value}`;
+    if (magnitude === undefined) throw new Error(`no magnitude found for value: ${value}`);
     return Number(magnitude) as Magnitude;
 }
 
@@ -70,9 +70,9 @@ export function getStormRating(skyCover: number, precipChance: number, rainMagni
     // practical max of 35 in rare cases
     const precipPercent = (precipChance / 100);
     const precipPercentSquared = precipPercent * precipPercent;
-    const percipPenalty =  precipPercentSquared * ((snowMagnitude + rainMagnitude) * 5) + Math.round(precipPercentSquared * 10);
+    const precipPenalty = precipPercentSquared * ((snowMagnitude + rainMagnitude) * 5) + Math.round(precipPercentSquared * 10);
 
-    const stormRating = skyCoverOutOf10 + windPenalty + percipPenalty + thunderPenalty;
+    const stormRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty;
     if (stormRating < 10) return Math.round(stormRating);
     else return 5 * Math.round(stormRating / 5);
 }

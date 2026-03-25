@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { City } from '@/app/utils/cityParser';
+import { debounce } from '@/app/lib/noaa/utility';
 
 interface CitySearchProps {
     cities: City[];
@@ -54,12 +55,13 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
         if (!allCitiesLoaded && value.length > 0) {
             const filtered = filterCities(allCities, value);
 
-            if (filtered.length === 0) {
+            if (!loading && filtered.length === 0) {
                 setLoading(true);
 
+                // !! artificial delay to show a loading screen
                 setTimeout(async () => {
                     const res = await fetch('/api/cities');
-                    
+
                     const { allCities: fetchedCities } = await res.json();
 
                     setAllCities((prev) => {
@@ -70,8 +72,8 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
 
                     setLoading(false);
                     setAllCitiesLoaded(true);
-                    
-                }, 1000);
+                }, 250);
+
             }
         }
     };
@@ -101,7 +103,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                         className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
                     />
                     {!citySelected && (filtered.length > 0 || loading) && (
-                        /* Covers the screen vieport so that the Simple Map credits link is not clickable */
+                        /* Covers the screen viewport so that the Simple Map credits link is not clickable */
                         <div className="fixed inset-0 z-10" onClick={() => setCitySelected(true)} />
                     )}
                     {!citySelected && (filtered.length > 0 || loading) && (

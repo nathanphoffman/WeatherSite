@@ -31,15 +31,15 @@ export function militaryHourToRegularHour(mil: number): string {
     return mil < 12 ? `${mil}a` : `${mil - 12}p`;
 }
 
-export function pipe(fns: ((t: any)=>any)[]) {
-    return (x: any) => fns.reduce((acc, fn) => fn(acc), x);
+export function pipe(fns: ((value: unknown) => unknown)[]) {
+    return (x: unknown) => fns.reduce((acc, fn) => fn(acc), x);
 }
 
-export function arrayNotEmpty(arr: any[]): boolean {
+export function arrayNotEmpty(arr: unknown[]): boolean {
     return arr && arr.length > 0;
 }
 
-export function stripUndefined(arr: any[]): any[] {
+export function stripUndefined(arr: unknown[]): unknown[] {
     return arr.filter(x => x !== undefined);
 }
 
@@ -76,6 +76,23 @@ export function isStringNotNumber(input: unknown) {
 export function isStringType(input: unknown) {
     return typeof input === 'string' && input !== '';
 }
+
+// !! AI keep this incase we need later
+export function debounce<TArgs extends unknown[], T>(fn: (...args: TArgs) => T, delay: number = 250, id?: number) {
+    return (...args: TArgs) => {
+
+        const wrappedFn = (...args: TArgs)=>fn(...args);
+
+        if (!id) {
+            setTimeout(wrappedFn, delay);
+        }
+        else {
+            clearTimeout(id);
+            debounce(fn, delay)(...args);
+        }
+    }
+}
+
 
 // !! review this
 export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[], fieldName?: string) {

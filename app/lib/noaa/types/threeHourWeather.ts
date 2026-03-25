@@ -61,5 +61,3 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate
         }
     }
 }
-
-

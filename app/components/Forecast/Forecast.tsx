@@ -32,7 +32,7 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
         if (!weather) return;
         const totalCount = Object.keys(weather).length;
         onFlipCountChange?.(flippedDates.size, totalCount);
-    }, [flippedDates, weather]);
+    }, [flippedDates, weather, onFlipCountChange]);
 
     useEffect(() => {
         setLoading(true);

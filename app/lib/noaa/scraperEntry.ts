@@ -10,7 +10,7 @@ export async function buildDayForecast(lat: string, long: string, source: 'scrap
         ? await fetchAndParseNoaaForecast(lat, long)
         : await getParseScrapedData(lat, long);
 
-        // !! note: we need to rename this weather3 deal -- it now refers to singular hours
+    // !! note: we need to rename this weather3 deal -- it now refers to singular hours
     const hourlyWeatherRowsGroupsOf3 = splitIntoGroupsOf3(hourlyWeatherRows);
 
     let currentDay = uniqueDays[0];
