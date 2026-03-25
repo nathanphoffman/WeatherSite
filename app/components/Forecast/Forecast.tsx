@@ -71,7 +71,7 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
     const currentHour = now.getHours();
 
     return (
-        <div className="flex flex-wrap justify-center gap-4 p-6">
+        <section className="flex flex-wrap justify-center gap-4 p-6">
             {(() => {
                 const allGroups = Object.values(weather).flat();
                 return Object.entries(weather).map(([forecastDate, groups]) => (
@@ -85,6 +85,6 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={`spacer-${i}`} className="w-[270px]" />
             ))}
-        </div>
+        </section>
     );
 }

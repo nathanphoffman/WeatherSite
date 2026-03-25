@@ -27,23 +27,22 @@ export function getChosenLocation() {
     return String(chosenLocation);
 }
 
-const LESS = -1 as const;
-const MORE = -1 as const;
+const UNBOUNDED = -1 as const;
 
 export const HumidityRanges: MagnitudeRange = {
-    0: [LESS, 60],
+    0: [UNBOUNDED, 60],
     1: [61, 72],
     2: [73, 84],
     3: [85, 96],
-    4: [97, MORE]
+    4: [97, UNBOUNDED]
 } as const;
 
 export const WindRanges: MagnitudeRange = {
-    0: [LESS, 9],
+    0: [UNBOUNDED, 9],
     1: [10, 15],
     2: [16, 22],
     3: [23, 29],
-    4: [30, MORE]
+    4: [30, UNBOUNDED]
 } as const;
 
 export const ChanceRanges: MagnitudeRange = {

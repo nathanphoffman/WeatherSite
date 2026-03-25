@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { getRealFeelTemperature, getMagnitude, convertNOAAChancesToAverageMagnitude, getStormRating } from '@/app/lib/noaa/output/calculations';
 import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude } from '@/app/lib/noaa/output/color';
-import { HumidityRanges, WindRanges, RealFeelPreferences, StormPreferences, ChanceRanges } from '@/app/lib/noaa/config';
+import { HumidityRanges, WindRanges, ChanceRanges } from '@/app/lib/noaa/config';
+import { realFeelThresholds, stormThresholds, windThresholds } from './graphThresholds';
 import { getAverage } from '@/app/lib/noaa/utility';
-import LineGraph, { ThresholdLine } from './LineGraph';
+import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
 
 interface GraphCardProps {
@@ -106,31 +107,6 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
         return best;
     }, null);
 
-    const realFeelThresholds: ThresholdLine[] = [
-        { value: RealFeelPreferences.ExtremelyHotMin, color: '#f43f5e' },
-        { value: RealFeelPreferences.VeryHotMin, color: '#ef4444' },
-        { value: RealFeelPreferences.HotMin, color: '#eab308' },
-        { value: RealFeelPreferences.WarmMin, color: 'rgba(255,255,255,0.0)' },
-        { value: RealFeelPreferences.NiceMin, color: '#22c55e' },
-        { value: RealFeelPreferences.CoolMin, color: 'rgba(255,255,255,0.0)' },
-        { value: RealFeelPreferences.ColdMin, color: '#eab308' },
-        { value: RealFeelPreferences.VeryColdMin, color: '#ef4444' },
-    ];
-
-    const stormThresholds: ThresholdLine[] = [
-        { value: StormPreferences.AverageMin, color: 'rgba(255,255,255,0.45)' },
-        { value: StormPreferences.PoorMin, color: '#eab308' },
-        { value: StormPreferences.BadMin, color: '#ef4444' },
-        { value: StormPreferences.VeryBadMin, color: '#f43f5e' },
-    ];
-
-    const windThresholds: ThresholdLine[] = [
-        { value: 10, color: 'rgba(255,255,255,0.45)' },
-        { value: 16, color: '#eab308' },
-        { value: 23, color: '#ef4444' },
-        { value: 30, color: '#f43f5e' },
-    ];
-
     const dailyHighRealFeel = Math.max(...realFeelPoints.map((p) => p.value));
     const dailyLowRealFeel = Math.min(...realFeelPoints.map((p) => p.value));
 
@@ -149,7 +125,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     );
 
     return (
-        <div>
+        <section>
             <div className="flex justify-between items-baseline">
                 <span className="text-4xl font-bold text-white">{dailyHighRealFeel}°</span>
                 <span className="text-4xl font-bold text-gray-400">{dailyLowRealFeel}°</span>
@@ -248,6 +224,6 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                     />
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

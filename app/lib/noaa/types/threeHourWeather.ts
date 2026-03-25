@@ -1,6 +1,6 @@
 import { Candidate, ChanceForecast, DomainModel, Hour } from "./general";
 import { candidateToType, isNumber, isNotNegative, isString } from "../utility";
-import { is24OrLess, isAboveAbsoluteZero, isBelowBoiling, isBelowSpeedOfSound, isChanceForecastValue, isNoMoreThan100 } from "./validators";
+import { is24OrLess, isAboveAbsoluteZero, isBelowBoiling, isBelowReasonablePrecipitation, isBelowSpeedOfSound, isChanceForecastValue, isNoMoreThan100 } from "./validators";
 
 type Fahrenheit = number;
 type Percent = number;
@@ -53,7 +53,7 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate
         }
 
         function formInches(candidate: unknown): Inches {
-            return candidateToType<Inches>(candidate, [isNumber, isNotNegative]);
+            return candidateToType<Inches>(candidate, [isNumber, isNotNegative, isBelowReasonablePrecipitation]);
         }
 
         function formHour(candidate: unknown): Hour {

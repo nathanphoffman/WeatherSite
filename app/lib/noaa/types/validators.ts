@@ -5,7 +5,11 @@ export function isChanceForecastValue(candidate: unknown) {
 }
 
 export function isAboveAbsoluteZero(input: unknown) {
-    return Number(input) > -274;
+    return Number(input) > -459.67;
+}
+
+export function isBelowReasonablePrecipitation(input: unknown) {
+    return Number(input) < 50;
 }
 
 export function is24OrLess(input: unknown) {

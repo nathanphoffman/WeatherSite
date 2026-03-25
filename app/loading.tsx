@@ -1,3 +1,3 @@
-  export default function Loading() {                                                                                                                              
-    return <p>Loading...</p>;                                                                                                                                      
-  }   
+export default function Loading() {
+    return <p className="p-6 text-gray-400">Loading...</p>;
+}

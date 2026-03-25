@@ -76,16 +76,17 @@ export async function getParseApiData(lat: string, long: string): Promise<{ hour
 
     // NOAA maintains a location of grid points that lat lon point to, here we get that coarse grid position to use against their main api
     const pointsResult = await fetch(`https://api.weather.gov/points/${lat},${long}`, { headers });
-    if (!pointsResult.ok) throw `NOAA points API failed: ${pointsResult.status}`;
+    if (!pointsResult.ok) throw new Error(`NOAA points API failed: ${pointsResult.status}`);
     const pointsData = await pointsResult.json();
-    const forecastHourlyUrl = pointsData.properties.forecastHourly;
-    const forecastGridDataUrl = pointsData.properties.forecastGridData;
+    const forecastHourlyUrl = pointsData.properties?.forecastHourly;
+    const forecastGridDataUrl = pointsData.properties?.forecastGridData;
+    if (!forecastHourlyUrl) throw new Error(`NOAA points response missing forecastHourly URL`);
 
     const [forecastResult, gridDataResult] = await Promise.all([
         fetch(forecastHourlyUrl, { headers }),
         fetch(forecastGridDataUrl, { headers }),
     ]);
-    if (!forecastResult.ok) throw `NOAA forecast API failed: ${forecastResult.status}`;
+    if (!forecastResult.ok) throw new Error(`NOAA forecast API failed: ${forecastResult.status}`);
     const forecastData = await forecastResult.json();
     const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
     const precipMap = gridData
