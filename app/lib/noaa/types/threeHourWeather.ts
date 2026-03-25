@@ -1,4 +1,4 @@
-import { Candidate, ChanceForeast, DomainModel, Hour } from "./general";
+import { Candidate, ChanceForecast, DomainModel, Hour } from "./general";
 import { candidateToType, isNumber, isNotNegative, isString } from "../utility";
 import { is24OrLess, isAboveAbsoluteZero, isBelowBoiling, isBelowSpeedOfSound, isChanceForecastValue, isNoMoreThan100 } from "./validators";
 
@@ -15,9 +15,9 @@ export interface ThreeHourWeatherModel {
     humidity: Percent,
     precipChance: Percent,
     precipAmount: Inches,
-    rain: ChanceForeast,
-    snow: ChanceForeast,
-    thunder: ChanceForeast,
+    rain: ChanceForecast,
+    snow: ChanceForecast,
+    thunder: ChanceForecast,
     hour: Hour  // use a range comparison something fancy like IntRange<>
 };
 
@@ -36,8 +36,8 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate
             hour: formHour(candidate.hour),
         };
 
-        function formChanceForecast(candidate: unknown): ChanceForeast {
-            return candidateToType<ChanceForeast>(candidate, [isString, isChanceForecastValue]);
+        function formChanceForecast(candidate: unknown): ChanceForecast {
+            return candidateToType<ChanceForecast>(candidate, [isString, isChanceForecastValue]);
         }
 
         function formFahrenheit(candidate: unknown): Fahrenheit {

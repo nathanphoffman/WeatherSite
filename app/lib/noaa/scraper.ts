@@ -4,10 +4,10 @@ import { HEADER_ACCEPT, HEADER_USER_AGENT } from "./config";
 import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
 
-export async function callOut(lat: string, lon: string, page: number) {
-    const url1 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=0&FcstType=digital&textField1=${lat}&textField2=${lon}&site=all&unit=0&dd=&bw=&BackDay.x=65&BackDay.y=3`;
-    const url2 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=0&FcstType=digital&textField1=${lat}&textField2=${lon}&site=all&unit=0&dd=&bw=&AheadDay.x=46&AheadDay.y=5`;
-    const url3 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=48&FcstType=digital&textField1=${lat}&textField2=${lon}&site=all&unit=0&dd=&bw=&AheadDay.x=49&AheadDay.y=11`;
+export async function callOut(lat: string, long: string, page: number) {
+    const url1 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=0&FcstType=digital&textField1=${lat}&textField2=${long}&site=all&unit=0&dd=&bw=&BackDay.x=65&BackDay.y=3`;
+    const url2 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=0&FcstType=digital&textField1=${lat}&textField2=${long}&site=all&unit=0&dd=&bw=&AheadDay.x=46&AheadDay.y=5`;
+    const url3 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=48&FcstType=digital&textField1=${lat}&textField2=${long}&site=all&unit=0&dd=&bw=&AheadDay.x=49&AheadDay.y=11`;
    
     const url = page === 1 ? url1 : page === 2 ? url2 : url3;
 
@@ -43,16 +43,16 @@ export async function callOut(lat: string, lon: string, page: number) {
             return [...row1Content, ...row2Content];
         }
     }
-    else return (num: number) => { throw "this function should never be executed"; };
+    else return (_: number) => { throw new Error("this function should never be executed"); };
 }
 
 
-export async function getParseScrapedData(lat: string, lon: string) {
+export async function getParseScrapedData(lat: string, long: string) {
 
-    console.log(`\nWeather from NOAA for ${lat}, ${lon}:\n`);
+    console.log(`\nWeather from NOAA for ${lat}, ${long}:\n`);
 
     // get the 1st, 2nd, and 3rd weather pages from NOAA
-    const results = await Promise.all([callOut(lat, lon, 1), callOut(lat, lon, 2), callOut(lat, lon, 3)]);
+    const results = await Promise.all([callOut(lat, long, 1), callOut(lat, long, 2), callOut(lat, long, 3)]);
 
     const getRows1 = results[0];
     const getRows2 = results[1];

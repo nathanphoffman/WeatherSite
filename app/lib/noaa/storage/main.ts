@@ -1,5 +1,5 @@
 import { getBlobConnectionInfo } from "../config";
-import { run } from "../scraperEntry";
+import { buildDayForecast } from "../scraperEntry";
 import { StorageSolution } from "../types/storage";
 import { DayForecast } from "../types/forecast";
 import { blobStorage } from "./blob";
@@ -37,7 +37,7 @@ export async function getForecast(lat?: string, long?: string, source: 'scraper'
     }
 
     console.log("Running fetch against NOAA");
-    const forecast = await run(resolvedLat, resolvedLon, source);
+    const forecast = await buildDayForecast(resolvedLat, resolvedLon, source);
 
     await storageSolution.saveLatLongForecast({
         lat: resolvedLat,

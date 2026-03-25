@@ -1,4 +1,4 @@
-import { ChanceForeast } from '../types/general';
+import { ChanceForecast } from '../types/general';
 import { ThreeHourWeatherModel } from '../types/threeHourWeather';
 
 
@@ -14,7 +14,7 @@ function inferSkyCover(shortForecast: string): number {
     return 90;
 }
 
-function precipProbToChance(prob: number): ChanceForeast {
+function precipProbToChance(prob: number): ChanceForecast {
     if (prob <= 0) return '--';
     if (prob <= 25) return 'SChc';
     if (prob <= 50) return 'Chc';
@@ -22,7 +22,7 @@ function precipProbToChance(prob: number): ChanceForeast {
     return 'Ocnl';
 }
 
-function inferRain(shortForecast: string, temperature: number, precipChance: number): ChanceForeast {
+function inferRain(shortForecast: string, temperature: number, precipChance: number): ChanceForecast {
     if (precipChance <= 0) return '--';
     const f = shortForecast.toLowerCase();
     if (temperature >= 35 || f.includes('rain') || f.includes('shower') || f.includes('drizzle')) {
@@ -31,7 +31,7 @@ function inferRain(shortForecast: string, temperature: number, precipChance: num
     return '--';
 }
 
-function inferSnow(shortForecast: string, temperature: number, precipChance: number): ChanceForeast {
+function inferSnow(shortForecast: string, temperature: number, precipChance: number): ChanceForecast {
     if (precipChance <= 0) return '--';
     const f = shortForecast.toLowerCase();
     if (temperature < 33 || f.includes('snow') || f.includes('flurr') || f.includes('blizzard')) {
@@ -40,7 +40,7 @@ function inferSnow(shortForecast: string, temperature: number, precipChance: num
     return '--';
 }
 
-function inferThunder(shortForecast: string, precipChance: number): ChanceForeast {
+function inferThunder(shortForecast: string, precipChance: number): ChanceForecast {
     const f = shortForecast.toLowerCase();
     if (f.includes('thunder')) return precipProbToChance(precipChance);
     return '--';
@@ -68,14 +68,14 @@ function buildPrecipMapMm(values: { validTime: string; value: number | null }[])
     return map;
 }
 
-export async function getParseApiData(lat: string, lon: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
+export async function getParseApiData(lat: string, long: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
     const headers = {
         'User-Agent': 'WeatherSite/1.0 (weather app)',
         'Accept': 'application/geo+json',
     };
 
     // NOAA maintains a location of grid points that lat lon point to, here we get that coarse grid position to use against their main api
-    const pointsResult = await fetch(`https://api.weather.gov/points/${lat},${lon}`, { headers });
+    const pointsResult = await fetch(`https://api.weather.gov/points/${lat},${long}`, { headers });
     if (!pointsResult.ok) throw `NOAA points API failed: ${pointsResult.status}`;
     const pointsData = await pointsResult.json();
     const forecastHourlyUrl = pointsData.properties.forecastHourly;

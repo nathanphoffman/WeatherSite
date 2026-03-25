@@ -134,7 +134,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     const dailyHighRealFeel = Math.max(...realFeelPoints.map((p) => p.value));
     const dailyLowRealFeel = Math.min(...realFeelPoints.map((p) => p.value));
 
-    function getWeeklyHighAndLow(dataExtractionFn: (hourData: HourData)=>any) {
+    function getWeeklyHighAndLow(dataExtractionFn: (hourData: HourData) => number) {
         const weeklyValues = (allGroups ?? groups).flatMap((group) => group.hours.map(dataExtractionFn));
         const weeklyHigh = Math.max(...weeklyValues);
         const weeklyLow = Math.min(...weeklyValues);

@@ -2,14 +2,14 @@
 // this is the raw string from NOAA
 export const CHANCE_FORECAST = ["--", "SChc", "Chc", "Lkly", "Ocnl"] as const;
 
-export type ChanceForeast = typeof CHANCE_FORECAST[number];
+export type ChanceForecast = typeof CHANCE_FORECAST[number];
 
 export type Magnitude = 0 | 1 | 2 | 3 | 4;
 
 export type ThreeHourAverage = number;
 
 export type MagnitudeRange = {
-    [key in Magnitude]: number[] | ChanceForeast
+    [key in Magnitude]: number[] | ChanceForecast
 }
 
 export type HourlyNumbers = number[];
