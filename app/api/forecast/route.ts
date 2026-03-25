@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getForecast } from '@/app/lib/noaa/storage/main';
+import { getForecast } from '@/app/lib/noaa/storage/forecastCache';
 import { locationCoordinates } from '@/app/lib/noaa/config';
 
 export const dynamic = 'force-dynamic';

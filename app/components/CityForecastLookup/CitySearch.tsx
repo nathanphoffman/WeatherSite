@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { City } from '@/app/utils/cityParser';
-import { debounce } from '@/app/lib/noaa/utility';
 
 interface CitySearchProps {
     cities: City[];
@@ -42,7 +41,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
         return cityList.filter(c => c.city.toLowerCase().startsWith(lower));
     };
 
-    const filtered = query.length > 0 ? filterCities(allCities, query).slice(0, 3) : [];
+    const getCurrentlyFilteredCities = (inputValue: string) => inputValue.length > 0 ? filterCities(allCities, inputValue).slice(0, 3) : [];
 
     const onCityChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -53,9 +52,10 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
         // then if the populated cities drop below 3 in the filter we load in all cities not just the populated ones
         // this is in an effort to preserve data and partly because I wanted to make the system more robust and fun
         if (!allCitiesLoaded && value.length > 0) {
-            const filtered = filterCities(allCities, value);
 
-            if (!loading && filtered.length === 0) {
+            const currentlyShownCities = getCurrentlyFilteredCities(value);
+
+            if (!loading && currentlyShownCities.length === 0) {
                 setLoading(true);
 
                 // !! artificial delay to show a loading screen
@@ -84,6 +84,8 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
         onSelect?.(city);
     };
 
+    const filteredCities = getCurrentlyFilteredCities(query);
+
     return (
         <nav className="p-4 flex justify-center">
             <div className="flex items-center gap-2 w-full max-w-sm">
@@ -102,14 +104,14 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                         placeholder="Search for a city..."
                         className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500"
                     />
-                    {!citySelected && (filtered.length > 0 || loading) && (
+                    {!citySelected && (filteredCities.length > 0 || loading) && (
                         /* Covers the screen viewport so that the Simple Map credits link is not clickable */
                         <div className="fixed inset-0 z-10" onClick={() => setCitySelected(true)} />
                     )}
-                    {!citySelected && (filtered.length > 0 || loading) && (
+                    {!citySelected && (filteredCities.length > 0 || loading) && (
                         <ul className="absolute z-20 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
                             {loading && (<li className="block px-4 py-2 text-lg text-gray-300">(Loading more cities...)</li>)}
-                            {!loading && filtered.map(c => (
+                            {!loading && filteredCities.map(c => (
                                 <li key={`${c.city}-${c.state_id}`}>
                                     <button
                                         type="button"
