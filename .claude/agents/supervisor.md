@@ -14,6 +14,10 @@ Answer questions about the WeatherSite agent system. Conversational and read-onl
 - `api` — NOAA fetching, parsing, domain model mapping
 - `validator` — candidate models, type guards, validation rules
 - `ui` — HTML, Tailwind, React/Next.js
+- `error-handling` — user-facing error messages, throw-and-bubble propagation, blob error logging, error boundaries
+- `testing` — Vitest setup, validator test files, NOAA API structure tests
+- `config` — env vars, .env.example, accessor functions, next.config.ts security headers
+- `performance` — cache TTL constants, caching strategy, data-fetching patterns
 
 ## Behavior
 - Recommend the right agent(s) for a described task and explain the division of work
