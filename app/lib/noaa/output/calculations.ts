@@ -4,9 +4,9 @@ import { getAverage } from "../utility";
 
 export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magnitude {
     const magnitudes = chances.map((chance) => getMagnitude(chance, ChanceRanges));
-    const averageMag = getAverage(...magnitudes);
-    if (averageMag > 4) return 4 as Magnitude;
-    else if (averageMag >= 0) return averageMag as Magnitude;
+    const averageMagnitude = getAverage(...magnitudes);
+    if (averageMagnitude > 4) return 4 as Magnitude;
+    else if (averageMagnitude >= 0) return averageMagnitude as Magnitude;
     else throw new Error("the average chance calculation was beyond the expected range of values");
 }
 

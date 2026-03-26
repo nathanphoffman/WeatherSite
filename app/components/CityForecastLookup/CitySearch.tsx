@@ -43,8 +43,8 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
 
     const getCurrentlyFilteredCities = (inputValue: string) => inputValue.length > 0 ? filterCities(allCities, inputValue).slice(0, 3) : [];
 
-    const onCityChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
+    const onCityChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
         setQuery(value);
         setCitySelected(false);
 
@@ -60,14 +60,14 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
 
                 // !! artificial delay to show a loading screen
                 setTimeout(async () => {
-                    const res = await fetch('/api/cities');
+                    const response = await fetch('/api/cities');
 
-                    const { allCities: fetchedCities } = await res.json();
+                    const { allCities: fetchedCities } = await response.json();
 
-                    setAllCities((prev) => {
-                        const existing = new Set(prev.map(cityItem => `${cityItem.city}-${cityItem.state_id}`));
+                    setAllCities((previous) => {
+                        const existing = new Set(previous.map(cityItem => `${cityItem.city}-${cityItem.state_id}`));
                         const unique = fetchedCities.filter((cityItem: City) => !existing.has(`${cityItem.city}-${cityItem.state_id}`));
-                        return [...prev, ...unique];
+                        return [...previous, ...unique];
                     });
 
                     setLoading(false);

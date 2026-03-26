@@ -2,7 +2,7 @@
 Audit and refactor files for naming conventions, folder structure, and code length.
 
 ## Nate's Rules
-- Permitted abbreviations: `lat`, `long`, `url`, `id` — nothing else
+- Permitted abbreviations: `lat`, `long`, `url`, `id`, `precip`, `fn` — nothing else
 - Names must be descriptive — verboseness over brevity
 - No file over 300 lines; prefer under 100 where easily justified
 - Components live in a folder named after the root component; sub-components colocate unless large or deeply nested

@@ -1,6 +1,5 @@
 import { getStore } from "@netlify/blobs";
 import { Weather } from "../types/databaseModels";
-import { ThreeHourWeatherModel } from "../types/threeHourWeather";
 import { getBlobConnectionInfo } from "../config";
 import { safeJsonParse } from "../utility";
 import { logger } from "../../logger";
@@ -42,4 +41,4 @@ export const blobStorage = {
         if(Number(weatherObj.unixSeconds) > unixSecondsAgeLimit) return weatherObj.forecast;
         else return "";
     }
-}
+};

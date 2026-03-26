@@ -39,16 +39,16 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         setError(null);
         setWeather(null);
         fetch(`/api/forecast?lat=${lat}&long=${long}&source=api`, { cache: 'no-store' })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch forecast');
-                return res.json();
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch forecast');
+                return response.json();
             })
             .then(data => {
                 setWeather(data);
                 setLoading(false);
             })
-            .catch(err => {
-                setError(err.message);
+            .catch(error => {
+                setError(error.message);
                 setLoading(false);
             });
     }, [lat, long]);

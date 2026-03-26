@@ -31,7 +31,10 @@ export type Candidate<T> = {
     [K in keyof T]?: unknown;
 };
 
-export type Hour = number;
+type IntRange<N extends number, Acc extends number[] = []> =
+    Acc['length'] extends N ? Acc[number] : IntRange<N, [...Acc, Acc['length']]>;
+
+export type Hour = IntRange<24>;
 
 export interface DomainModel<T,Y> {
     formModelFromCandidate(candidate: Y): T;

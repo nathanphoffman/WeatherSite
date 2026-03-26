@@ -17,11 +17,11 @@ function inferSkyCover(shortForecast: string): number {
     return 90;
 }
 
-function precipProbToChance(prob: number): ChanceForecast {
-    if (prob <= 0) return '--';
-    if (prob <= 25) return 'SChc';
-    if (prob <= 50) return 'Chc';
-    if (prob <= 75) return 'Lkly';
+function precipProbToChance(precipProbability: number): ChanceForecast {
+    if (precipProbability <= 0) return '--';
+    if (precipProbability <= 25) return 'SChc';
+    if (precipProbability <= 50) return 'Chc';
+    if (precipProbability <= 75) return 'Lkly';
     // 'Ocnl' is used here as the app's maximum probability tier, not in NOAA's literal
     // "Occasionally" sense. The ChanceForecast type does not include 'Def' (Definite),
     // so 'Ocnl' serves as the top tier for >75% probability by intentional design.

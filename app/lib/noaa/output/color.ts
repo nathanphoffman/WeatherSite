@@ -38,7 +38,7 @@ export function underline(txt: string) {
 }
 
 export function getFreezeIconFromTemperatures(...temperatures: number[]) {
-    const freezingTemperatures = temperatures.find(temp => temp < 33);
+    const freezingTemperatures = temperatures.find(temperature => temperature < 33);
     return (freezingTemperatures ?? 0) > 0 ? "🧊" : " ";
 }
 

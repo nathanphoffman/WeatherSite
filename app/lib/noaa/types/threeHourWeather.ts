@@ -7,7 +7,6 @@ type Percent = number;
 type AirMilesPerHour = number;
 type Inches = number;
 
-// !! unknown number should be updated here
 export interface ThreeHourWeatherModel {
     temperature: Fahrenheit,
     skyCover: Percent,
@@ -18,7 +17,7 @@ export interface ThreeHourWeatherModel {
     rain: ChanceForecast,
     snow: ChanceForecast,
     thunder: ChanceForecast,
-    hour: Hour  // use a range comparison something fancy like IntRange<>
+    hour: Hour,
 };
 
 export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate<ThreeHourWeatherModel>> = {

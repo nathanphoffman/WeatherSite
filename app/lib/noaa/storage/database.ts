@@ -60,4 +60,4 @@ export const databaseStorage: StorageSolution = {
         const result = db.prepare(`SELECT forecast FROM weather WHERE lat = ? AND long = ? AND unixSeconds > ?`).get(storageIntegerLat, storageIntegerLong, unixSecondsAgeLimit) as { forecast: string };
         return result?.forecast;
     }
-}
+};
