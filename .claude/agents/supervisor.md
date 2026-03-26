@@ -16,8 +16,9 @@ Answer questions about the WeatherSite agent system. Conversational and read-onl
 - `ui` — HTML, Tailwind, React/Next.js
 - `error-handling` — user-facing error messages, throw-and-bubble propagation, blob error logging, error boundaries
 - `testing` — Vitest setup, validator test files, NOAA API structure tests
-- `config` — env vars, .env.example, accessor functions, next.config.ts security headers
+- `config` — env vars, .env.example, accessor functions
 - `performance` — cache TTL constants, caching strategy, data-fetching patterns
+- `security` — HTTP security headers, API input sanitization, cookie flags, CORS, secrets hygiene
 
 ## Behavior
 - Recommend the right agent(s) for a described task and explain the division of work

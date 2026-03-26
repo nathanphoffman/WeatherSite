@@ -30,6 +30,30 @@ const securityHeaders = [
         key: "Permissions-Policy",
         value: "camera=(), microphone=(), geolocation=()",
     },
+    {
+        // Instructs browsers to only load resources from explicitly allowed sources.
+        // Restricts scripts, styles, images, and connections to same-origin and the
+        // NOAA API to prevent XSS and data injection attacks.
+        key: "Content-Security-Policy",
+        value: [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline'",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data:",
+            "connect-src 'self' https://api.weather.gov",
+            "font-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "frame-ancestors 'none'",
+        ].join("; "),
+    },
+    {
+        // Instructs browsers to always use HTTPS for this domain and subdomains for
+        // the next two years. Prevents protocol-downgrade attacks and cookie hijacking.
+        key: "Strict-Transport-Security",
+        value: "max-age=63072000; includeSubDomains; preload",
+    },
 ];
 
 const nextConfig: NextConfig = {

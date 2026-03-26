@@ -13,8 +13,9 @@ Review code quality and apply fixes. Delegate to specialists; synthesize and app
 - `validator` — candidate models, type guards, validation rules
 - `error-handling` — user-facing error messages, throw-and-bubble propagation, blob error logging, error boundaries
 - `testing` — Vitest setup, test file structure, validator and NOAA API tests
-- `config` — env var accessor patterns, .env.example sync, next.config.ts security headers
+- `config` — env var accessor patterns, .env.example sync
 - `performance` — cache TTL constants, caching strategy, data-fetching patterns
+- `security` — HTTP security headers, API input sanitization, cookie flags, CORS, secrets hygiene
 
 ## Applying Fixes
 - **Apply immediately**: clear violations (wrong naming, thrown strings, file length, obvious bugs)
