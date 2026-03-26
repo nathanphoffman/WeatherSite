@@ -34,9 +34,7 @@ export default function LineGraph({ title, points, color, indicesToLabel, height
     const yAt = logStrength
         ? (value: number) => {
             const linearNormalized = (value - computedMin) / (computedMax - computedMin || 1);
-            const logMin = Math.log(computedMin + 1);
-            const logMax = Math.log(computedMax + 1);
-            const logNormalized = (Math.log(value + 1) - logMin) / (logMax - logMin || 1);
+            const logNormalized = Math.log(1 + linearNormalized * (Math.E - 1));
             const blended = linearNormalized + logStrength * (logNormalized - linearNormalized);
             return PADDING_TOP + (1 - blended) * plotHeight;
         }

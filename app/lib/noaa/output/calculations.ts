@@ -56,23 +56,24 @@ export function isAnyTemperatureFreezing(...temperatures: string[]) {
     return (freezingTemperatures?.length ?? 0) > 0;
 }
 
-export function getStormRating(skyCover: number, precipChance: number, rainMagnitude: Magnitude, snowMagnitude: Magnitude, windMagnitude: Magnitude, thunderMagnitude: Magnitude) {
+export function getStormRating(skyCover: number, precipChance: number, precipAmount: number, snowMagnitude: Magnitude, windMagnitude: Magnitude, thunderMagnitude: Magnitude) {
 
-    // practical max of 10
+    // max 10
     const skyCoverOutOf10 = 10 * (skyCover / 100);
 
-    // max of 25 in rare cases
+    // max 20 (mag 4 requires "Ocnl" thunder category, which is rare)
     const thunderPenalty = thunderMagnitude * 5;
 
-    // practical max of 32 in rare cases
-    const windPenalty = windMagnitude * windMagnitude * (windMagnitude / 2);
+    // max 24 — rescaled from windMag³/2 to leave room for precip contribution
+    const windPenalty = windMagnitude * windMagnitude * 1.5;
 
-    // practical max of 35 in rare cases
-    const precipPercent = (precipChance / 100);
-    const precipPercentSquared = precipPercent * precipPercent;
-    const precipPenalty = precipPercentSquared * ((snowMagnitude + rainMagnitude) * 5) + Math.round(precipPercentSquared * 10);
+    // snow is more impactful per inch of water equivalent; 3 inches = max 15 contribution
+    const snowMultiplier = snowMagnitude > 0 ? 1.5 : 1.0;
+    const precipPenalty = (precipChance / 100) * Math.min(precipAmount * snowMultiplier * 5, 15);
 
-    const stormRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty;
+    const rawRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty;
+    const stormRating = Math.min(rawRating, 50);
+
     if (stormRating < 10) return Math.round(stormRating);
     else return 5 * Math.round(stormRating / 5);
 }

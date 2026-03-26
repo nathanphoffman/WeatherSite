@@ -25,12 +25,11 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const { regularTime, middleHour, hours } = group;
 
     const allThreeStormRatings = hours.map((weatherRow) => {
-        const { wind, thunder, rain, snow, skyCover, precipChance } = weatherRow;
+        const { wind, thunder, snow, skyCover, precipChance, precipAmount } = weatherRow;
         const windMagnitude = getMagnitude(Number(wind), WindRanges);
         const thunderMagnitude = convertNOAAChancesToAverageMagnitude(thunder);
-        const rainMagnitude = convertNOAAChancesToAverageMagnitude(rain);
         const snowMagnitude = convertNOAAChancesToAverageMagnitude(snow);
-        return Number(getStormRating(skyCover, precipChance, rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude));
+        return Number(getStormRating(skyCover, precipChance, precipAmount, snowMagnitude, windMagnitude, thunderMagnitude));
     });
 
     const lowestStorm = Math.min(...allThreeStormRatings);
@@ -43,21 +42,20 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const humidity = hours.map(hourData => hourData.humidity);
     const wind = hours.map(hourData => hourData.wind);
     const thunder = hours.map(hourData => hourData.thunder);
-    const rain = hours.map(hourData => hourData.rain);
     const snow = hours.map(hourData => hourData.snow);
     const skyCover = hours.map(hourData => hourData.skyCover);
     const temperature = hours.map(hourData => hourData.temperature);
     const precipChance = hours.map(hourData => hourData.precipChance);
+    const precipAmount = hours.map(hourData => hourData.precipAmount);
 
     const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
     const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
     const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...thunder);
-    const rainMagnitude = convertNOAAChancesToAverageMagnitude(...rain);
     const snowMagnitude = convertNOAAChancesToAverageMagnitude(...snow);
 
     const averageSkyCover = getAverage(...skyCover);
     const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
-    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
+    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), getAverage(...precipAmount), snowMagnitude, windMagnitude, thunderMagnitude);
 
     const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature);
     const stormMagnitude = getStormMagnitude(stormRating);

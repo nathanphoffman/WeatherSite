@@ -5,7 +5,7 @@ import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { getRealFeelTemperature, getMagnitude, convertNOAAChancesToAverageMagnitude, getStormRating } from '@/app/lib/noaa/output/calculations';
 import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude } from '@/app/lib/noaa/output/color';
 import { HumidityRanges, WindRanges, ChanceRanges } from '@/app/lib/noaa/config';
-import { realFeelThresholds, stormThresholds, windThresholds } from './graphThresholds';
+import { realFeelThresholds, windThresholds, stormRatingThresholds, precipThresholds } from './graphThresholds';
 import { getAverage } from '@/app/lib/noaa/utility';
 import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
@@ -45,7 +45,7 @@ const toStormRating = (hourData: HourData) =>
     getStormRating(
         hourData.skyCover,
         hourData.precipChance,
-        getMagnitude(hourData.rain, ChanceRanges),
+        hourData.precipAmount,
         getMagnitude(hourData.snow, ChanceRanges),
         getMagnitude(hourData.wind, WindRanges),
         getMagnitude(hourData.thunder, ChanceRanges)
@@ -96,11 +96,10 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
         const humidityMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.humidity)), HumidityRanges);
         const windMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.wind)), WindRanges);
         const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.thunder));
-        const rainMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.rain));
         const snowMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.snow));
         const averageSkyCover = getAverage(...hours.map((hourData) => hourData.skyCover));
         const realFeel = getRealFeelTemperature(getAverage(...hours.map((hourData) => hourData.temperature)), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
-        const stormRating = getStormRating(averageSkyCover, getAverage(...hours.map((hourData) => hourData.precipChance)), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
+        const stormRating = getStormRating(averageSkyCover, getAverage(...hours.map((hourData) => hourData.precipChance)), getAverage(...hours.map((hourData) => hourData.precipAmount)), snowMagnitude, windMagnitude, thunderMagnitude);
         return getHappyFaceFromMagnitude(humidityMagnitude, getRealFeelMagnitude(realFeel), getStormMagnitude(stormRating));
     });
     const bestSmiley = smileys.reduce<string | null>((best, smiley) => {
@@ -151,9 +150,9 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                 indicesToLabel={indicesToLabel}
                 height={90}
                 minValue={0}
-                maxValue={75}
+                maxValue={50}
                 logStrength={0.4}
-                thresholdLines={[{ value: 10, color: 'rgba(255,255,255,0.45)', showYLabel: true }]}
+                thresholdLines={stormRatingThresholds}
             />
 
             <button
@@ -209,7 +208,9 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                         color="#38bdf8"
                         indicesToLabel={indicesToLabel}
                         minValue={0}
-                        maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(0.5))}
+                        logStrength={2}
+                        thresholdLines={precipThresholds.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
+                        maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(1))}
                         formatYLabel={(value) => useMetric ? value.toFixed(1) : value.toFixed(2)}
                     />
 
