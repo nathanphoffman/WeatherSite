@@ -12,12 +12,11 @@ interface ForecastCardProps {
     allFlipped: boolean;
     flipNonce: number;
     allExpanded: boolean;
-    currentHour?: number;
     onFlipChange?: (flipped: boolean) => void;
     onExpandChange?: (expanded: boolean) => void;
 }
 
-export default function ForecastCard({ forecastDate, groups, allGroups, allFlipped, flipNonce, allExpanded, currentHour, onFlipChange, onExpandChange }: ForecastCardProps) {
+export default function ForecastCard({ forecastDate, groups, allGroups, allFlipped, flipNonce, allExpanded, onFlipChange, onExpandChange }: ForecastCardProps) {
     const [flipped, setFlipped] = useState(false);
     const [cardExpanded, setCardExpanded] = useState(false);
     const [graphsOpen, setGraphsOpen] = useState(false);
@@ -116,7 +115,6 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
                         groups={groups}
                         allGroups={allGroups}
                         allExpanded={graphsOpen}
-                        currentHour={currentHour}
                         onExpandChange={(value) => {
                             setGraphsOpen(value);
                             setCardExpanded(value);

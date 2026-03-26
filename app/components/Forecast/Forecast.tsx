@@ -67,10 +67,6 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         });
     };
 
-    const now = new Date();
-    const todayDate = `${now.getMonth() + 1}/${now.getDate()}`;
-    const currentHour = now.getHours();
-
     const allGroups = Object.values(weather).flat();
 
     return (
@@ -81,8 +77,6 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
                 allFlipped={allFlipped}
                 flipNonce={flipNonce}
                 allExpanded={allExpanded}
-                todayDate={todayDate}
-                currentHour={currentHour}
                 onCardFlipChange={handleCardFlipChange}
                 onExpandChange={setAllExpanded}
             />

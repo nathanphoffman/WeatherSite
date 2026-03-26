@@ -15,7 +15,6 @@ interface GraphCardProps {
     groups: ThreeHourGroup[];
     allGroups?: ThreeHourGroup[];
     allExpanded: boolean;
-    currentHour?: number;
     onExpandChange?: (expanded: boolean) => void;
 }
 
@@ -54,7 +53,7 @@ const toStormRating = (hourData: HourData) =>
     
 const toWindSpeed = (hourData: HourData) => hourData.wind;
 
-export default function GraphCard({ groups, allGroups, allExpanded, currentHour, onExpandChange }: GraphCardProps) {
+export default function GraphCard({ groups, allGroups, allExpanded, onExpandChange }: GraphCardProps) {
     const [expanded, setExpanded] = useState(false);
     const { useMetric, convertTemperature, convertWindSpeed, convertPrecip } = useMeasurementSystemProviderContext();
 
@@ -69,24 +68,25 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
         onExpandChange?.(next);
     };
 
+    const firstMiddleHour = groups[0]?.middleHour ?? 0;
+    const lastMiddleHour = groups[groups.length - 1]?.middleHour ?? 23;
+
     const sortedHours = (selector: (hourData: HourData) => number) =>
         groups
             .flatMap((group) => group.hours.map((hourData) => ({ hour: hourData.hour, value: selector(hourData) })))
+            .filter((point) => point.hour >= firstMiddleHour && point.hour <= lastMiddleHour)
             .sort((pointA, pointB) => pointA.hour - pointB.hour);
 
-    const clipToCurrentHour = (points: { hour: number; value: number }[]) =>
-        currentHour !== undefined ? points.filter((point) => point.hour >= currentHour) : points;
-
-    const realFeelPoints = clipToCurrentHour(sortedHours(toRealFeel));
-    const stormRatingPoints = clipToCurrentHour(sortedHours(toStormRating));
-    const windPoints = clipToCurrentHour(sortedHours((hourData) => hourData.wind));
-    const skyCoverPoints = clipToCurrentHour(sortedHours((hourData) => hourData.skyCover));
-    const humidityPoints = clipToCurrentHour(sortedHours((hourData) => hourData.humidity));
-    const precipChancePoints = clipToCurrentHour(sortedHours((hourData) => hourData.precipChance));
-    const precipAmountPoints = clipToCurrentHour(sortedHours((hourData) => hourData.precipAmount ?? 0));
-    const rainPoints = clipToCurrentHour(sortedHours((hourData) => chanceToPercent(hourData.rain)));
-    const snowPoints = clipToCurrentHour(sortedHours((hourData) => chanceToPercent(hourData.snow)));
-    const thunderPoints = clipToCurrentHour(sortedHours((hourData) => chanceToPercent(hourData.thunder)));
+    const realFeelPoints = sortedHours(toRealFeel);
+    const stormRatingPoints = sortedHours(toStormRating);
+    const windPoints = sortedHours((hourData) => hourData.wind);
+    const skyCoverPoints = sortedHours((hourData) => hourData.skyCover);
+    const humidityPoints = sortedHours((hourData) => hourData.humidity);
+    const precipChancePoints = sortedHours((hourData) => hourData.precipChance);
+    const precipAmountPoints = sortedHours((hourData) => hourData.precipAmount ?? 0);
+    const rainPoints = sortedHours((hourData) => chanceToPercent(hourData.rain));
+    const snowPoints = sortedHours((hourData) => chanceToPercent(hourData.snow));
+    const thunderPoints = sortedHours((hourData) => chanceToPercent(hourData.thunder));
 
     if (realFeelPoints.length === 0) return null;
 

@@ -9,13 +9,11 @@ interface ForecastCardTableProps {
     allFlipped: boolean;
     flipNonce: number;
     allExpanded: boolean;
-    todayDate: string;
-    currentHour: number;
     onCardFlipChange: (date: string, flipped: boolean) => void;
     onExpandChange: (expanded: boolean) => void;
 }
 
-export default function ForecastCardTable({ weather, allGroups, allFlipped, flipNonce, allExpanded, todayDate, currentHour, onCardFlipChange, onExpandChange }: ForecastCardTableProps) {
+export default function ForecastCardTable({ weather, allGroups, allFlipped, flipNonce, allExpanded, onCardFlipChange, onExpandChange }: ForecastCardTableProps) {
     const { useMetric, toggleSystem } = useMeasurementSystemProviderContext();
 
     return (
@@ -40,7 +38,7 @@ export default function ForecastCardTable({ weather, allGroups, allFlipped, flip
             </div>
             <section className="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-6 p-6">
                 {Object.entries(weather).map(([forecastDate, groups]) => (
-                    <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} currentHour={forecastDate === todayDate ? currentHour : undefined} onFlipChange={(flipped) => onCardFlipChange(forecastDate, flipped)} onExpandChange={onExpandChange} />
+                    <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} onFlipChange={(flipped) => onCardFlipChange(forecastDate, flipped)} onExpandChange={onExpandChange} />
                 ))}
             </section>
         </>
