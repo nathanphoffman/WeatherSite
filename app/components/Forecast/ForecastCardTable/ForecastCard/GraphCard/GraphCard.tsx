@@ -9,6 +9,7 @@ import { realFeelThresholds, stormThresholds, windThresholds } from './graphThre
 import { getAverage } from '@/app/lib/noaa/utility';
 import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
+import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
 
 interface GraphCardProps {
     groups: ThreeHourGroup[];
@@ -55,6 +56,7 @@ const toWindSpeed = (hourData: HourData) => hourData.wind;
 
 export default function GraphCard({ groups, allGroups, allExpanded, currentHour, onExpandChange }: GraphCardProps) {
     const [expanded, setExpanded] = useState(false);
+    const { useMetric, convertTemperature, convertWindSpeed, convertPrecip } = useMeasurementSystemProviderContext();
 
     useEffect(() => {
         setExpanded(allExpanded);
@@ -127,20 +129,20 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     return (
         <section>
             <div className="flex justify-between items-baseline">
-                <span className="text-4xl font-bold text-white">{dailyHighRealFeel}°</span>
-                <span className="text-4xl font-bold text-gray-400">{dailyLowRealFeel}°</span>
+                <span className="text-4xl font-bold text-white">{convertTemperature(dailyHighRealFeel)}°</span>
+                <span className="text-4xl font-bold text-gray-400">{convertTemperature(dailyLowRealFeel)}°</span>
             </div>
 
             <LineGraph
-                title="Real Feel"
-                points={realFeelPoints}
+                title={`Real Feel (${useMetric ? '°C' : '°F'})`}
+                points={realFeelPoints.map((point) => ({ ...point, value: convertTemperature(point.value) }))}
                 color="#3b82f6"
                 indicesToLabel={indicesToLabel}
                 height={110}
-                minValue={weeklyHighAndLowRealFeel.weeklyLow}
-                maxValue={weeklyHighAndLowRealFeel.weeklyHigh}
+                minValue={convertTemperature(weeklyHighAndLowRealFeel.weeklyLow)}
+                maxValue={convertTemperature(weeklyHighAndLowRealFeel.weeklyHigh)}
                 formatYLabel={(value) => `${Math.round(value)}°`}
-                thresholdLines={realFeelThresholds}
+                thresholdLines={realFeelThresholds.map((threshold) => ({ ...threshold, value: convertTemperature(threshold.value) }))}
             />
             <LineGraph
                 title="Storm Rating"
@@ -183,13 +185,13 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         formatYLabel={(value) => `${value}%`}
                     />
                     <LineGraph
-                        title="Wind Speed"
-                        points={windPoints}
-                        minValue={weeklyHighAndLowWindSpeed.weeklyLow}
-                        maxValue={weeklyHighAndLowWindSpeed.weeklyHigh}
+                        title={`Wind Speed (${useMetric ? 'km/h' : 'mph'})`}
+                        points={windPoints.map((point) => ({ ...point, value: convertWindSpeed(point.value) }))}
+                        minValue={convertWindSpeed(weeklyHighAndLowWindSpeed.weeklyLow)}
+                        maxValue={convertWindSpeed(weeklyHighAndLowWindSpeed.weeklyHigh)}
                         color="#a78bfa"
                         indicesToLabel={indicesToLabel}
-                        thresholdLines={windThresholds}
+                        thresholdLines={windThresholds.map((threshold) => ({ ...threshold, value: convertWindSpeed(threshold.value) }))}
                     />
                     <LineGraph
                         title="Humidity"
@@ -202,13 +204,13 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                     />
 
                     <LineGraph
-                        title="Precipitation"
-                        points={precipAmountPoints}
+                        title={`Precipitation (${useMetric ? 'mm' : 'in'})`}
+                        points={precipAmountPoints.map((point) => ({ ...point, value: convertPrecip(point.value) }))}
                         color="#38bdf8"
                         indicesToLabel={indicesToLabel}
                         minValue={0}
-                        maxValue={Math.max(...precipAmountPoints.map((point) => point.value).filter(isFinite), 0.5)}
-                        formatYLabel={(value) => `${value.toFixed(2)}"`}
+                        maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(0.5))}
+                        formatYLabel={(value) => useMetric ? value.toFixed(1) : value.toFixed(2)}
                     />
 
                     <MultiLineGraph

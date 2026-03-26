@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { DayForecast } from '@/app/lib/noaa/types/forecast';
-import ForecastCard from './ForecastCard/ForecastCard';
+import { MeasurementSystemProvider } from '@/app/components/Forecast/MeasurementSystemProvider';
+import ForecastCardTable from '@/app/components/Forecast/ForecastCardTable/ForecastCardTable';
 
 interface ForecastProps {
     lat: string;
@@ -73,10 +74,18 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
     const allGroups = Object.values(weather).flat();
 
     return (
-        <section className="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-4 p-6">
-            {Object.entries(weather).map(([forecastDate, groups]) => (
-                <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} currentHour={forecastDate === todayDate ? currentHour : undefined} onFlipChange={(flipped) => handleCardFlipChange(forecastDate, flipped)} onExpandChange={setAllExpanded} />
-            ))}
-        </section>
+        <MeasurementSystemProvider>
+            <ForecastCardTable
+                weather={weather}
+                allGroups={allGroups}
+                allFlipped={allFlipped}
+                flipNonce={flipNonce}
+                allExpanded={allExpanded}
+                todayDate={todayDate}
+                currentHour={currentHour}
+                onCardFlipChange={handleCardFlipChange}
+                onExpandChange={setAllExpanded}
+            />
+        </MeasurementSystemProvider>
     );
 }

@@ -1,5 +1,8 @@
+'use client';
+
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { getMagnitude, convertNOAAChancesToAverageMagnitude, getRealFeelTemperature, getStormRating } from '@/app/lib/noaa/output/calculations';
+import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
 import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, getFreezeIconFromTemperatures, GREEN, YELLOW, RED, BRIGHT, WHITE } from '@/app/lib/noaa/output/color';
 import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
 import { getAverage } from '@/app/lib/noaa/utility';
@@ -18,6 +21,7 @@ interface ThreeHourEntryProps {
 }
 
 export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
+    const { convertTemperature } = useMeasurementSystemProviderContext();
     const { regularTime, middleHour, hours } = group;
 
     const allThreeStormRatings = hours.map((weatherRow) => {
@@ -63,7 +67,7 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     return (
         <li className="flex gap-3 items-baseline py-1 border-b border-gray-800 text-xl last:border-0">
             <span className="text-gray-500 w-12 mr-1">{regularTime}</span>
-            <span className={magnitudeColor[realFeelMagnitude]}>{realFeelTemperature}°</span>
+            <span className={magnitudeColor[realFeelMagnitude]}>{convertTemperature(realFeelTemperature)}°</span>
             {humidityMagnitude > 0 && <span className={magnitudeColor[humidityMagnitude]}>H</span>}
             <span className={magnitudeColor[stormMagnitude]}>{stormRating}</span>
             {unstableWeather && <span>⚠️</span>}
