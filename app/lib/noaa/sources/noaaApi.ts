@@ -1,6 +1,7 @@
 import { ChanceForecast } from '../types/general';
 import { ThreeHourWeatherModel } from '../types/threeHourWeather';
 import { NoaaHourlyPeriod, NoaaPointsProperties, NoaaPrecipEntry } from '../types/noaaApiModels';
+import { isValidLatitude, isValidLongitude } from '../types/validators';
 
 
 
@@ -73,6 +74,10 @@ function buildPrecipMapMm(values: NoaaPrecipEntry[]): Map<string, number> {
 }
 
 export async function fetchAndParseNoaaForecast(lat: string, long: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
+    if (!isValidLatitude(lat) || !isValidLongitude(long)) {
+        throw new Error(`Invalid coordinates: lat=${lat}, long=${long}`);
+    }
+
     const headers = {
         'User-Agent': 'WeatherSite/1.0 (weather app)',
         'Accept': 'application/geo+json',
@@ -123,7 +128,11 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
 
         // NOAA returns windSpeed as a string like "5 mph" or "10 mph"; parseInt handles the " mph" suffix correctly.
         // Upper-bound range validation is not applied here — it occurs downstream in ThreeHourWeatherModel.formModelFromCandidate via isBelowSpeedOfSound.
-        const windSpeed = parseInt(period.windSpeed) || 0;
+        const parsedWindSpeed = parseInt(period.windSpeed);
+        if (isNaN(parsedWindSpeed)) {
+            console.log(`VALIDATION FAILED! field="windSpeed" value=${period.windSpeed}`);
+        }
+        const windSpeed = isNaN(parsedWindSpeed) ? 0 : parsedWindSpeed;
         const { humidity, precipChance, shortForecast } = period;
         const skyCover = inferSkyCover(shortForecast);
 

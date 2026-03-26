@@ -1,6 +1,6 @@
 export default async function Page() {
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <main className="max-w-4xl mx-auto p-6 space-y-6">
             <div className="relative flex items-center justify-center">
                 <a href="/" className="absolute left-0 flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800" aria-label="Back to forecast">
                     ↩
@@ -62,6 +62,6 @@ export default async function Page() {
                     ))}
                 </div>
             </section>
-        </div>
+        </main>
     );
 }

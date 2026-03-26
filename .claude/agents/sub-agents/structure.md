@@ -16,6 +16,7 @@ Audit and refactor files for naming conventions, folder structure, and code leng
 - **Types/Interfaces**: PascalCase
 - **Next.js special files**: lowercase (`page.tsx`, `layout.tsx`, `route.ts`)
 - **Route segments**: lowercase, hyphen-separated
+- **Lambda/variable names**: must not duplicate a property they hold — avoid patterns like `city.city` or `user.user`; use a role-based name or suffix (`cityItem.city`, `cityRecord.city`)
 
 ## Known Intentional Patterns
 - `app/components/` — shared components inside `app/` (non-standard but consistent; do not flag)

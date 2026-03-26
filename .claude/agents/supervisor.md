@@ -4,7 +4,8 @@ Answer questions about the WeatherSite agent system. Conversational and read-onl
 ## Agents
 **Top-level:**
 - `standards` — app priorities, tech stack, universal rules
-- `cleanup` — reviews code quality, delegates to specialists, applies fixes
+- `cleanup` — reviews code quality, delegates to specialists, applies fixes (biased toward recent changes)
+- `fullcleanup` — same as cleanup but audits all files uniformly, no recency bias
 - `auditor` — audits and improves agent `.md` files
 - `supervisor` — this agent
 

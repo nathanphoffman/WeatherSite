@@ -27,8 +27,8 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
     const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
-    const allValues = series.flatMap((s) => s.points.map((p) => p.value));
-    const allHours = series.flatMap((s) => s.points.map((p) => p.hour));
+    const allValues = series.flatMap((seriesItem) => seriesItem.points.map((point) => point.value));
+    const allHours = series.flatMap((seriesItem) => seriesItem.points.map((point) => point.hour));
     const computedMin = minValue ?? Math.min(...allValues);
     const computedMax = maxValue ?? Math.max(...allValues);
 
@@ -54,14 +54,14 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
                 referencePoints={referencePoints}
                 indicesToLabel={indicesToLabel}
             >
-                {series.map((s, seriesIndex) => {
-                    const coords: [number, number][] = s.points.map((p) => [xAt(p.hour), yAt(p.value)]);
+                {series.map((seriesItem, seriesIndex) => {
+                    const coords: [number, number][] = seriesItem.points.map((point) => [xAt(point.hour), yAt(point.value)]);
                     return (
                         <path
                             key={seriesIndex}
                             d={smoothLinePath(coords)}
                             fill="none"
-                            stroke={s.color}
+                            stroke={seriesItem.color}
                             strokeWidth={1.5}
                             strokeLinejoin="round"
                             strokeLinecap="round"
@@ -70,10 +70,10 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
                 })}
             </GraphSvg>
             <div className="flex gap-3 mt-1">
-                {series.map((s, index) => (
+                {series.map((seriesItem, index) => (
                     <div key={index} className="flex items-center gap-1">
-                        <div className="w-3 h-0.5 rounded-full" style={{ backgroundColor: s.color }} />
-                        <span className="text-xs text-gray-500">{s.label}</span>
+                        <div className="w-3 h-0.5 rounded-full" style={{ backgroundColor: seriesItem.color }} />
+                        <span className="text-xs text-gray-500">{seriesItem.label}</span>
                     </div>
                 ))}
             </div>

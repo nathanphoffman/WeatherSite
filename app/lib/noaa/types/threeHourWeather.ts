@@ -60,4 +60,4 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate
             return candidateToType<Hour>(candidate, [isNumber, isNotNegative, is24HourClockValue], fieldName);
         }
     }
-}
+};

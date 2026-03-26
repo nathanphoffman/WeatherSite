@@ -39,7 +39,7 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
 
     const addSelectedCityToLookupCache = (city: City) => {
         const cachedCitiesFromStorage = getCachedCitiesFromStorage();
-        const matchedCity = cachedCitiesFromStorage.find(x=>x.city === city.city);
+        const matchedCity = cachedCitiesFromStorage.find(cachedCity => cachedCity.city === city.city);
         if(!matchedCity) {
             const newCityList = [city, ...cachedCitiesFromStorage];
             localStorage.setItem(STORAGE_KEY_CACHED_CITIES, JSON.stringify(newCityList));
@@ -80,12 +80,14 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
                 <>
                     <div className="flex justify-center gap-2 mt-3">
                         <button
+                            type="button"
                             onClick={() => flipAll(false)}
                             className={`text-sm border rounded-lg px-4 py-1.5 transition-colors ${totalCards > 0 && flippedCount === 0 ? 'text-white border-gray-500' : 'text-gray-400 hover:text-white border-gray-700 hover:border-gray-500'}`}
                         >
                             View Forecasts
                         </button>
                         <button
+                            type="button"
                             onClick={() => flipAll(true)}
                             className={`text-sm border rounded-lg px-4 py-1.5 transition-colors ${totalCards > 0 && flippedCount === totalCards ? 'text-white border-gray-500' : 'text-gray-400 hover:text-white border-gray-700 hover:border-gray-500'}`}
                         >

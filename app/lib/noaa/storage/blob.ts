@@ -11,7 +11,7 @@ const FORECASTS = 'FORECASTS';
 
 export const blobStorage = {
     saveLatLongForecast: async function (weather: Weather) {
-        if(!blobConnectionInfo) throw "Blobs are not available, unable to save forecast."
+        if(!blobConnectionInfo) throw new Error("Blobs are not available, unable to save forecast.");
 
         const { lat, long } = weather;
         const key = lat + long;
@@ -22,7 +22,7 @@ export const blobStorage = {
 
     getSavedLatLongForecast: async function (lat: string, long: string, unixSecondsAgeLimit: number): Promise<string> {
 
-        if(!blobConnectionInfo) throw "Blobs are not available, unable to get forecast."
+        if(!blobConnectionInfo) throw new Error("Blobs are not available, unable to get forecast.");
         const key = lat + long;
 
         const store = getStore(FORECASTS, { siteID: SITE_ID, token: BLOB_TOKEN });
@@ -30,7 +30,13 @@ export const blobStorage = {
         const weather = await store.get(key, {type: 'text'});
         if(!weather) return "";
 
-        const weatherObj = JSON.parse(weather);
+        let weatherObj: ReturnType<typeof JSON.parse>;
+        try {
+            weatherObj = JSON.parse(weather);
+        } catch {
+            console.log(`VALIDATION FAILED! field="weatherBlob" value=<corrupted>`);
+            return "";
+        }
 
         // we check to see if the forecast is current before trusting it
         if(Number(weatherObj?.unixSeconds) > unixSecondsAgeLimit) return weatherObj.forecast;

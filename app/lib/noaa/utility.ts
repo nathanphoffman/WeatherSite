@@ -1,13 +1,13 @@
 import { Magnitude } from "./types/general";
 
 
-export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] | undefined {
-    const deepClone = [...arr];
-    const take3 = deepClone.splice(0, 3);
+export function splitIntoGroupsOf3<T>(items: T[], prev?: T[][]): T[][] | undefined {
+    const deepClone = [...items];
+    const firstThreeItems = deepClone.splice(0, 3);
 
-    if (arr.length < 3) return prev;
-    else if (!prev || prev.length === 0) return splitIntoGroupsOf3(deepClone, [take3]);
-    else if (prev && prev.length > 0 && arr.length > 2) return splitIntoGroupsOf3(deepClone, [...prev, take3]);
+    if (items.length < 3) return prev;
+    else if (!prev || prev.length === 0) return splitIntoGroupsOf3(deepClone, [firstThreeItems]);
+    else if (prev && prev.length > 0 && items.length > 2) return splitIntoGroupsOf3(deepClone, [...prev, firstThreeItems]);
     else return undefined;
 }
 
@@ -35,12 +35,12 @@ export function pipe(fns: ((value: unknown) => unknown)[]) {
     return (x: unknown) => fns.reduce((acc, fn) => fn(acc), x);
 }
 
-export function arrayNotEmpty(arr: unknown[]): boolean {
-    return arr && arr.length > 0;
+export function arrayNotEmpty(items: unknown[]): boolean {
+    return items && items.length > 0;
 }
 
-export function stripUndefined(arr: unknown[]): unknown[] {
-    return arr.filter(x => x !== undefined);
+export function stripUndefined(items: unknown[]): unknown[] {
+    return items.filter(item => item !== undefined);
 }
 
 export function isNumber(input: unknown) {

@@ -36,14 +36,14 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     // there is no point showing unstable weather if it is unstable because of a 2, 1, 8 say
     const unstableWeather = highestStorm > 10 && (stormDelta >= lowestStorm + 5);
 
-    const humidity = hours.map(h => h.humidity);
-    const wind = hours.map(h => h.wind);
-    const thunder = hours.map(h => h.thunder);
-    const rain = hours.map(h => h.rain);
-    const snow = hours.map(h => h.snow);
-    const skyCover = hours.map(h => h.skyCover);
-    const temperature = hours.map(h => h.temperature);
-    const precipChance = hours.map(h => h.precipChance);
+    const humidity = hours.map(hourData => hourData.humidity);
+    const wind = hours.map(hourData => hourData.wind);
+    const thunder = hours.map(hourData => hourData.thunder);
+    const rain = hours.map(hourData => hourData.rain);
+    const snow = hours.map(hourData => hourData.snow);
+    const skyCover = hours.map(hourData => hourData.skyCover);
+    const temperature = hours.map(hourData => hourData.temperature);
+    const precipChance = hours.map(hourData => hourData.precipChance);
 
     const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
     const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);

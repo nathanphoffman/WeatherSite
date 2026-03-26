@@ -1,6 +1,6 @@
 import { DomainModel } from "./general";
 import { candidateToType, isNumber, isNotNegative, isStringNotNumber } from "../utility";
-import { isNoMoreThan100 } from "./validators";
+import { isNoMoreThan100, isValidTemperatureUnit } from "./validators";
 
 // Verified against live NOAA API responses.
 // See app/lib/noaa/sources/samples/ for reference.
@@ -57,7 +57,7 @@ export const NoaaHourlyPeriod: DomainModel<NoaaHourlyPeriod, NoaaRawHourlyPeriod
         return {
             startTime: candidateToType(candidate.startTime, [isStringNotNumber], "startTime"),
             temperature: candidateToType(candidate.temperature, [isNumber], "temperature"),
-            temperatureUnit: candidateToType(candidate.temperatureUnit, [isStringNotNumber], "temperatureUnit"),
+            temperatureUnit: candidateToType(candidate.temperatureUnit, [isStringNotNumber, isValidTemperatureUnit], "temperatureUnit"),
             windSpeed: candidateToType(candidate.windSpeed, [isStringNotNumber], "windSpeed"),
             humidity: candidateToType(candidate.relativeHumidity?.value ?? 50, [isNumber, isNotNegative, isNoMoreThan100], "humidity"),
             precipChance: candidateToType(candidate.probabilityOfPrecipitation?.value ?? 0, [isNumber, isNotNegative, isNoMoreThan100], "precipChance"),

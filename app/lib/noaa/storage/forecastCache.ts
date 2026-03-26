@@ -26,12 +26,15 @@ export async function getForecast(lat?: string, long?: string): Promise<DayForec
     const savedRecord = await storageSolution.getSavedLatLongForecast(lat, long, oneHourAgo);
 
     if (savedRecord) {
-        const parsed = JSON.parse(savedRecord);
-        if (parsed.version === CACHE_VERSION) {
-            return parsed.data as DayForecast;
+        try {
+            const parsed = JSON.parse(savedRecord);
+            if (parsed.version === CACHE_VERSION) {
+                return parsed.data as DayForecast;
+            }
+            console.log("Cache version mismatch, re-fetching from NOAA");
+        } catch {
+            console.log("Cache record corrupted, re-fetching from NOAA");
         }
-
-        console.log("Cache version mismatch, re-fetching from NOAA");
     }
 
     console.log("Running fetch against NOAA");

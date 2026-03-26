@@ -8,7 +8,7 @@ export type Magnitude = 0 | 1 | 2 | 3 | 4;
 
 export type MagnitudeRange = {
     [key in Magnitude]: number[] | ChanceForecast
-}
+};
 
 export type RealFeelMin = {
     ExtremelyHotMin: number;
@@ -19,13 +19,13 @@ export type RealFeelMin = {
     CoolMin: number;
     ColdMin: number;
     VeryColdMin: number;
-}
+};
 export type StormMin = {
     VeryBadMin: number;
     BadMin: number;
     PoorMin: number;
     AverageMin: number;
-}
+};
 
 export type Candidate<T> = {
     [K in keyof T]?: unknown;

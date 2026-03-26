@@ -12,7 +12,7 @@ interface ThresholdLinesProps {
 }
 
 export default function ThresholdLines({ thresholds, computedMin, computedMax, paddingLeft, plotWidth, yAt, formatYLabel }: ThresholdLinesProps) {
-    const visibleThresholds = thresholds.filter((t) => t.value >= computedMin && t.value <= computedMax);
+    const visibleThresholds = thresholds.filter((threshold) => threshold.value >= computedMin && threshold.value <= computedMax);
 
     return (
         <>

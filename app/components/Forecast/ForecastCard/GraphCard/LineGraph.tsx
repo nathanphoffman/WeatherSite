@@ -25,11 +25,11 @@ export default function LineGraph({ title, points, color, indicesToLabel, height
     const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
-    const values = points.map((p) => p.value);
+    const values = points.map((point) => point.value);
     const computedMin = minValue ?? Math.min(...values);
     const computedMax = maxValue ?? Math.max(...values);
 
-    const { xAt, yAt: linearYAt } = buildAxisHelpers(points.map((p) => p.hour), computedMin, computedMax, plotWidth, plotHeight);
+    const { xAt, yAt: linearYAt } = buildAxisHelpers(points.map((point) => point.hour), computedMin, computedMax, plotWidth, plotHeight);
 
     const yAt = logStrength
         ? (value: number) => {
@@ -46,7 +46,7 @@ export default function LineGraph({ title, points, color, indicesToLabel, height
     const lastX = xAt(points[points.length - 1].hour);
     const baseline = PADDING_TOP + plotHeight;
 
-    const coords: [number, number][] = points.map((p) => [xAt(p.hour), yAt(p.value)]);
+    const coords: [number, number][] = points.map((point) => [xAt(point.hour), yAt(point.value)]);
 
     return (
         <GraphSvg

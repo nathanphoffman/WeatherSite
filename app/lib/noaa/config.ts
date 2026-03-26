@@ -18,7 +18,7 @@ export function getBlobConnectionInfo() {
     if(!SITE_ID || !BLOB_TOKEN) return undefined;
     else return {
         SITE_ID, BLOB_TOKEN
-    }
+    };
 }
 
 export function getChosenLocation() {

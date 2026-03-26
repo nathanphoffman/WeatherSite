@@ -31,3 +31,25 @@ export function isNoMoreThan100(input: unknown) {
 export function isBelowSpeedOfSound(input: unknown) {
     return Number(input) < 767;
 }
+
+// Valid latitude range: -90 to 90 (inclusive)
+export function isValidLatitude(input: unknown) {
+    const value = Number(input);
+    return !isNaN(value) && value >= -90 && value <= 90;
+}
+
+// Valid longitude range: -180 to 180 (inclusive)
+export function isValidLongitude(input: unknown) {
+    const value = Number(input);
+    return !isNaN(value) && value >= -180 && value <= 180;
+}
+
+// Ensures temperatureUnit is a known NOAA unit; guards against unexpected unit strings
+export function isValidTemperatureUnit(input: unknown) {
+    return input === 'C' || input === 'F';
+}
+
+// Upper bound ~year 2100; rejects timestamps beyond any reasonable forecast horizon
+export function isReasonableUnixTimestamp(input: unknown) {
+    return Number(input) <= 4102444800;
+}

@@ -70,35 +70,35 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
     const sortedHours = (selector: (hourData: HourData) => number) =>
         groups
             .flatMap((group) => group.hours.map((hourData) => ({ hour: hourData.hour, value: selector(hourData) })))
-            .sort((a, b) => a.hour - b.hour);
+            .sort((pointA, pointB) => pointA.hour - pointB.hour);
 
     const clipToCurrentHour = (points: { hour: number; value: number }[]) =>
         currentHour !== undefined ? points.filter((point) => point.hour >= currentHour) : points;
 
     const realFeelPoints = clipToCurrentHour(sortedHours(toRealFeel));
     const stormRatingPoints = clipToCurrentHour(sortedHours(toStormRating));
-    const windPoints = clipToCurrentHour(sortedHours((h) => h.wind));
-    const skyCoverPoints = clipToCurrentHour(sortedHours((h) => h.skyCover));
-    const humidityPoints = clipToCurrentHour(sortedHours((h) => h.humidity));
-    const precipChancePoints = clipToCurrentHour(sortedHours((h) => h.precipChance));
-    const precipAmountPoints = clipToCurrentHour(sortedHours((h) => h.precipAmount ?? 0));
-    const rainPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.rain)));
-    const snowPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.snow)));
-    const thunderPoints = clipToCurrentHour(sortedHours((h) => chanceToPercent(h.thunder)));
+    const windPoints = clipToCurrentHour(sortedHours((hourData) => hourData.wind));
+    const skyCoverPoints = clipToCurrentHour(sortedHours((hourData) => hourData.skyCover));
+    const humidityPoints = clipToCurrentHour(sortedHours((hourData) => hourData.humidity));
+    const precipChancePoints = clipToCurrentHour(sortedHours((hourData) => hourData.precipChance));
+    const precipAmountPoints = clipToCurrentHour(sortedHours((hourData) => hourData.precipAmount ?? 0));
+    const rainPoints = clipToCurrentHour(sortedHours((hourData) => chanceToPercent(hourData.rain)));
+    const snowPoints = clipToCurrentHour(sortedHours((hourData) => chanceToPercent(hourData.snow)));
+    const thunderPoints = clipToCurrentHour(sortedHours((hourData) => chanceToPercent(hourData.thunder)));
 
     if (realFeelPoints.length === 0) return null;
 
     const SMILEY_RANK: Record<string, number> = { '😎': 0, '🙂': 1 };
     const smileys = groups.map((group) => {
         const { middleHour, hours } = group;
-        const humidityMagnitude = getMagnitude(getAverage(...hours.map((h) => h.humidity)), HumidityRanges);
-        const windMagnitude = getMagnitude(getAverage(...hours.map((h) => h.wind)), WindRanges);
-        const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.thunder));
-        const rainMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.rain));
-        const snowMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.snow));
-        const averageSkyCover = getAverage(...hours.map((h) => h.skyCover));
-        const realFeel = getRealFeelTemperature(getAverage(...hours.map((h) => h.temperature)), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
-        const stormRating = getStormRating(averageSkyCover, getAverage(...hours.map((h) => h.precipChance)), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
+        const humidityMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.humidity)), HumidityRanges);
+        const windMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.wind)), WindRanges);
+        const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.thunder));
+        const rainMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.rain));
+        const snowMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.snow));
+        const averageSkyCover = getAverage(...hours.map((hourData) => hourData.skyCover));
+        const realFeel = getRealFeelTemperature(getAverage(...hours.map((hourData) => hourData.temperature)), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
+        const stormRating = getStormRating(averageSkyCover, getAverage(...hours.map((hourData) => hourData.precipChance)), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
         return getHappyFaceFromMagnitude(humidityMagnitude, getRealFeelMagnitude(realFeel), getStormMagnitude(stormRating));
     });
     const bestSmiley = smileys.reduce<string | null>((best, smiley) => {
@@ -107,8 +107,8 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
         return best;
     }, null);
 
-    const dailyHighRealFeel = Math.max(...realFeelPoints.map((p) => p.value));
-    const dailyLowRealFeel = Math.min(...realFeelPoints.map((p) => p.value));
+    const dailyHighRealFeel = Math.max(...realFeelPoints.map((point) => point.value));
+    const dailyLowRealFeel = Math.min(...realFeelPoints.map((point) => point.value));
 
     function getWeeklyHighAndLow(dataExtractionFn: (hourData: HourData) => number) {
         const weeklyValues = (allGroups ?? groups).flatMap((group) => group.hours.map(dataExtractionFn));
@@ -155,6 +155,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
             />
 
             <button
+                type="button"
                 onClick={handleExpand}
                 className="w-full mt-3 py-1 text-xs text-gray-500 hover:text-gray-300 border border-gray-700 hover:border-gray-500 rounded-lg transition-colors"
             >
@@ -206,7 +207,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, currentHour,
                         color="#38bdf8"
                         indicesToLabel={indicesToLabel}
                         minValue={0}
-                        maxValue={Math.max(...precipAmountPoints.map((p) => p.value).filter(isFinite), 0.5)}
+                        maxValue={Math.max(...precipAmountPoints.map((point) => point.value).filter(isFinite), 0.5)}
                         formatYLabel={(value) => `${value.toFixed(2)}"`}
                     />
 

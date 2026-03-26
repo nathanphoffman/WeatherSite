@@ -10,15 +10,15 @@ export async function buildDayForecast(lat: string, long: string): Promise<DayFo
     const hourlyWeatherRowsGroupsOf3 = splitIntoGroupsOf3(hourlyWeatherRows);
 
     let currentDay = uniqueDays[0];
-    const obj: DayForecast = {};
+    const dayForecast: DayForecast = {};
 
     const today = getDayOfTheWeek(String(currentDay));
-    obj[`${currentDay} ${today}`] = [];
+    dayForecast[`${currentDay} ${today}`] = [];
     let dayTracker = 0;
 
-    hourlyWeatherRowsGroupsOf3?.forEach((threeHours: ThreeHourWeatherModel[], i, arr) => {
+    hourlyWeatherRowsGroupsOf3?.forEach((threeHours: ThreeHourWeatherModel[], i, allWeatherGroups) => {
         const middleHour = threeHours[1].hour;
-        const prevMiddleHour = i === 0 ? 0 : arr[i - 1][1].hour;
+        const prevMiddleHour = i === 0 ? 0 : allWeatherGroups[i - 1][1].hour;
         let dayOfTheWeek = getDayOfTheWeek(String(currentDay));
 
         // days of the week are scraped separately from data so we determine which days belong to which hours here
@@ -34,9 +34,9 @@ export async function buildDayForecast(lat: string, long: string): Promise<DayFo
         };
 
         const dayTitle = `${currentDay} ${dayOfTheWeek}`;
-        if (!obj[dayTitle]) obj[dayTitle] = [];
-        obj[dayTitle].push(group);
+        if (!dayForecast[dayTitle]) dayForecast[dayTitle] = [];
+        dayForecast[dayTitle].push(group);
     });
 
-    return obj;
+    return dayForecast;
 }
