@@ -87,7 +87,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
     const filteredCities = getCurrentlyFilteredCities(query);
 
     return (
-        <nav className="p-4 flex justify-center">
+        <header className="p-4 flex justify-center">
             <div className="flex items-center gap-2 w-full max-w-sm">
                 <a
                     href="/about"
@@ -136,6 +136,6 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                     </button>
                 )}
             </div>
-        </nav>
+        </header>
     );
 }

@@ -11,6 +11,10 @@ Review code quality and apply fixes. Delegate to specialists; synthesize and app
 - `api` — NOAA fetching, parsing, domain model mapping
 - `ui` — HTML, Tailwind, React/Next.js
 - `validator` — candidate models, type guards, validation rules
+- `error-handling` — user-facing error messages, throw-and-bubble propagation, blob error logging, error boundaries
+- `testing` — Vitest setup, test file structure, validator and NOAA API tests
+- `config` — env var accessor patterns, .env.example sync, next.config.ts security headers
+- `performance` — cache TTL constants, caching strategy, data-fetching patterns
 
 ## Applying Fixes
 - **Apply immediately**: clear violations (wrong naming, thrown strings, file length, obvious bugs)

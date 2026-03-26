@@ -80,7 +80,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
     const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[430px]";
 
     return (
-        <div
+        <article
             className={`flip-card w-[calc(100vw-3rem)] sm:w-[290px] cursor-pointer${cardExpanded && flipped ? ' flip-card-expanded' : ''}`}
             onClick={() => {
                 if (!flipped) {
@@ -125,6 +125,6 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
                     />
                 </div>
             </div>
-        </div>
+        </article>
     );
 }

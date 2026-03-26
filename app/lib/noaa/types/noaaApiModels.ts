@@ -1,5 +1,5 @@
 import { DomainModel } from "./general";
-import { candidateToType, isNumber, isNotNegative, isStringNotNumber } from "../utility";
+import { candidateToType, isNumber, isNotNegative, isStringNotNumber, isObject, isArray } from "../utility";
 import { isNoMoreThan100, isValidTemperatureUnit } from "./validators";
 
 // Verified against live NOAA API responses.
@@ -24,6 +24,50 @@ export const NoaaPointsProperties: DomainModel<NoaaPointsProperties, NoaaRawPoin
             forecastHourlyUrl: candidateToType(candidate.forecastHourly, [isStringNotNumber], "forecastHourlyUrl"),
             forecastGridDataUrl: candidateToType(candidate.forecastGridData, [isStringNotNumber], "forecastGridDataUrl"),
         };
+    }
+};
+
+// --- NoaaPointsResponse ---
+// Validates the outer envelope of the /points/{lat},{lon} response before
+// extracting properties. Guards against error bodies (e.g. { title, status })
+// that would otherwise silently produce an empty-object fallback.
+
+export const NoaaPointsResponse: DomainModel<NoaaPointsProperties, { properties?: unknown }> = {
+    formModelFromCandidate(candidate: { properties?: unknown }): NoaaPointsProperties {
+        const properties = candidateToType<NoaaRawPointsProperties>(candidate.properties, [isObject], "properties");
+        return NoaaPointsProperties.formModelFromCandidate(properties);
+    }
+};
+
+// --- NoaaForecastResponse ---
+// Validates the outer envelope of the hourly forecast response.
+// Ensures properties.periods is an array before iterating.
+
+export interface NoaaForecastResponse {
+    periods: unknown[];
+}
+
+export const NoaaForecastResponse: DomainModel<NoaaForecastResponse, { properties?: unknown }> = {
+    formModelFromCandidate(candidate: { properties?: unknown }): NoaaForecastResponse {
+        const properties = candidateToType<{ periods?: unknown }>(candidate.properties, [isObject], "properties");
+        const periods = candidateToType<unknown[]>(properties.periods, [isArray], "periods");
+        return { periods };
+    }
+};
+
+// --- NoaaGridDataResponse ---
+// Validates the outer envelope of the grid data response.
+// quantitativePrecipitation is optional in NOAA responses; defaults to empty array.
+
+export interface NoaaGridDataResponse {
+    precipValues: unknown[];
+}
+
+export const NoaaGridDataResponse: DomainModel<NoaaGridDataResponse, { properties?: unknown }> = {
+    formModelFromCandidate(candidate: { properties?: unknown }): NoaaGridDataResponse {
+        const properties = candidateToType<{ quantitativePrecipitation?: { values?: unknown } }>(candidate.properties, [isObject], "properties");
+        const precipValues = (properties.quantitativePrecipitation?.values as unknown[] | undefined) ?? [];
+        return { precipValues };
     }
 };
 

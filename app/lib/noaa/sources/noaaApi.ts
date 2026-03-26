@@ -1,6 +1,6 @@
 import { ChanceForecast } from '../types/general';
 import { ThreeHourWeatherModel } from '../types/threeHourWeather';
-import { NoaaHourlyPeriod, NoaaPointsProperties, NoaaPrecipEntry } from '../types/noaaApiModels';
+import { NoaaHourlyPeriod, NoaaPointsResponse, NoaaForecastResponse, NoaaGridDataResponse, NoaaPrecipEntry } from '../types/noaaApiModels';
 import { isValidLatitude, isValidLongitude } from '../types/validators';
 
 
@@ -87,7 +87,7 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
     const pointsResult = await fetch(`https://api.weather.gov/points/${lat},${long}`, { headers });
     if (!pointsResult.ok) throw new Error(`NOAA points API failed: ${pointsResult.status}`);
     const pointsData = await pointsResult.json();
-    const { forecastHourlyUrl, forecastGridDataUrl } = NoaaPointsProperties.formModelFromCandidate(pointsData.properties ?? {});
+    const { forecastHourlyUrl, forecastGridDataUrl } = NoaaPointsResponse.formModelFromCandidate(pointsData);
 
     const [forecastResult, gridDataResult] = await Promise.all([
         fetch(forecastHourlyUrl, { headers }),
@@ -97,19 +97,18 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
     const forecastData = await forecastResult.json();
     const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
     const precipEntries: NoaaPrecipEntry[] = gridData
-        ? (gridData.properties.quantitativePrecipitation?.values ?? []).map(
-            (entry: unknown) => NoaaPrecipEntry.formModelFromCandidate(entry as { validTime?: unknown; value?: unknown })
-          )
+        ? NoaaGridDataResponse.formModelFromCandidate(gridData).precipValues
+            .map(entry => NoaaPrecipEntry.formModelFromCandidate(entry as { validTime?: unknown; value?: unknown }))
         : [];
     const precipMap = buildPrecipMapMm(precipEntries);
 
-    const periods = forecastData.properties.periods;
+    const { periods } = NoaaForecastResponse.formModelFromCandidate(forecastData);
     const seenDays = new Set<string>();
     const uniqueDays: string[] = [];
     const hourlyWeatherRows: ThreeHourWeatherModel[] = [];
 
     for (const rawPeriod of periods) {
-        const period = NoaaHourlyPeriod.formModelFromCandidate(rawPeriod);
+        const period = NoaaHourlyPeriod.formModelFromCandidate(rawPeriod as { [key: string]: unknown });
         const [datePortion, timePortion] = period.startTime.split('T');
         const [, monthString, dayString] = datePortion.split('-');
         const month = parseInt(monthString, 10);

@@ -77,6 +77,14 @@ export function isStringType(input: unknown) {
     return typeof input === 'string' && input !== '';
 }
 
+export function isObject(input: unknown) {
+    return typeof input === 'object' && input !== null && !Array.isArray(input);
+}
+
+export function isArray(input: unknown) {
+    return Array.isArray(input);
+}
+
 // !! AI keep this incase we need later
 export function debounce<TArgs extends unknown[], T>(fn: (...args: TArgs) => T, delay: number = 250, id?: number) {
     return (...args: TArgs) => {

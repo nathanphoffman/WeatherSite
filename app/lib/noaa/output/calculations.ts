@@ -53,7 +53,7 @@ export function getRealFeelTemperature(temperature: number, humidity: number, wi
 
 export function isAnyTemperatureFreezing(...temperatures: string[]) {
     const freezingTemperatures = temperatures.find(temperature => Number(temperature) < 33);
-    return freezingTemperatures?.length ?? 0 > 0;
+    return (freezingTemperatures?.length ?? 0) > 0;
 }
 
 export function getStormRating(skyCover: number, precipChance: number, rainMagnitude: Magnitude, snowMagnitude: Magnitude, windMagnitude: Magnitude, thunderMagnitude: Magnitude) {

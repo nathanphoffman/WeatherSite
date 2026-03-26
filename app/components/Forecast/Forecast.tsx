@@ -6,13 +6,13 @@ import ForecastCard from './ForecastCard/ForecastCard';
 
 interface ForecastProps {
     lat: string;
-    lon: string;
+    long: string;
     allFlipped: boolean;
     flipNonce: number;
     onFlipCountChange?: (flippedCount: number, totalCount: number) => void;
 }
 
-export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountChange }: ForecastProps) {
+export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCountChange }: ForecastProps) {
     const [weather, setWeather] = useState<DayForecast | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -38,7 +38,7 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
         setLoading(true);
         setError(null);
         setWeather(null);
-        fetch(`/api/forecast?lat=${lat}&lon=${lon}&source=api`, { cache: 'no-store' })
+        fetch(`/api/forecast?lat=${lat}&lon=${long}&source=api`, { cache: 'no-store' })
             .then(res => {
                 if (!res.ok) throw new Error('Failed to fetch forecast');
                 return res.json();
@@ -51,7 +51,7 @@ export default function Forecast({ lat, lon, allFlipped, flipNonce, onFlipCountC
                 setError(err.message);
                 setLoading(false);
             });
-    }, [lat, lon]);
+    }, [lat, long]);
 
     if (loading) return <p className="p-6 text-gray-400">Loading forecast...</p>;
     if (error) return <p className="p-6 text-red-400">{error}</p>;

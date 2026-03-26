@@ -94,7 +94,7 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
                             View Graphs
                         </button>
                     </div>
-                    <Forecast lat={selectedCity.lat} lon={selectedCity.long} allFlipped={allFlipped} flipNonce={flipNonce} onFlipCountChange={handleFlipCountChange} />
+                    <Forecast lat={selectedCity.lat} long={selectedCity.long} allFlipped={allFlipped} flipNonce={flipNonce} onFlipCountChange={handleFlipCountChange} />
                 </>
             )}
         </section>
