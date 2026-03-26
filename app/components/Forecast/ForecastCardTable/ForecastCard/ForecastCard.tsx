@@ -81,7 +81,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
 
     return (
         <article
-            className={`flip-card w-[calc(100vw-3rem)] sm:w-[290px] cursor-pointer${cardExpanded && flipped ? ' flip-card-expanded' : ''}`}
+            className={`flip-card w-full cursor-pointer${cardExpanded && flipped ? ' flip-card-expanded' : ''}`}
             onClick={() => {
                 if (!flipped) {
                     if (allExpanded) {
