@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import CitySearch from '@/app/components/CityForecastLookup/CitySearch';
 import Forecast from '../Forecast/Forecast';
 import { City } from '@/app/utils/cityParser';
+import { safeJsonParse } from '@/app/lib/noaa/utility';
 
 const STORAGE_KEY = 'lastCity';
 const STORAGE_KEY_CACHED_CITIES = 'cachedCities';
@@ -33,8 +34,7 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
     };
 
     const getCachedCitiesFromStorage = (): City[] => {
-        const cachedCitiesFromStorage = localStorage.getItem(STORAGE_KEY_CACHED_CITIES);
-        return cachedCitiesFromStorage ? JSON.parse(cachedCitiesFromStorage) : [];
+        return safeJsonParse<City[]>(localStorage.getItem(STORAGE_KEY_CACHED_CITIES)) ?? [];
     }
 
     const addSelectedCityToLookupCache = (city: City) => {

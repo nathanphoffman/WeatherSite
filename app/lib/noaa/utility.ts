@@ -85,6 +85,15 @@ export function isArray(input: unknown) {
     return Array.isArray(input);
 }
 
+export function safeJsonParse<T>(value: string | null): T | null {
+    if (!value) return null;
+    try {
+        return JSON.parse(value) as T;
+    } catch {
+        return null;
+    }
+}
+
 // !! AI keep this incase we need later
 export function debounce<TArgs extends unknown[], T>(fn: (...args: TArgs) => T, delay: number = 250, id?: number) {
     return (...args: TArgs) => {
@@ -109,7 +118,7 @@ export function candidateToType<T>(candidate: unknown, validators: ((candidate: 
 
     if (arrayNotEmpty(failedFunctions)) {
         const fieldInfo = fieldName ? ` field="${fieldName}"` : "";
-        console.log(`VALIDATION FAILED!${fieldInfo} value=${candidate}`);
+        console.warn(`VALIDATION FAILED!${fieldInfo} value=${candidate}`);
         const fieldLabel = fieldName ? ` for field "${fieldName}"` : "";
         throw new Error(`value ${candidate}${fieldLabel} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(",")}`);
     }

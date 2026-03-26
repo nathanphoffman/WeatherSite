@@ -1,8 +1,9 @@
-import { getBlobConnectionInfo } from "../config";
+import { getBlobConnectionInfo, FORECAST_TTL_SECONDS } from "../config";
 import { buildDayForecast } from "../forecastBuilder";
 import { StorageSolution } from "../types/storage";
 import { DayForecast } from "../types/forecast";
 import { WeatherModel } from "../types/databaseModels";
+import { safeJsonParse } from "../utility";
 import { blobStorage } from "./blob";
 import { databaseStorage } from "./database";
 
@@ -22,18 +23,17 @@ export async function getForecast(lat?: string, long?: string): Promise<DayForec
 
     if (!storageSolution) throw new Error("No storage method found to serve as a database for forecasts.");
 
-    const oneHourAgo = nowInSeconds - 3600;
+    const oneHourAgo = nowInSeconds - FORECAST_TTL_SECONDS;
     const savedRecord = await storageSolution.getSavedLatLongForecast(lat, long, oneHourAgo);
 
     if (savedRecord) {
-        try {
-            const parsed = JSON.parse(savedRecord);
-            if (parsed.version === CACHE_VERSION) {
-                return parsed.data as DayForecast;
-            }
-            console.log("Cache version mismatch, re-fetching from NOAA");
-        } catch {
+        const parsed = safeJsonParse<{ version: number; data: DayForecast }>(savedRecord);
+        if (!parsed) {
             console.log("Cache record corrupted, re-fetching from NOAA");
+        } else if (parsed.version === CACHE_VERSION) {
+            return parsed.data;
+        } else {
+            console.log("Cache version mismatch, re-fetching from NOAA");
         }
     }
 

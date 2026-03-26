@@ -34,7 +34,7 @@ export const blobStorage = {
         try {
             weatherObj = JSON.parse(weather);
         } catch {
-            console.log(`VALIDATION FAILED! field="weatherBlob" value=<corrupted>`);
+            console.error(`VALIDATION FAILED! field="weatherBlob" value=<corrupted>`);
             return "";
         }
 
