@@ -54,11 +54,11 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
                 referencePoints={referencePoints}
                 indicesToLabel={indicesToLabel}
             >
-                {series.map((seriesItem, seriesIndex) => {
+                {series.map((seriesItem) => {
                     const coords: [number, number][] = seriesItem.points.map((point) => [xAt(point.hour), yAt(point.value)]);
                     return (
                         <path
-                            key={seriesIndex}
+                            key={seriesItem.label}
                             d={smoothLinePath(coords)}
                             fill="none"
                             stroke={seriesItem.color}
@@ -70,8 +70,8 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
                 })}
             </GraphSvg>
             <div className="flex gap-3 mt-1">
-                {series.map((seriesItem, index) => (
-                    <div key={index} className="flex items-center gap-1">
+                {series.map((seriesItem) => (
+                    <div key={seriesItem.label} className="flex items-center gap-1">
                         <div className="w-3 h-0.5 rounded-full" style={{ backgroundColor: seriesItem.color }} />
                         <span className="text-xs text-gray-500">{seriesItem.label}</span>
                     </div>

@@ -6,6 +6,9 @@ import {
     arrayNotEmpty,
     stripUndefined,
     candidateToType,
+    isObject,
+    isArray,
+    safeJsonParse,
 } from "../utility";
 import { isNumber, isNotNegative } from "../utility";
 
@@ -40,8 +43,7 @@ describe("splitIntoGroupsOf3", () => {
         ]);
     });
 
-    it("returns undefined for 7 items because the last group would be incomplete", () => {
-        // splitIntoGroupsOf3 drops any trailing partial group
+    it("drops the trailing incomplete group for 7 items", () => {
         const result = splitIntoGroupsOf3([1, 2, 3, 4, 5, 6, 7]);
         expect(result).toEqual([[1, 2, 3], [4, 5, 6]]);
     });
@@ -129,6 +131,67 @@ describe("stripUndefined", () => {
 
     it("keeps null and empty string values — only strips undefined", () => {
         expect(stripUndefined([null, "", undefined, 0])).toEqual([null, "", 0]);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// isObject
+// ---------------------------------------------------------------------------
+describe("isObject", () => {
+    it("returns true for plain objects", () => {
+        expect(isObject({})).toBe(true);
+        expect(isObject({ key: "value" })).toBe(true);
+    });
+
+    it("returns false for arrays", () => {
+        expect(isObject([])).toBe(false);
+        expect(isObject([1, 2, 3])).toBe(false);
+    });
+
+    it("returns false for null, primitives, and undefined", () => {
+        expect(isObject(null)).toBe(false);
+        expect(isObject(undefined)).toBe(false);
+        expect(isObject(42)).toBe(false);
+        expect(isObject("string")).toBe(false);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// isArray
+// ---------------------------------------------------------------------------
+describe("isArray", () => {
+    it("returns true for arrays", () => {
+        expect(isArray([])).toBe(true);
+        expect(isArray([1, 2, 3])).toBe(true);
+    });
+
+    it("returns false for non-arrays", () => {
+        expect(isArray({})).toBe(false);
+        expect(isArray(null)).toBe(false);
+        expect(isArray(undefined)).toBe(false);
+        expect(isArray("string")).toBe(false);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// safeJsonParse
+// ---------------------------------------------------------------------------
+describe("safeJsonParse", () => {
+    it("parses valid JSON strings", () => {
+        expect(safeJsonParse<{ key: string }>('{"key":"value"}')).toEqual({ key: "value" });
+        expect(safeJsonParse<number[]>("[1,2,3]")).toEqual([1, 2, 3]);
+    });
+
+    it("returns null for malformed JSON", () => {
+        expect(safeJsonParse("{not valid json}")).toBeNull();
+    });
+
+    it("returns null for null input", () => {
+        expect(safeJsonParse(null)).toBeNull();
+    });
+
+    it("returns null for empty string", () => {
+        expect(safeJsonParse("")).toBeNull();
     });
 });
 

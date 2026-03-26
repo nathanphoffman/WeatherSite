@@ -43,21 +43,20 @@ describe("isNotNumber", () => {
 // isWithin
 // ---------------------------------------------------------------------------
 describe("isWithin", () => {
+    const between0and10 = isWithin(0, 10);
+
     it("returns true when the value is inside the inclusive range", () => {
-        const between0and10 = isWithin(0, 10);
         expect(between0and10(0)).toBe(true);
         expect(between0and10(5)).toBe(true);
         expect(between0and10(10)).toBe(true);
     });
 
     it("returns false when the value is outside the range", () => {
-        const between0and10 = isWithin(0, 10);
         expect(between0and10(-1)).toBe(false);
         expect(between0and10(11)).toBe(false);
     });
 
     it("returns false for non-numeric inputs", () => {
-        const between0and10 = isWithin(0, 10);
         expect(between0and10("hello")).toBe(false);
     });
 });

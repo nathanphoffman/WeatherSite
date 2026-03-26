@@ -2,6 +2,7 @@ import { ChanceForecast } from '../types/general';
 import { ThreeHourWeatherModel } from '../types/threeHourWeather';
 import { NoaaHourlyPeriod, NoaaPointsResponse, NoaaForecastResponse, NoaaGridDataResponse, NoaaPrecipEntry } from '../types/noaaApiModels';
 import { isValidLatitude, isValidLongitude } from '../types/validators';
+import { logger } from '../../logger';
 
 
 
@@ -93,7 +94,6 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
         fetch(forecastHourlyUrl, { headers }),
         fetch(forecastGridDataUrl, { headers }),
     ]);
-    
     if (!forecastResult.ok) throw new Error(`NOAA forecast API failed: ${forecastResult.status}`);
     const forecastData = await forecastResult.json();
     const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
@@ -130,7 +130,7 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
         // Upper-bound range validation is not applied here — it occurs downstream in ThreeHourWeatherModel.formModelFromCandidate via isBelowSpeedOfSound.
         const parsedWindSpeed = parseInt(period.windSpeed);
         if (isNaN(parsedWindSpeed)) {
-            console.warn(`VALIDATION FAILED! field="windSpeed" value=${period.windSpeed}`);
+            logger.warn(`VALIDATION FAILED! field="windSpeed" value=${period.windSpeed}`);
         }
         const windSpeed = isNaN(parsedWindSpeed) ? 0 : parsedWindSpeed;
         const { humidity, precipChance, shortForecast } = period;

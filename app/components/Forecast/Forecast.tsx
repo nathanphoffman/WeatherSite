@@ -38,7 +38,7 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         setLoading(true);
         setError(null);
         setWeather(null);
-        fetch(`/api/forecast?lat=${lat}&lon=${long}&source=api`, { cache: 'no-store' })
+        fetch(`/api/forecast?lat=${lat}&long=${long}&source=api`, { cache: 'no-store' })
             .then(res => {
                 if (!res.ok) throw new Error('Failed to fetch forecast');
                 return res.json();
@@ -70,14 +70,13 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
     const todayDate = `${now.getMonth() + 1}/${now.getDate()}`;
     const currentHour = now.getHours();
 
+    const allGroups = Object.values(weather).flat();
+
     return (
         <section className="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-4 p-6">
-            {(() => {
-                const allGroups = Object.values(weather).flat();
-                return Object.entries(weather).map(([forecastDate, groups]) => (
-                    <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} currentHour={forecastDate === todayDate ? currentHour : undefined} onFlipChange={(flipped) => handleCardFlipChange(forecastDate, flipped)} onExpandChange={setAllExpanded} />
-                ));
-            })()}
+            {Object.entries(weather).map(([forecastDate, groups]) => (
+                <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} currentHour={forecastDate === todayDate ? currentHour : undefined} onFlipChange={(flipped) => handleCardFlipChange(forecastDate, flipped)} onExpandChange={setAllExpanded} />
+            ))}
         </section>
     );
 }

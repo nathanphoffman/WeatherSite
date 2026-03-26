@@ -55,7 +55,7 @@ export default function CityForecastLookup({ cities }: CityForecastLookupProps) 
         }
 
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) setSelectedCity(JSON.parse(saved));
+        if (saved) setSelectedCity(safeJsonParse<City>(saved));
 
         const cachedCities = getCachedCitiesFromStorage();
         const cachedCityNames = new Set(cachedCities.map((city) => city.city));

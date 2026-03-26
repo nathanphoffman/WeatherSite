@@ -1,4 +1,5 @@
 import { getBlobConnectionInfo, FORECAST_TTL_SECONDS } from "../config";
+import { logger } from "../../logger";
 import { buildDayForecast } from "../forecastBuilder";
 import { StorageSolution } from "../types/storage";
 import { DayForecast } from "../types/forecast";
@@ -29,15 +30,15 @@ export async function getForecast(lat?: string, long?: string): Promise<DayForec
     if (savedRecord) {
         const parsed = safeJsonParse<{ version: number; data: DayForecast }>(savedRecord);
         if (!parsed) {
-            console.log("Cache record corrupted, re-fetching from NOAA");
+            logger.warn("Cache record corrupted, re-fetching from NOAA");
         } else if (parsed.version === CACHE_VERSION) {
             return parsed.data;
         } else {
-            console.log("Cache version mismatch, re-fetching from NOAA");
+            logger.warn("Cache version mismatch, re-fetching from NOAA");
         }
     }
 
-    console.log("Running fetch against NOAA");
+    logger.info("Running fetch against NOAA");
     const forecast = await buildDayForecast(lat, long);
 
     const weatherRecord = WeatherModel.formModelFromCandidate({
@@ -49,6 +50,6 @@ export async function getForecast(lat?: string, long?: string): Promise<DayForec
 
     await storageSolution.saveLatLongForecast(weatherRecord);
 
-    console.log("Completed fetch against NOAA");
+    logger.info("Completed fetch against NOAA");
     return forecast;
 }

@@ -1,4 +1,5 @@
 import { Magnitude } from "./types/general";
+import { logger } from "../logger";
 
 
 export function splitIntoGroupsOf3<T>(items: T[], prev?: T[][]): T[][] | undefined {
@@ -118,7 +119,7 @@ export function candidateToType<T>(candidate: unknown, validators: ((candidate: 
 
     if (arrayNotEmpty(failedFunctions)) {
         const fieldInfo = fieldName ? ` field="${fieldName}"` : "";
-        console.warn(`VALIDATION FAILED!${fieldInfo} value=${candidate}`);
+        logger.warn(`VALIDATION FAILED!${fieldInfo} value=${candidate}`);
         const fieldLabel = fieldName ? ` for field "${fieldName}"` : "";
         throw new Error(`value ${candidate}${fieldLabel} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(",")}`);
     }
