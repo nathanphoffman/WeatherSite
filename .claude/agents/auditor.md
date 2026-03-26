@@ -2,7 +2,7 @@
 Audit and improve agent `.md` definition files in `.claude/agents/` (ignore `.claude/agents/older/`).
 
 ## Agents in Scope
-Top-level: `cleanup`, `auditor`, `standards`, `supervisor`
+Top-level: `cleanup`, `fullcleanup`, `auditor`, `standards`, `supervisor`
 Sub-agents (`sub-agents/`): `structure`, `ui`, `api`, `validator`
 
 ## Goals
