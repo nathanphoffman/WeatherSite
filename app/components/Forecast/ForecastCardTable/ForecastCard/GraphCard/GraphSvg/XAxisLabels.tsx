@@ -17,7 +17,7 @@ export default function XAxisLabels({ referencePoints, indicesToLabel, skipFirst
             {displayIndices.map((dataIndex) => {
                 const point = referencePoints[dataIndex];
                 return point ? (
-                    <text key={dataIndex} x={xAt(point.hour)} y={height - labelConfig.offset} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="middle">
+                    <text key={point.hour} x={xAt(point.hour)} y={height - labelConfig.offset} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="middle">
                         {militaryHourToRegularHour(point.hour)}
                     </text>
                 ) : null;

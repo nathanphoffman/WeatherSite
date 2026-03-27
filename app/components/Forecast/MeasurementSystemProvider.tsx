@@ -18,10 +18,19 @@ const MeasurementSystemContext = createContext<MeasurementSystemContextValue>({
     convertPrecip: (inches) => inches,
 });
 
-export function MeasurementSystemProvider({ children }: { children: React.ReactNode }) {
-    const [useMetric, setUseMetric] = useState(false);
+const STORAGE_KEY = 'measurementSystem';
 
-    const toggleSystem = () => setUseMetric((previous) => !previous);
+export function MeasurementSystemProvider({ children }: { children: React.ReactNode }) {
+    const [useMetric, setUseMetric] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return localStorage.getItem(STORAGE_KEY) === 'metric';
+    });
+
+    const toggleSystem = () => setUseMetric((previous) => {
+        const next = !previous;
+        localStorage.setItem(STORAGE_KEY, next ? 'metric' : 'imperial');
+        return next;
+    });
 
     const convertTemperature = (fahrenheit: number) =>
         useMetric ? Math.round((fahrenheit - 32) * 5 / 9) : fahrenheit;

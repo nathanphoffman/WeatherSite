@@ -1,7 +1,7 @@
 'use client';
 
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
-import { getMagnitude, convertNOAAChancesToAverageMagnitude, getHourRealFeel, getHourStormRating } from '@/app/lib/noaa/output/calculations';
+import { getMagnitude, convertNOAAChancesToAverageMagnitude, getHourRealFeel, getHourStormRating, roundStormRating } from '@/app/lib/noaa/output/calculations';
 import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
 import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, getFreezeIconFromTemperatures, GREEN, YELLOW, RED, BRIGHT, WHITE } from '@/app/lib/noaa/output/color';
 import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
@@ -37,7 +37,7 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.thunder));
 
     const realFeelTemperature = Math.round(getAverage(...hours.map(getHourRealFeel)) / 5) * 5;
-    const stormRating = Math.round(getAverage(...allThreeStormRatings));
+    const stormRating = roundStormRating(getAverage(...allThreeStormRatings));
 
     const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature);
     const stormMagnitude = getStormMagnitude(stormRating);

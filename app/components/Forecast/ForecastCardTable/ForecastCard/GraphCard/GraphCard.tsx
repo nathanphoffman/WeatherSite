@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
-import { getHourRealFeel, getHourStormRating } from '@/app/lib/noaa/output/calculations';
+import { getHourRealFeel, getHourStormRating, roundToNearestFive } from '@/app/lib/noaa/output/calculations';
 import { realFeelThresholds, windThresholds, stormRatingThresholds, precipThresholds } from './graphThresholds';
-import { getAverage } from '@/app/lib/noaa/utility';
 import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
 import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
@@ -29,10 +28,6 @@ function chanceToPercent(chance: string): number {
 }
 
 type HourData = ThreeHourGroup['hours'][number];
-
-const toRealFeel = (hourData: HourData) => getHourRealFeel(hourData);
-
-const toStormRating = (hourData: HourData) => getHourStormRating(hourData);
 
 const toWindSpeed = (hourData: HourData) => hourData.wind;
 
@@ -60,8 +55,8 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
             .filter((point) => point.hour >= firstMiddleHour && point.hour <= lastMiddleHour)
             .sort((pointA, pointB) => pointA.hour - pointB.hour);
 
-    const realFeelPoints = sortedHours(toRealFeel);
-    const stormRatingPoints = sortedHours(toStormRating);
+    const realFeelPoints = sortedHours(getHourRealFeel);
+    const stormRatingPoints = sortedHours(getHourStormRating);
     const windPoints = sortedHours((hourData) => hourData.wind);
     const skyCoverPoints = sortedHours((hourData) => hourData.skyCover);
     const humidityPoints = sortedHours((hourData) => hourData.humidity);
@@ -83,18 +78,18 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
         return { weeklyHigh, weeklyLow };
     }
 
-    const weeklyHighAndLowRealFeel = getWeeklyHighAndLow(toRealFeel);
+    const weeklyHighAndLowRealFeel = getWeeklyHighAndLow(getHourRealFeel);
     const weeklyHighAndLowWindSpeed = getWeeklyHighAndLow(toWindSpeed);
 
-    const indicesToLabel = Array.from({ length: 3 }, (_, index) =>
+    const indicesToLabel = [...new Set(Array.from({ length: 3 }, (_, index) =>
         Math.round((index / 2) * (realFeelPoints.length - 1))
-    );
+    ))];
 
     return (
         <section>
             <div className="flex justify-between items-baseline">
-                <span className="text-4xl font-bold text-white">{convertTemperature(dailyHighRealFeel)}°</span>
-                <span className="text-4xl font-bold text-gray-400">{convertTemperature(dailyLowRealFeel)}°</span>
+                <span className="text-4xl font-bold text-white">{convertTemperature(roundToNearestFive(dailyHighRealFeel))}°</span>
+                <span className="text-4xl font-bold text-gray-400">{convertTemperature(roundToNearestFive(dailyLowRealFeel))}°</span>
             </div>
 
             <LineGraph

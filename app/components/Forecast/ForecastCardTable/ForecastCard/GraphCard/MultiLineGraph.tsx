@@ -27,14 +27,20 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
     const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
-    const allValues = series.flatMap((seriesItem) => seriesItem.points.map((point) => point.value));
-    const allHours = series.flatMap((seriesItem) => seriesItem.points.map((point) => point.hour));
+    const effectiveSeries = series.map((seriesItem) =>
+        seriesItem.points.length === 1
+            ? { ...seriesItem, points: [seriesItem.points[0], { ...seriesItem.points[0], hour: seriesItem.points[0].hour + 1 }] }
+            : seriesItem
+    );
+
+    const allValues = effectiveSeries.flatMap((seriesItem) => seriesItem.points.map((point) => point.value));
+    const allHours = effectiveSeries.flatMap((seriesItem) => seriesItem.points.map((point) => point.hour));
     const computedMin = minValue ?? Math.min(...allValues);
     const computedMax = maxValue ?? Math.max(...allValues);
 
     const { xAt, yAt } = buildAxisHelpers(allHours, computedMin, computedMax, plotWidth, plotHeight);
 
-    const referencePoints = series[0]?.points ?? [];
+    const referencePoints = effectiveSeries[0]?.points ?? [];
 
     return (
         <>
@@ -54,7 +60,7 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
                 referencePoints={referencePoints}
                 indicesToLabel={indicesToLabel}
             >
-                {series.map((seriesItem) => {
+                {effectiveSeries.map((seriesItem) => {
                     const coords: [number, number][] = seriesItem.points.map((point) => [xAt(point.hour), yAt(point.value)]);
                     return (
                         <path

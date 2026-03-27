@@ -20,9 +20,8 @@ export function isInRange(value: number | string, range: number[] | string) {
     }
     else throw new Error("an unexpected type was encountered when performing a range comparison");
 }
-    
+
 export function getMagnitude(value: number | string, range: MagnitudeRange): Magnitude {
-    //const magnitude = Object.keys(range).find(key => Number(key) === Number(value));
     const magnitude = Object.keys(range).find(key => isInRange(value, range[Number(key) as Magnitude]));
 
     if (magnitude === undefined) throw new Error(`no magnitude found for value: ${value}`);
@@ -34,21 +33,20 @@ export function getRealFeelTemperature(temperature: number, humidity: number, wi
 
     const SUNRISE = 7 as const;
     const SUNSET = 18 as const;
-    const MIDDAY = (7+18)/2;
-    const DIFFDAY = MIDDAY-SUNRISE;
+    const MIDDAY = (SUNRISE + SUNSET) / 2;
+    const HALF_DAY_SPAN = MIDDAY - SUNRISE;
 
     const isDayTime = hour > SUNRISE && hour < SUNSET;
 
     // the reason for the reduction in temperature of -4.5 is that being outside in the shade even in calm breeze has more windflow than indoors, and outdoor temperatures do already include sunlight to some extent
-    let realFeel = temperature + 1.5*humidity -3*wind - 4.5;
+    let realFeel = temperature + 1.5 * humidity - 3 * wind - 4.5;
 
     if (isDayTime && averageSkyCover < 95) {
-        const dayTimeAmount = DIFFDAY - Math.abs(MIDDAY - hour);
+        const dayTimeAmount = HALF_DAY_SPAN - Math.abs(MIDDAY - hour);
         realFeel += dayTimeAmount * 2 * ((100 - averageSkyCover) / 100);
     }
 
-    const realFeelIn5s = Math.round(realFeel / 5) * 5;
-    return realFeelIn5s;
+    return realFeel;
 }
 
 export function isAnyTemperatureFreezing(...temperatures: string[]) {
@@ -100,18 +98,24 @@ export function getStormRating(skyCover: number, precipChance: number, precipAmo
     // max 20 (mag 4 requires "Ocnl" thunder category, which is rare)
     const thunderPenalty = thunderMagnitude * 5;
 
-    // max 24 — rescaled from windMag³/2 to leave room for precip contribution
+    // max 24 — rescaled from windMagnitude³/2 to leave room for precip contribution
     const windPenalty = windMagnitude * windMagnitude * 1.5;
 
     // ~max 40
-    const precipPenalty = (precipChance / 100) * Math.min(precipAmount * (snowMagnitude+1) * 20, 10);
+    const precipPenalty = (precipChance / 100) * Math.min(precipAmount * (snowMagnitude + 1) * 20, 10);
 
     // max: 2.5: the reason for this small penalty is to account for haze
     const humidityPenalty = humidityMagnitude / 2;
 
     const rawRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty + humidityPenalty;
-    const stormRating = Math.min(rawRating, 50);
+    return Math.min(rawRating, 50);
+}
 
-    if (stormRating < 10) return Math.round(stormRating);
-    else return 5 * Math.round(stormRating / 5);
+export function roundStormRating(rating: number): number {
+    if (rating < 10) return Math.round(rating);
+    return roundToNearestFive(rating);
+}
+
+export function roundToNearestFive(num: number) {
+    return Math.round(num / 5) * 5;
 }
