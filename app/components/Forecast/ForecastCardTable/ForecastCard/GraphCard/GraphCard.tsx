@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
-import { getHourRealFeel, getHourStormRating, roundToNearestFive } from '@/app/lib/noaa/output/calculations';
+import { getHourRealFeel, getHourStormRating } from '@/app/lib/noaa/output/calculations';
 import { realFeelThresholds, windThresholds, stormRatingThresholds, precipThresholds } from './graphThresholds';
 import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
