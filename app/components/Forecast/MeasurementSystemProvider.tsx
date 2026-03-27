@@ -10,13 +10,7 @@ interface MeasurementSystemContextValue {
     convertPrecip: (inches: number) => number;
 }
 
-const MeasurementSystemContext = createContext<MeasurementSystemContextValue>({
-    useMetric: false,
-    toggleSystem: () => {},
-    convertTemperature: (fahrenheit) => fahrenheit,
-    convertWindSpeed: (mph) => mph,
-    convertPrecip: (inches) => inches,
-});
+const MeasurementSystemContext = createContext<MeasurementSystemContextValue | null>(null);
 
 const STORAGE_KEY = 'measurementSystem';
 
@@ -32,8 +26,10 @@ export function MeasurementSystemProvider({ children }: { children: React.ReactN
         return next;
     });
 
-    const convertTemperature = (fahrenheit: number) =>
-        useMetric ? Math.round((fahrenheit - 32) * 5 / 9) : fahrenheit;
+    const convertTemperature = (fahrenheit: number) => {
+        if (useMetric) return Math.round((fahrenheit - 32) * 5 / 9 / 2) * 2;
+        return Math.round(fahrenheit / 5) * 5;
+    };
 
     const convertWindSpeed = (mph: number) =>
         useMetric ? Math.round(mph * 1.60934) : mph;
@@ -49,5 +45,7 @@ export function MeasurementSystemProvider({ children }: { children: React.ReactN
 }
 
 export function useMeasurementSystemProviderContext() {
-    return useContext(MeasurementSystemContext);
+    const context = useContext(MeasurementSystemContext);
+    if (!context) throw new Error('useMeasurementSystemProviderContext must be used within a MeasurementSystemProvider');
+    return context;
 }

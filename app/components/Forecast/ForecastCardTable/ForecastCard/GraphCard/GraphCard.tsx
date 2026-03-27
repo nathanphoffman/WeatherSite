@@ -88,8 +88,8 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
     return (
         <section>
             <div className="flex justify-between items-baseline">
-                <span className="text-4xl font-bold text-white">{convertTemperature(roundToNearestFive(dailyHighRealFeel))}°</span>
-                <span className="text-4xl font-bold text-gray-400">{convertTemperature(roundToNearestFive(dailyLowRealFeel))}°</span>
+                <span className="text-4xl font-bold text-white">{convertTemperature(dailyHighRealFeel)}°</span>
+                <span className="text-4xl font-bold text-gray-400">{convertTemperature(dailyLowRealFeel)}°</span>
             </div>
 
             <LineGraph
