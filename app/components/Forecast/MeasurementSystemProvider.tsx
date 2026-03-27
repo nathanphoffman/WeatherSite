@@ -14,6 +14,7 @@ const MeasurementSystemContext = createContext<MeasurementSystemContextValue | n
 
 const STORAGE_KEY = 'measurementSystem';
 
+// !! come back to this and have AI explain why exactly all this usecallback and usememo is needed and if this is just over-engineered
 export function MeasurementSystemProvider({ children }: { children: React.ReactNode }) {
     const [useMetric, setUseMetric] = useState(() => {
         if (typeof window === 'undefined') return false;
