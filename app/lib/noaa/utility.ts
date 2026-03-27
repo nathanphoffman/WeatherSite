@@ -95,24 +95,6 @@ export function safeJsonParse<T>(value: string | null): T | null {
     }
 }
 
-// !! AI keep this incase we need later
-export function debounce<TArgs extends unknown[], T>(callbackFunction: (...args: TArgs) => T, delay: number = 250, id?: number) {
-    return (...args: TArgs) => {
-
-        const wrappedFunction = (...args: TArgs) => callbackFunction(...args);
-
-        if (!id) {
-            setTimeout(wrappedFunction, delay);
-        }
-        else {
-            clearTimeout(id);
-            debounce(callbackFunction, delay)(...args);
-        }
-    };
-}
-
-
-// !! review this
 export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[], fieldName?: string) {
     const failedFunctionsOrUndefined = validators.map((validator) => validator(candidate) ? undefined : validator.name);
     const failedFunctions = stripUndefined(failedFunctionsOrUndefined);

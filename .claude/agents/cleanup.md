@@ -16,6 +16,7 @@ Review code quality and apply fixes. Delegate to specialists; synthesize and app
 - `config` — env var accessor patterns, .env.example sync
 - `performance` — cache TTL constants, caching strategy, data-fetching patterns
 - `security` — HTTP security headers, API input sanitization, cookie flags, CORS, secrets hygiene
+- `deduplicator` — find duplicated logic across files and consolidate to a single authoritative location
 
 ## Applying Fixes
 - **Apply immediately**: clear violations (wrong naming, thrown strings, file length, obvious bugs)

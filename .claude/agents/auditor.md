@@ -3,7 +3,7 @@ Audit and improve agent `.md` definition files in `.claude/agents/` (ignore `.cl
 
 ## Agents in Scope
 Top-level: `cleanup`, `fullcleanup`, `auditor`, `standards`, `supervisor`
-Sub-agents (`sub-agents/`): `structure`, `ui`, `api`, `validator`, `error-handling`, `testing`, `config`, `performance`, `security`
+Sub-agents (`sub-agents/`): `structure`, `ui`, `api`, `validator`, `error-handling`, `testing`, `config`, `performance`, `security`, `deduplicator`
 
 ## Goals
 - Minimize token cost without losing intent or rule precision
