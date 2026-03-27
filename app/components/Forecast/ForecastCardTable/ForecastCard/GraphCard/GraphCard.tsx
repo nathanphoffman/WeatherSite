@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
-import { getRealFeelTemperature, getMagnitude, convertNOAAChancesToAverageMagnitude, getStormRating } from '@/app/lib/noaa/output/calculations';
-import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude } from '@/app/lib/noaa/output/color';
-import { HumidityRanges, WindRanges, ChanceRanges } from '@/app/lib/noaa/config';
+import { getHourRealFeel, getHourStormRating } from '@/app/lib/noaa/output/calculations';
 import { realFeelThresholds, windThresholds, stormRatingThresholds, precipThresholds } from './graphThresholds';
 import { getAverage } from '@/app/lib/noaa/utility';
 import LineGraph from './LineGraph';
@@ -32,25 +30,10 @@ function chanceToPercent(chance: string): number {
 
 type HourData = ThreeHourGroup['hours'][number];
 
-const toRealFeel = (hourData: HourData) =>
-    getRealFeelTemperature(
-        hourData.temperature,
-        getMagnitude(hourData.humidity, HumidityRanges),
-        getMagnitude(hourData.wind, WindRanges),
-        hourData.skyCover,
-        hourData.hour
-    );
+const toRealFeel = (hourData: HourData) => getHourRealFeel(hourData);
 
-const toStormRating = (hourData: HourData) =>
-    getStormRating(
-        hourData.skyCover,
-        hourData.precipChance,
-        hourData.precipAmount,
-        getMagnitude(hourData.snow, ChanceRanges),
-        getMagnitude(hourData.wind, WindRanges),
-        getMagnitude(hourData.thunder, ChanceRanges)
-    );
-    
+const toStormRating = (hourData: HourData) => getHourStormRating(hourData);
+
 const toWindSpeed = (hourData: HourData) => hourData.wind;
 
 export default function GraphCard({ groups, allGroups, allExpanded, onExpandChange }: GraphCardProps) {
@@ -89,24 +72,6 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
     const thunderPoints = sortedHours((hourData) => chanceToPercent(hourData.thunder));
 
     if (realFeelPoints.length === 0) return null;
-
-    const SMILEY_RANK: Record<string, number> = { '😎': 0, '🙂': 1 };
-    const smileys = groups.map((group) => {
-        const { middleHour, hours } = group;
-        const humidityMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.humidity)), HumidityRanges);
-        const windMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.wind)), WindRanges);
-        const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.thunder));
-        const snowMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.snow));
-        const averageSkyCover = getAverage(...hours.map((hourData) => hourData.skyCover));
-        const realFeel = getRealFeelTemperature(getAverage(...hours.map((hourData) => hourData.temperature)), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
-        const stormRating = getStormRating(averageSkyCover, getAverage(...hours.map((hourData) => hourData.precipChance)), getAverage(...hours.map((hourData) => hourData.precipAmount)), snowMagnitude, windMagnitude, thunderMagnitude);
-        return getHappyFaceFromMagnitude(humidityMagnitude, getRealFeelMagnitude(realFeel), getStormMagnitude(stormRating));
-    });
-    const bestSmiley = smileys.reduce<string | null>((best, smiley) => {
-        if (!(smiley in SMILEY_RANK)) return best;
-        if (best === null || SMILEY_RANK[smiley] < SMILEY_RANK[best]) return smiley;
-        return best;
-    }, null);
 
     const dailyHighRealFeel = Math.max(...realFeelPoints.map((point) => point.value));
     const dailyLowRealFeel = Math.min(...realFeelPoints.map((point) => point.value));

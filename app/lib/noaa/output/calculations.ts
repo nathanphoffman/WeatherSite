@@ -1,4 +1,4 @@
-import { ChanceRanges } from "../config";
+import { ChanceRanges, HumidityRanges, WindRanges } from "../config";
 import { Magnitude, MagnitudeRange } from "../types/general";
 import { getAverage } from "../utility";
 
@@ -56,7 +56,43 @@ export function isAnyTemperatureFreezing(...temperatures: string[]) {
     return (freezingTemperatures?.length ?? 0) > 0;
 }
 
-export function getStormRating(skyCover: number, precipChance: number, precipAmount: number, snowMagnitude: Magnitude, windMagnitude: Magnitude, thunderMagnitude: Magnitude) {
+export function getHourRealFeel(hourData: {
+    temperature: number;
+    humidity: number;
+    wind: number;
+    skyCover: number;
+    hour: number;
+}): number {
+    return getRealFeelTemperature(
+        hourData.temperature,
+        getMagnitude(hourData.humidity, HumidityRanges),
+        getMagnitude(hourData.wind, WindRanges),
+        hourData.skyCover,
+        hourData.hour
+    );
+}
+
+export function getHourStormRating(hourData: {
+    skyCover: number;
+    precipChance: number;
+    precipAmount: number;
+    snow: string;
+    wind: number;
+    thunder: string;
+    humidity: number;
+}): number {
+    return getStormRating(
+        hourData.skyCover,
+        hourData.precipChance,
+        hourData.precipAmount,
+        getMagnitude(hourData.snow, ChanceRanges),
+        getMagnitude(hourData.wind, WindRanges),
+        getMagnitude(hourData.thunder, ChanceRanges),
+        getMagnitude(hourData.humidity, HumidityRanges)
+    );
+}
+
+export function getStormRating(skyCover: number, precipChance: number, precipAmount: number, snowMagnitude: Magnitude, windMagnitude: Magnitude, thunderMagnitude: Magnitude, humidityMagnitude: Magnitude) {
 
     // max 10
     const skyCoverOutOf10 = 10 * (skyCover / 100);
@@ -67,11 +103,13 @@ export function getStormRating(skyCover: number, precipChance: number, precipAmo
     // max 24 — rescaled from windMag³/2 to leave room for precip contribution
     const windPenalty = windMagnitude * windMagnitude * 1.5;
 
-    // snow is more impactful per inch of water equivalent; 3 inches = max 15 contribution
-    const snowMultiplier = snowMagnitude > 0 ? 1.5 : 1.0;
-    const precipPenalty = (precipChance / 100) * Math.min(precipAmount * snowMultiplier * 5, 15);
+    // ~max 40
+    const precipPenalty = (precipChance / 100) * Math.min(precipAmount * (snowMagnitude+1) * 20, 10);
 
-    const rawRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty;
+    // max: 2.5: the reason for this small penalty is to account for haze
+    const humidityPenalty = humidityMagnitude / 2;
+
+    const rawRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty + humidityPenalty;
     const stormRating = Math.min(rawRating, 50);
 
     if (stormRating < 10) return Math.round(stormRating);

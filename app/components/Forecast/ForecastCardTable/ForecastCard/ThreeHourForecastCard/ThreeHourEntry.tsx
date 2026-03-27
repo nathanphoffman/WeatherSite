@@ -24,21 +24,6 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const { convertTemperature } = useMeasurementSystemProviderContext();
     const { regularTime, middleHour, hours } = group;
 
-    const allThreeStormRatings = hours.map((weatherRow) => {
-        const { wind, thunder, snow, skyCover, precipChance, precipAmount } = weatherRow;
-        const windMagnitude = getMagnitude(Number(wind), WindRanges);
-        const thunderMagnitude = convertNOAAChancesToAverageMagnitude(thunder);
-        const snowMagnitude = convertNOAAChancesToAverageMagnitude(snow);
-        return Number(getStormRating(skyCover, precipChance, precipAmount, snowMagnitude, windMagnitude, thunderMagnitude));
-    });
-
-    const lowestStorm = Math.min(...allThreeStormRatings);
-    const highestStorm = Math.max(...allThreeStormRatings);
-    const stormDelta = highestStorm - lowestStorm;
-
-    // there is no point showing unstable weather if it is unstable because of a 2, 1, 8 say
-    const unstableWeather = highestStorm > 10 && (stormDelta >= lowestStorm + 5);
-
     const humidity = hours.map(hourData => hourData.humidity);
     const wind = hours.map(hourData => hourData.wind);
     const thunder = hours.map(hourData => hourData.thunder);
@@ -49,13 +34,33 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const precipAmount = hours.map(hourData => hourData.precipAmount);
 
     const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
+
+    const allThreeStormRatings = hours.map((weatherRow) =>
+        getStormRating(
+            weatherRow.skyCover,
+            weatherRow.precipChance,
+            weatherRow.precipAmount,
+            convertNOAAChancesToAverageMagnitude(weatherRow.snow),
+            getMagnitude(weatherRow.wind, WindRanges),
+            convertNOAAChancesToAverageMagnitude(weatherRow.thunder),
+            humidityMagnitude
+        )
+    );
+
+    const lowestStorm = Math.min(...allThreeStormRatings);
+    const highestStorm = Math.max(...allThreeStormRatings);
+    const stormDelta = highestStorm - lowestStorm;
+
+    // there is no point showing unstable weather if it is unstable because of a 2, 1, 8 say
+    const unstableWeather = highestStorm > 10 && (stormDelta >= lowestStorm + 5);
+
     const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
     const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...thunder);
     const snowMagnitude = convertNOAAChancesToAverageMagnitude(...snow);
 
     const averageSkyCover = getAverage(...skyCover);
     const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
-    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), getAverage(...precipAmount), snowMagnitude, windMagnitude, thunderMagnitude);
+    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), getAverage(...precipAmount), snowMagnitude, windMagnitude, thunderMagnitude, humidityMagnitude);
 
     const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature);
     const stormMagnitude = getStormMagnitude(stormRating);
