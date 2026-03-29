@@ -36,7 +36,7 @@ export default function ForecastCardTable({ weather, allGroups, allFlipped, flip
                     </button>
                 </div>
             </div>
-            <section className="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-6 p-6">
+            <section className="grid grid-cols-[repeat(auto-fit,minmax(324px,1fr))] gap-6 p-6">
                 {Object.entries(weather).map(([forecastDate, groups]) => (
                     <ForecastCard key={forecastDate} forecastDate={forecastDate} groups={groups} allGroups={allGroups} allFlipped={allFlipped} flipNonce={flipNonce} allExpanded={allExpanded} onFlipChange={(flipped) => onCardFlipChange(forecastDate, flipped)} onExpandChange={onExpandChange} />
                 ))}

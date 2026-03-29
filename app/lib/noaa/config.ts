@@ -61,7 +61,7 @@ export const RealFeelPreferences: RealFeelMin = {
     HotMin: 90,
     WarmMin: 85,
     NiceMin: 65,
-    CoolMin: 45,
+    CoolMin: 50,
     ColdMin: 30,
     VeryColdMin: 5
     // Extremely Cold (bright red) is below ColdMin

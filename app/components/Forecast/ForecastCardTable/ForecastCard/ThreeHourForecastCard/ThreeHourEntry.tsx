@@ -7,6 +7,8 @@ import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, get
 import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
 import { getAverage } from '@/app/lib/noaa/utility';
 import { Magnitude } from '@/app/lib/noaa/types/general';
+import Tooltip from './Tooltip';
+import { buildEntryTooltips } from './tooltipText';
 
 const magnitudeColor: Record<Magnitude, string> = {
     0: GREEN,
@@ -43,17 +45,62 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const stormMagnitude = getStormMagnitude(stormRating);
     const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
     const freezeIcon = getFreezeIconFromTemperatures(...hours.map((hourData) => hourData.temperature));
+    const statusIcon = unstableWeather ? '⚠️' : freezeIcon.trim() ? freezeIcon : happyFace;
+
+    const tooltips = buildEntryTooltips({
+        avgTemp: Math.round(getAverage(...hours.map((h) => h.temperature))),
+        avgHumidity: Math.round(getAverage(...hours.map((h) => h.humidity))),
+        avgWind: Math.round(getAverage(...hours.map((h) => h.wind))),
+        avgSkyCover: Math.round(getAverage(...hours.map((h) => h.skyCover))),
+        avgPrecipChance: Math.round(getAverage(...hours.map((h) => h.precipChance))),
+        avgSnowMagnitude: convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.snow)),
+        stormRating,
+        thunderMagnitude,
+        unstableWeather,
+        lowestStorm,
+        highestStorm,
+        freezeIcon,
+        happyFace,
+        convertTemperature,
+    });
 
     return (
-        <li className="flex gap-3 items-baseline py-1 border-b border-gray-800 text-xl last:border-0">
-            <span className="text-gray-500 w-12 mr-1">{regularTime}</span>
-            <span className={magnitudeColor[realFeelMagnitude]}>{convertTemperature(realFeelTemperature)}°</span>
-            {humidityMagnitude > 0 && <span className={magnitudeColor[humidityMagnitude]}>H</span>}
-            <span className={magnitudeColor[stormMagnitude]}>{stormRating}</span>
-            {unstableWeather && <span>⚠️</span>}
-            {windMagnitude > 0 && <span className={magnitudeColor[windMagnitude]}>W</span>}
-            {thunderMagnitude > 0 && <span className={magnitudeColor[thunderMagnitude]}>T</span>}
-            <span>{happyFace}{freezeIcon}</span>
-        </li>
+        <tr className="border-b border-gray-800 last:border-0">
+            <td className="py-1 pr-4 text-gray-500 border-r border-dotted border-gray-700">{regularTime}</td>
+            <td className="py-1 px-4 border-r border-dotted border-gray-700">
+                <span className={magnitudeColor[realFeelMagnitude]}>
+                    <Tooltip text={tooltips.realFeel}>
+                        <span>{convertTemperature(realFeelTemperature)}°</span>
+                    </Tooltip>
+                    {humidityMagnitude > 0 && (
+                        <Tooltip text={tooltips.humidity}>
+                            <span className={`ml-1 ${magnitudeColor[humidityMagnitude]}`}>H</span>
+                        </Tooltip>
+                    )}
+                </span>
+            </td>
+            <td className={`py-1 px-2 border-r border-dotted border-gray-700 whitespace-nowrap ${magnitudeColor[stormMagnitude]}`}>
+                <Tooltip text={tooltips.storm}>
+                    <span>{stormRating}</span>
+                </Tooltip>
+                {(windMagnitude > 0 || thunderMagnitude > 0) && <span className="ml-1">
+                    {windMagnitude > 0 && (
+                        <Tooltip text={tooltips.wind}>
+                            <span className={magnitudeColor[windMagnitude]}>W</span>
+                        </Tooltip>
+                    )}
+                    {thunderMagnitude > 0 && (
+                        <Tooltip text={tooltips.thunder}>
+                            <span className={magnitudeColor[thunderMagnitude]}>T</span>
+                        </Tooltip>
+                    )}
+                </span>}
+            </td>
+            <td className="py-1 pl-4">
+                {statusIcon.trim() ? (
+                    <Tooltip text={tooltips.status} align="right">{statusIcon}</Tooltip>
+                ) : statusIcon}
+            </td>
+        </tr>
     );
 }
