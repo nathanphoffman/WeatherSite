@@ -26,6 +26,10 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const { convertTemperature } = useMeasurementSystemProviderContext();
     const { regularTime, hours } = group;
 
+    const temperatures = hours.map((h) => h.temperature);
+    const humidities = hours.map((h) => h.humidity);
+    const winds = hours.map((h) => h.wind);
+
     const allThreeStormRatings = hours.map(getHourStormRating);
     const lowestStorm = Math.min(...allThreeStormRatings);
     const highestStorm = Math.max(...allThreeStormRatings);
@@ -34,8 +38,8 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     // there is no point showing unstable weather if it is unstable because of a 2, 1, 8 say
     const unstableWeather = highestStorm > 10 && (stormDelta >= lowestStorm + 5);
 
-    const humidityMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.humidity)), HumidityRanges);
-    const windMagnitude = getMagnitude(getAverage(...hours.map((hourData) => hourData.wind)), WindRanges);
+    const humidityMagnitude = getMagnitude(getAverage(...humidities), HumidityRanges);
+    const windMagnitude = getMagnitude(getAverage(...winds), WindRanges);
     const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.thunder));
 
     const realFeelTemperature = Math.round(getAverage(...hours.map(getHourRealFeel)) / 5) * 5;
@@ -44,13 +48,13 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature);
     const stormMagnitude = getStormMagnitude(stormRating);
     const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
-    const freezeIcon = getFreezeIconFromTemperatures(...hours.map((hourData) => hourData.temperature));
+    const freezeIcon = getFreezeIconFromTemperatures(...temperatures);
     const statusIcon = unstableWeather ? '⚠️' : freezeIcon.trim() ? freezeIcon : happyFace;
 
     const tooltips = buildEntryTooltips({
-        avgTemp: Math.round(getAverage(...hours.map((h) => h.temperature))),
-        avgHumidity: Math.round(getAverage(...hours.map((h) => h.humidity))),
-        avgWind: Math.round(getAverage(...hours.map((h) => h.wind))),
+        avgTemp: Math.round(getAverage(...temperatures)),
+        avgHumidity: Math.round(getAverage(...humidities)),
+        avgWind: Math.round(getAverage(...winds)),
         avgSkyCover: Math.round(getAverage(...hours.map((h) => h.skyCover))),
         avgPrecipChance: Math.round(getAverage(...hours.map((h) => h.precipChance))),
         avgSnowMagnitude: convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.snow)),

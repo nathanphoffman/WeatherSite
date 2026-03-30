@@ -41,7 +41,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear, ref
         onClear?.();
     };
 
-    useImperativeHandle(ref, () => ({ clear }), []);
+    useImperativeHandle(ref, () => ({ clear }), [clear]);
 
     const filterCities = (cityList: City[], value: string): City[] => {
         const lower = value.toLowerCase();

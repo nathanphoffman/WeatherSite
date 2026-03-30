@@ -24,7 +24,6 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         setFlippedDates(new Set());
         setAllExpanded(false);
     }, [weather]);
-    // test comment
 
     useEffect(() => {
         if (!allFlipped) setAllExpanded(false);
