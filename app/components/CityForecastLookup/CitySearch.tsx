@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useImperativeHandle, useState } from 'react';
 import { City } from '@/app/utils/cityParser';
 
 interface CitySearchProps {
@@ -8,9 +8,15 @@ interface CitySearchProps {
     initialCity?: City | null;
     onSelect?: (city: City) => void;
     onClear?: () => void;
+    ref?: React.Ref<CitySearchHandle>;
 }
 
-export default function CitySearch({ cities, initialCity, onSelect, onClear }: CitySearchProps) {
+export interface CitySearchHandle {
+    clear: () => void;
+}
+
+export default function CitySearch({ cities, initialCity, onSelect, onClear, ref }: CitySearchProps) {
+    const listboxId = useId();
     const [query, setQuery] = useState('');
     const [allCities, setAllCities] = useState<City[]>(cities);
     const [allCitiesLoaded, setAllCitiesLoaded] = useState(false);
@@ -28,6 +34,14 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
     useEffect(() => {
         setAllCities(cities);
     }, [cities]);
+
+    const clear = () => {
+        setQuery('');
+        setCitySelected(false);
+        onClear?.();
+    };
+
+    useImperativeHandle(ref, () => ({ clear }), []);
 
     const filterCities = (cityList: City[], value: string): City[] => {
         const lower = value.toLowerCase();
@@ -99,6 +113,10 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                 <div className="relative flex-1 min-w-0">
                     <input
                         type="text"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded={!citySelected && filteredCities.length > 0}
+                        aria-controls={listboxId}
                         value={query}
                         onChange={onCityChange}
                         placeholder="Search for a city..."
@@ -109,7 +127,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                         <div className="fixed inset-0 z-10" onClick={() => setCitySelected(true)} />
                     )}
                     {!citySelected && (filteredCities.length > 0 || loading) && (
-                        <ul className="absolute z-20 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
+                        <ul id={listboxId} role="listbox" className="absolute z-20 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
                             {loading && (<li className="block px-4 py-2 text-lg text-gray-300">(Loading more cities...)</li>)}
                             {!loading && filteredCities.map(cityItem => (
                                 <li key={`${cityItem.city}-${cityItem.state_id}`}>
@@ -128,7 +146,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                 {query.length > 0 && (
                     <button
                         type="button"
-                        onClick={() => { setQuery(''); onClear?.(); }}
+                        onClick={clear}
                         className="flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800"
                         aria-label="Clear"
                     >

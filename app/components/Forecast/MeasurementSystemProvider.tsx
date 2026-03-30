@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+import { useLocalStorage } from '@/app/hooks/useLocalStorage';
 
 interface MeasurementSystemContextValue {
     useMetric: boolean;
@@ -16,16 +17,9 @@ const STORAGE_KEY = 'measurementSystem';
 
 // !! come back to this and have AI explain why exactly all this usecallback and usememo is needed and if this is just over-engineered
 export function MeasurementSystemProvider({ children }: { children: React.ReactNode }) {
-    const [useMetric, setUseMetric] = useState(() => {
-        if (typeof window === 'undefined') return false;
-        return localStorage.getItem(STORAGE_KEY) === 'metric';
-    });
+    const [useMetric, setUseMetric] = useLocalStorage<boolean>(STORAGE_KEY, false);
 
-    const toggleSystem = useCallback(() => setUseMetric((previous) => {
-        const next = !previous;
-        localStorage.setItem(STORAGE_KEY, next ? 'metric' : 'imperial');
-        return next;
-    }), []);
+    const toggleSystem = useCallback(() => setUseMetric((previous) => !previous), [setUseMetric]);
 
     const convertTemperature = useCallback((fahrenheit: number) => {
         if (useMetric) return Math.round((fahrenheit - 32) * 5 / 9 / 2) * 2;
