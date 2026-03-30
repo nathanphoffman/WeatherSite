@@ -71,7 +71,7 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     return (
         <tr className="border-b border-gray-800 last:border-0">
             <td className="py-1 pr-4 text-gray-500 border-r border-dotted border-gray-700">{regularTime}</td>
-            <td className="py-1 px-4 border-r border-dotted border-gray-700">
+            <td className="py-1 px-4 text-center border-r border-dotted border-gray-700">
                 <span className={magnitudeColor[realFeelMagnitude]}>
                     <Tooltip text={tooltips.realFeel}>
                         <span>{convertTemperature(realFeelTemperature)}°</span>
@@ -83,7 +83,7 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
                     )}
                 </span>
             </td>
-            <td className={`py-1 px-2 border-r border-dotted border-gray-700 whitespace-nowrap ${magnitudeColor[stormMagnitude]}`}>
+            <td className={`py-1 px-2 text-center border-r border-dotted border-gray-700 whitespace-nowrap ${magnitudeColor[stormMagnitude]}`}>
                 <Tooltip text={tooltips.storm}>
                     <span>{stormRating}</span>
                 </Tooltip>

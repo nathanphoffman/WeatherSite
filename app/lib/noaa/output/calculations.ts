@@ -38,8 +38,14 @@ export function getRealFeelTemperature(temperature: number, humidity: number, wi
 
     const isDayTime = hour > SUNRISE && hour < SUNSET;
 
+    // humidity matters more in heat — scale up above 50°F, minimum of 0.5 at low temps, capped at 2 to avoid runaway at extreme heat
+    const humidityScale = Math.min((temperature - 50) / 30 + 0.5, 2);
+
+    // wind matters more in cold — scale up below 60°F, minimum of 0.5 at high temps, capped at 2 to avoid runaway at extreme cold
+    const windScale = Math.min(Math.max((60 - temperature) / 30 + 0.5, 0.5), 2);
+
     // the reason for the reduction in temperature of -4.5 is that being outside in the shade even in calm breeze has more windflow than indoors, and outdoor temperatures do already include sunlight to some extent
-    let realFeel = temperature + 1.5 * humidity - 3 * wind - 4.5;
+    let realFeel = temperature + 1.5 * humidity * humidityScale - 6 * wind * windScale - 4.5;
 
     if (isDayTime && averageSkyCover < 95) {
         const dayTimeAmount = HALF_DAY_SPAN - Math.abs(MIDDAY - hour);
