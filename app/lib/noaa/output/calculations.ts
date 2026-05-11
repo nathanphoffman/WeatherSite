@@ -107,13 +107,17 @@ export function getStormRating(skyCover: number, precipChance: number, precipAmo
     // max 24 — rescaled from windMagnitude³/2 to leave room for precip contribution
     const windPenalty = windMagnitude * windMagnitude * 1.5;
 
-    // ~max 40
-    const precipPenalty = (precipChance / 100) * Math.min(precipAmount * (snowMagnitude + 1) * 20, 10);
+    // snow penalty accounts for snow at the same precip amount being more punishing
+    const snowPenalty = snowMagnitude * precipAmount * 3;
+
+    // precip amount is unlikely to ever go above 1, and 0.5 is heavy
+    const precipPenalty = precipChance / 10 + (precipAmount * 20);
 
     // max 4: the reason for this small penalty is to account for haze
     const humidityPenalty = humidityMagnitude;
 
-    const rawRating = skyCoverOutOf10 + windPenalty + precipPenalty + thunderPenalty + humidityPenalty;
+    const rawRating = skyCoverOutOf10 + windPenalty + precipPenalty + snowPenalty + thunderPenalty + humidityPenalty;
+    
     return Math.min(rawRating, 50);
 }
 
