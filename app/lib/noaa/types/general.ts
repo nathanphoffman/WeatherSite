@@ -10,23 +10,6 @@ export type MagnitudeRange = {
     [key in Magnitude]: number[] | ChanceForecast
 };
 
-export type RealFeelMin = {
-    ExtremelyHotMin: number;
-    VeryHotMin: number;
-    HotMin: number;
-    WarmMin: number;
-    NiceMin: number;
-    CoolMin: number;
-    ColdMin: number;
-    VeryColdMin: number;
-};
-export type StormMin = {
-    VeryBadMin: number;
-    BadMin: number;
-    PoorMin: number;
-    AverageMin: number;
-};
-
 export type Candidate<T> = {
     [K in keyof T]?: unknown;
 };
@@ -39,3 +22,4 @@ export type Hour = IntRange<24>;
 export interface DomainModel<T,Y> {
     formModelFromCandidate(candidate: Y): T;
 }
+

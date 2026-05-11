@@ -1,5 +1,6 @@
 import { ChanceRanges, HumidityRanges, WindRanges } from "../config";
 import { Magnitude, MagnitudeRange } from "../types/general";
+import { StormFactors } from "../types/calculations";
 import { getAverage } from "../utility";
 
 export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magnitude {
@@ -57,7 +58,7 @@ export function getRealFeelTemperature(temperature: number, humidity: number, wi
 
 export function isAnyTemperatureFreezing(...temperatures: string[]) {
     const freezingTemperatures = temperatures.find(temperature => Number(temperature) < 33);
-    return (freezingTemperatures?.length ?? 0) > 0;
+    return freezingTemperatures !== undefined;
 }
 
 export function getHourRealFeel(hourData: {
@@ -85,26 +86,28 @@ export function getHourStormRating(hourData: {
     thunder: string;
     humidity: number;
 }): number {
-    return getStormRating(
-        hourData.skyCover,
-        hourData.precipChance,
-        hourData.precipAmount,
-        getMagnitude(hourData.snow, ChanceRanges),
-        getMagnitude(hourData.wind, WindRanges),
-        getMagnitude(hourData.thunder, ChanceRanges),
-        getMagnitude(hourData.humidity, HumidityRanges)
-    );
+    const factors: StormFactors = {
+        skyCover: hourData.skyCover,
+        precipChance: hourData.precipChance,
+        precipAmount: hourData.precipAmount,
+        snowMagnitude: getMagnitude(hourData.snow, ChanceRanges),
+        windMagnitude: getMagnitude(hourData.wind, WindRanges),
+        thunderMagnitude: getMagnitude(hourData.thunder, ChanceRanges),
+        humidityMagnitude: getMagnitude(hourData.humidity, HumidityRanges),
+    };
+    return getStormRating(factors);
 }
 
-export function getStormRating(skyCover: number, precipChance: number, precipAmount: number, snowMagnitude: Magnitude, windMagnitude: Magnitude, thunderMagnitude: Magnitude, humidityMagnitude: Magnitude) {
+export function getStormRating(factors: StormFactors) {
+    const { skyCover, precipChance, precipAmount, snowMagnitude, windMagnitude, thunderMagnitude, humidityMagnitude } = factors;
 
     // max 10
     const skyCoverOutOf10 = 10 * (skyCover / 100);
 
-    // max 20 (mag 4 requires "Ocnl" thunder category, which is rare)
+    // max 20
     const thunderPenalty = thunderMagnitude * 5;
 
-    // max 24 — rescaled from windMagnitude³/2 to leave room for precip contribution
+    // max 24
     const windPenalty = windMagnitude * windMagnitude * 1.5;
 
     // snow penalty accounts for snow at the same precip amount being more punishing

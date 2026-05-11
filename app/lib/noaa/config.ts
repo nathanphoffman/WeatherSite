@@ -1,4 +1,5 @@
-import { MagnitudeRange, RealFeelMin, StormMin } from "./types/general";
+import { MagnitudeRange } from "./types/general";
+import { RealFeelMin, StormMin } from "./types/calculations";
 
 export const locationCoordinates = {
     default: [40.1852, -75.538], //royersford
