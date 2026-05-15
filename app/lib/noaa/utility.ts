@@ -22,7 +22,7 @@ export function getDayOfTheWeek(day: string) {
 }
 
 export function getAverage(...numbers: number[]) {
-    const average = Math.round(numbers.reduce((accumulator, currentValue) => Number(accumulator) + Number(currentValue)) / numbers.length);
+    const average = Math.round(numbers.reduce((accumulator, currentValue) => accumulator + currentValue) / numbers.length);
     return average;
 }
 

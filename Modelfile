@@ -1,2 +1,0 @@
-FROM llama3.1
-SYSTEM "Keep all responses under 100 words. Be concise and direct."

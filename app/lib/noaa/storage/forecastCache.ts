@@ -16,13 +16,8 @@ export async function getForecast(lat?: string, long?: string): Promise<DayForec
 
     const nowInSeconds = new Date().getTime() / 1000;
 
-    let storageSolution: StorageSolution | undefined = undefined;
     const blobConnectionInfo = getBlobConnectionInfo();
-
-    if (blobConnectionInfo) storageSolution = blobStorage;
-    else storageSolution = databaseStorage;
-
-    if (!storageSolution) throw new Error("No storage method found to serve as a database for forecasts.");
+    const storageSolution: StorageSolution = blobConnectionInfo ? blobStorage : databaseStorage;
 
     const oneHourAgo = nowInSeconds - FORECAST_TTL_SECONDS;
     const savedRecord = await storageSolution.getSavedLatLongForecast(lat, long, oneHourAgo);
