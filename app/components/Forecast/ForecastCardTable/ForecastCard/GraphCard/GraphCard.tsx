@@ -168,9 +168,9 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                         color="#38bdf8"
                         indicesToLabel={indicesToLabel}
                         minValue={0}
-                        logStrength={2}
-                        thresholdLines={precipThresholds.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
-                        maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(1))}
+                        logStrength={1}
+                        //thresholdLines={precipThresholds.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
+                        maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(0.1))}
                         formatYLabel={(value) => useMetric ? value.toFixed(1) : value.toFixed(2)}
                     />
 
