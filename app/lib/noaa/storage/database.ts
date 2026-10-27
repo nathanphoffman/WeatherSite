@@ -8,6 +8,7 @@ let _db: Database.Database | undefined = undefined;
 
 export function openDatabaseConnection() {
     if (!_db) _db = new Database("./database.sqlite", { verbose: logger.debug });
+
     return _db;
 }
 
@@ -58,6 +59,7 @@ export const databaseStorage: StorageSolution = {
         const storageIntegerLong = Math.round(Number(long) * LONG_MULTIPLIER);
 
         const result = db.prepare(`SELECT forecast FROM weather WHERE lat = ? AND long = ? AND unixSeconds > ?`).get(storageIntegerLat, storageIntegerLong, unixSecondsAgeLimit) as { forecast: string } | undefined;
+
         return result?.forecast ?? "";
     }
 };

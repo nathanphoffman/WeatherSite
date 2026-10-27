@@ -4,6 +4,7 @@ import { getRealFeelMagnitude, getStormMagnitude, getHappyFaceFromMagnitude, get
 import { HumidityRanges, WindRanges } from '@/app/lib/noaa/config';
 import { getAverage } from '@/app/lib/noaa/utility';
 
+// collapses the three hourly rows into one displayed row, averaging values so the row reflects the whole window rather than one hour
 export function getThreeHourEntrySummary(hours: ThreeHourGroup['hours']) {
     const temperatures = hours.map((hourData) => hourData.temperature);
     const humidities = hours.map((hourData) => hourData.humidity);

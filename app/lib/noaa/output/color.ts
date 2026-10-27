@@ -7,6 +7,7 @@ export const GREEN = "text-green-500" as const;
 export const YELLOW = "text-yellow-500" as const;
 export const WHITE = "text-white" as const;
 
+// both extremes are bad, so magnitude rises as the temperature moves away from the comfortable middle
 export function getRealFeelMagnitude(realFeel: number): Magnitude {
 
     if (realFeel >= RealFeelPreferences.ExtremelyHotMin) return 4;
@@ -20,6 +21,7 @@ export function getRealFeelMagnitude(realFeel: number): Magnitude {
     else return 4;
 }
 
+// higher storm ratings are always worse, so magnitude only increases with the rating
 export function getStormMagnitude(stormRating: number): Magnitude {
     if (stormRating < StormPreferences.AverageMin) return 0;
     else if (stormRating < StormPreferences.PoorMin) return 1;
@@ -30,6 +32,7 @@ export function getStormMagnitude(stormRating: number): Magnitude {
 
 export function color(txt: string, color: string) {
     if (!color) return txt;
+
     return `<span class="${color}">${txt}</span>`;
 }
 
@@ -39,6 +42,7 @@ export function underline(txt: string) {
 
 export function getFreezeIconFromTemperatures(...temperatures: number[]) {
     const freezingTemperatures = temperatures.find(temperature => temperature < 33);
+
     return (freezingTemperatures ?? 0) > 0 ? "🧊" : " ";
 }
 

@@ -30,6 +30,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: NONE,
         });
+
         expectInRange(rating, 0, 2);
     });
 
@@ -43,6 +44,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: ALRIGHT,
         });
+
         expectInRange(rating, 8, 10);
     });
 
@@ -56,6 +58,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: POOR,
         });
+
         expectInRange(rating, 10, 20);
     });
 
@@ -69,6 +72,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: POOR,
         });
+
         expectInRange(rating, 15, 25);
     });
 
@@ -82,6 +86,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: ALRIGHT,
         });
+
         expectInRange(rating, 12, 20);
     });
 
@@ -95,6 +100,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: BAD,
         });
+
         expectInRange(rating, 30, 40);
     });
 
@@ -108,6 +114,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: NONE,
         });
+
         expectInRange(rating, 28, 35);
     });
 
@@ -121,6 +128,7 @@ describe("getStormRating", () => {
             thunderMagnitude: POOR,
             humidityMagnitude: BAD,
         });
+
         expectInRange(rating, 35, 51);
     });
 
@@ -134,6 +142,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: ALRIGHT,
         });
+
         expectInRange(rating, 45, 50);
     });
 
@@ -147,6 +156,7 @@ describe("getStormRating", () => {
             thunderMagnitude: SEVERE,
             humidityMagnitude: SEVERE,
         });
+
         expect(rating).toBe(50);
     });
 
@@ -160,6 +170,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: NONE,
         });
+
         const likelySnow = getStormRating({
             skyCover: 100,
             precipChance: 80,
@@ -169,6 +180,7 @@ describe("getStormRating", () => {
             thunderMagnitude: NONE,
             humidityMagnitude: NONE,
         });
+
         expect(likelySnow).toBeGreaterThan(noSnow);
     });
 });

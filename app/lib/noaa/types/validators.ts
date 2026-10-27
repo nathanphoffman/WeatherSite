@@ -41,6 +41,7 @@ function isPlainDecimal(input: unknown) {
 export function isValidLatitude(input: unknown) {
     if (!isPlainDecimal(input)) return false;
     const value = Number(input);
+
     return !isNaN(value) && value >= -90 && value <= 90;
 }
 
@@ -48,6 +49,7 @@ export function isValidLatitude(input: unknown) {
 export function isValidLongitude(input: unknown) {
     if (!isPlainDecimal(input)) return false;
     const value = Number(input);
+
     return !isNaN(value) && value >= -180 && value <= 180;
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { DayForecast } from '@/app/lib/noaa/types/forecast';
 import { MeasurementSystemProvider } from '@/app/components/Forecast/MeasurementSystemProvider';
 import ForecastCardTable from '@/app/components/Forecast/ForecastCardTable/ForecastCardTable';
+import { logger } from '@/app/lib/logger';
 
 interface ForecastProps {
     lat: string;
@@ -13,6 +14,7 @@ interface ForecastProps {
     onFlipCountChange?: (flippedCount: number, totalCount: number) => void;
 }
 
+// fetches per city; the effect aborts in-flight requests so a quick city change cannot show a stale forecast
 export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCountChange }: ForecastProps) {
     const [weather, setWeather] = useState<DayForecast | null>(null);
     const [loading, setLoading] = useState(true);
@@ -43,14 +45,17 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         fetch(`/api/forecast?lat=${lat}&long=${long}&source=api`, { cache: 'no-store', signal: abortController.signal })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to fetch forecast');
+
                 return response.json();
             })
             .then(data => {
                 setWeather(data);
                 setLoading(false);
             })
-            .catch(() => {
+            .catch((error) => {
                 if (abortController.signal.aborted) return;
+
+                logger.error('Forecast request failed:', error);
                 setError('Forecast unavailable for your location');
                 setLoading(false);
             });
@@ -59,14 +64,18 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
     }, [lat, long]);
 
     if (loading) return <p role="status" className="p-6 text-gray-400">Loading forecast...</p>;
+
     if (error) return <p role="alert" className="p-6 text-red-400">{error}</p>;
+
     if (!weather) return null;
 
     const handleCardFlipChange = (date: string, flipped: boolean) => {
         setFlippedDates((previous) => {
             const next = new Set(previous);
+
             if (flipped) next.add(date);
             else next.delete(date);
+
             return next;
         });
     };

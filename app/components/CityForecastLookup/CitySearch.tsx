@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { City } from '@/app/utils/cityParser';
 import { ICON_BUTTON_CLASSES } from '@/app/components/iconButtonClasses';
 import { getCityKey } from '@/app/utils/cityKey';
+import { logger } from '@/app/lib/logger';
 
 interface CitySearchProps {
     cities: City[];
@@ -41,18 +42,22 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
 
     const filterCities = (cityList: City[], value: string): City[] => {
         const lower = value.toLowerCase();
+
         if (lower.includes(',') || lower.includes(' ')) {
             const [cityPart, statePart] = lower.split(/[, ]+/, 2).map(searchPart => searchPart.trim());
+
             return cityList.filter(cityItem =>
                 cityItem.city.toLowerCase().startsWith(cityPart) &&
                 cityItem.state_id.toLowerCase().startsWith(statePart)
             );
         }
+
         return cityList.filter(cityItem => cityItem.city.toLowerCase().startsWith(lower));
     };
 
     const getCurrentlyFilteredCities = (inputValue: string) => inputValue.length > 0 ? filterCities(allCities, inputValue).slice(0, 3) : [];
 
+    // the full city list is only fetched when the preloaded populated cities have no match, to avoid downloading ~30k rows up front
     const onCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setQuery(value);
@@ -72,6 +77,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                 setTimeout(async () => {
                     try {
                         const response = await fetch('/api/cities');
+
                         if (!response.ok) throw new Error('City list unavailable');
 
                         const { allCities: fetchedCities } = await response.json();
@@ -79,12 +85,14 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                         setAllCities((previous) => {
                             const existing = new Set(previous.map(getCityKey));
                             const unique = fetchedCities.filter((cityItem: City) => !existing.has(getCityKey(cityItem)));
+
                             return [...previous, ...unique];
                         });
 
                         setAllCitiesLoaded(true);
-                    } catch {
+                    } catch (error) {
                         // leave allCitiesLoaded false so the next keystroke can retry
+                        logger.warn('City list request failed:', error);
                     } finally {
                         setLoading(false);
                     }

@@ -8,6 +8,7 @@ import { safeJsonParse } from "../utility";
 import { blobStorage } from "./blob";
 import { databaseStorage } from "./database";
 
+// serves from storage while the record is younger than the TTL; the version check discards records saved in an older format
 export async function getForecast(lat: string, long: string): Promise<DayForecast> {
 
     const nowInSeconds = Math.floor(Date.now() / 1000);
@@ -20,6 +21,7 @@ export async function getForecast(lat: string, long: string): Promise<DayForecas
 
     if (savedRecord) {
         const parsed = safeJsonParse<{ version: number; data: DayForecast }>(savedRecord);
+
         if (!parsed) {
             logger.warn("Cache record corrupted, re-fetching from NOAA");
         } else if (parsed.version === CACHE_VERSION) {
@@ -42,5 +44,6 @@ export async function getForecast(lat: string, long: string): Promise<DayForecas
     await storageSolution.saveLatLongForecast(weatherRecord);
 
     logger.info("Completed fetch against NOAA");
+
     return forecast;
 }

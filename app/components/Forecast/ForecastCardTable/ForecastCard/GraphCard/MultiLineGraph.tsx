@@ -54,6 +54,7 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
             >
                 {effectiveSeries.map((seriesItem) => {
                     const coords: [number, number][] = seriesItem.points.map((point) => [xAt(point.hour), yAt(point.value)]);
+
                     return (
                         <path
                             key={seriesItem.label}

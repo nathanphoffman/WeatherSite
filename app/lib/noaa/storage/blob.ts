@@ -22,6 +22,7 @@ export const blobStorage = {
         await store.set(key, JSON.stringify(weather));
     },
 
+    // a stale or corrupted record returns an empty string so the caller refetches instead of failing
     getSavedLatLongForecast: async function (lat: string, long: string, unixSecondsAgeLimit: number): Promise<string> {
 
         if(!blobConnectionInfo) throw new Error("Blobs are not available, unable to get forecast.");
@@ -30,11 +31,14 @@ export const blobStorage = {
         const store = getStore(FORECASTS, { siteID: SITE_ID, token: BLOB_TOKEN });
 
         const weather = await store.get(key, {type: 'text'});
+
         if(!weather) return "";
 
         const weatherRecord = safeJsonParse<Weather>(weather);
+
         if (!weatherRecord) {
             logger.error(`VALIDATION FAILED! field="weatherBlob" value=<corrupted>`);
+
             return "";
         }
 

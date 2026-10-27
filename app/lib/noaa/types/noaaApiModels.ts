@@ -35,6 +35,7 @@ export const NoaaPointsProperties: DomainModel<NoaaPointsProperties, NoaaRawPoin
 export const NoaaPointsResponse: DomainModel<NoaaPointsProperties, { properties?: unknown }> = {
     formModelFromCandidate(candidate: { properties?: unknown }): NoaaPointsProperties {
         const properties = candidateToType<NoaaRawPointsProperties>(candidate.properties, [isObject], "properties");
+
         return NoaaPointsProperties.formModelFromCandidate(properties);
     }
 };
@@ -51,6 +52,7 @@ export const NoaaForecastResponse: DomainModel<NoaaForecastResponse, { propertie
     formModelFromCandidate(candidate: { properties?: unknown }): NoaaForecastResponse {
         const properties = candidateToType<{ periods?: unknown }>(candidate.properties, [isObject], "properties");
         const periods = candidateToType<unknown[]>(properties.periods, [isArray], "periods");
+
         return { periods };
     }
 };
@@ -67,6 +69,7 @@ export const NoaaGridDataResponse: DomainModel<NoaaGridDataResponse, { propertie
     formModelFromCandidate(candidate: { properties?: unknown }): NoaaGridDataResponse {
         const properties = candidateToType<{ quantitativePrecipitation?: { values?: unknown } }>(candidate.properties, [isObject], "properties");
         const precipValues = candidateToType<unknown[]>(properties.quantitativePrecipitation?.values ?? [], [isArray], "quantitativePrecipitation.values");
+
         return { precipValues };
     }
 };
@@ -97,6 +100,7 @@ type NoaaRawHourlyPeriod = {
 };
 
 export const NoaaHourlyPeriod: DomainModel<NoaaHourlyPeriod, NoaaRawHourlyPeriod> = {
+    // NOAA nests humidity and precip chance in objects and can omit them, so the defaults keep one missing field from failing the forecast
     formModelFromCandidate(candidate: NoaaRawHourlyPeriod): NoaaHourlyPeriod {
         return {
             startTime: candidateToType(candidate.startTime, [isStringNotNumber], "startTime"),

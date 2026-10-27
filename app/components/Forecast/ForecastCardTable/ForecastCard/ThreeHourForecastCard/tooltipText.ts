@@ -1,48 +1,74 @@
 import { roundStormRating } from '@/app/lib/noaa/output/calculations';
 import { Magnitude } from '@/app/lib/noaa/types/general';
 
+// plain-language labels exist so the tooltips are readable without knowing the underlying numbers
 function getSkyCoverLabel(skyCover: number): string {
     if (skyCover <= 20) return 'Clear';
+
     if (skyCover <= 40) return 'Mostly clear';
+
     if (skyCover <= 60) return 'Partly cloudy';
+
     if (skyCover <= 80) return 'Mostly cloudy';
+
     return 'Overcast';
 }
 
+// turns a precipitation percentage into wording a reader can act on
 function getPrecipLabel(precipChance: number): string {
     if (precipChance <= 5) return 'No precipitation';
+
     if (precipChance <= 20) return `Small chance of rain (${precipChance}%)`;
+
     if (precipChance <= 50) return `Chance of rain (${precipChance}%)`;
+
     if (precipChance <= 80) return `Rain likely (${precipChance}%)`;
+
     return `Rain expected (${precipChance}%)`;
 }
 
 // category cutoffs are in mph; the displayed speed is already converted to the chosen unit
 function getWindLabel(windMph: number, displayedWind: number, windUnit: string): string {
     const speed = `${displayedWind} ${windUnit}`;
+
     if (windMph <= 9) return `Calm (${speed})`;
+
     if (windMph <= 15) return `Light winds (${speed})`;
+
     if (windMph <= 22) return `Moderate winds (${speed})`;
+
     if (windMph <= 29) return `Strong winds (${speed})`;
+
     return `High winds (${speed})`;
 }
 
+// cutoffs match HumidityRanges so the label agrees with the H marker shown in the row
 function getHumidityLabel(humidity: number): string {
     if (humidity <= 60) return 'Comfortable';
+
     if (humidity <= 72) return 'Slightly humid';
+
     if (humidity <= 84) return 'Humid';
+
     if (humidity <= 96) return 'Very humid';
+
     return 'Extremely humid';
 }
 
+// turns the numeric storm rating into wording a reader can act on
 function getStormLabel(stormRating: number): string {
     if (stormRating < 8) return 'Good conditions';
+
     if (stormRating < 20) return 'Average conditions';
+
     if (stormRating < 30) return 'Poor conditions';
+
     if (stormRating < 50) return 'Bad conditions';
+
     return 'Severe conditions';
 }
 
+// thunder and snow are stored as magnitudes (0-4), not percentages, so they get their own wording
 function getMagnitudeChanceLabel(magnitude: Magnitude): string {
     switch (magnitude) {
         case 0: return 'No chance';
@@ -81,6 +107,7 @@ export interface EntryTooltipInputs {
     convertTemperature: (temperature: number) => number;
 }
 
+// all tooltip text is built in one place so the row component stays free of wording logic
 export function buildEntryTooltips(inputs: EntryTooltipInputs): EntryTooltips {
     const {
         averageTemperature, averageHumidity, averageWind, averageSkyCover, averagePrecipChance, averageSnowMagnitude,

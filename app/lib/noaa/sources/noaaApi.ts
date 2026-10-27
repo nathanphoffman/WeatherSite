@@ -5,76 +5,98 @@ import { isValidLatitude, isValidLongitude } from '../types/validators';
 import { logger } from '../../logger';
 import { NOAA_API_BASE_URL, NOAA_USER_AGENT, NOAA_REQUEST_TIMEOUT_MS } from '../config';
 
-
-
 // this logic is a bit of a temporary solution for now
 // these infer functions convert NOAA API output to the internal forecast model
 function inferSkyCover(shortForecast: string): number {
     const forecastLower = shortForecast.toLowerCase();
+
     if (forecastLower.includes('mostly clear') || forecastLower.includes('mostly sunny')) return 20;
+
     if (forecastLower.includes('clear') || forecastLower.includes('sunny')) return 5;
+
     if (forecastLower.includes('partly')) return 50;
+
     if (forecastLower.includes('mostly cloudy')) return 75;
+
     return 90;
 }
 
+// NOAA gives a percentage but the app works in chance tiers
 function precipProbToChance(precipProbability: number): ChanceForecast {
     if (precipProbability <= 0) return '--';
+
     if (precipProbability <= 25) return 'SChc';
+
     if (precipProbability <= 50) return 'Chc';
+
     if (precipProbability <= 75) return 'Lkly';
+
     // 'Ocnl' is used here as the app's maximum probability tier, not in NOAA's literal
     // "Occasionally" sense. The ChanceForecast type does not include 'Def' (Definite),
     // so 'Ocnl' serves as the top tier for >75% probability by intentional design.
     return 'Ocnl';
 }
 
+// NOAA does not say whether precipitation is rain, so temperature and the forecast text decide
 function inferRain(shortForecast: string, temperature: number, precipChance: number): ChanceForecast {
     if (precipChance <= 0) return '--';
     const forecastLower = shortForecast.toLowerCase();
+
     if (temperature >= 35 || forecastLower.includes('rain') || forecastLower.includes('shower') || forecastLower.includes('drizzle')) {
         return precipProbToChance(precipChance);
     }
+
     return '--';
 }
 
+// NOAA does not say whether precipitation is snow, so temperature and the forecast text decide
 function inferSnow(shortForecast: string, temperature: number, precipChance: number): ChanceForecast {
     if (precipChance <= 0) return '--';
     const forecastLower = shortForecast.toLowerCase();
+
     if (temperature < 33 || forecastLower.includes('snow') || forecastLower.includes('flurr') || forecastLower.includes('blizzard')) {
         return precipProbToChance(precipChance);
     }
+
     return '--';
 }
 
 function inferThunder(shortForecast: string, precipChance: number): ChanceForecast {
     const forecastLower = shortForecast.toLowerCase();
+
     if (forecastLower.includes('thunder')) return precipProbToChance(precipChance);
+
     return '--';
 }
 
 function parseDurationHours(duration: string): number {
     const match = duration.match(/PT(\d+)H/);
+
     return match ? parseInt(match[1], 10) : 1;
 }
 
+// NOAA reports precipitation over multi-hour periods, so it is spread evenly across each hour to match the hourly rows
 function buildPrecipMapMm(values: NoaaPrecipEntry[]): Map<string, number> {
     const map = new Map<string, number>();
+
     for (const { validTime, value } of values) {
         if (value === null) continue;
         const [startTimeStr, durationStr] = validTime.split('/');
         const durationHours = parseDurationHours(durationStr);
         const perHourMm = value / durationHours;
         const startTime = new Date(startTimeStr);
+
         for (let i = 0; i < durationHours; i++) {
             const hourTime = new Date(startTime.getTime() + i * 3600 * 1000);
             const key = hourTime.toISOString().slice(0, 13);
             map.set(key, perHourMm);
         }
     }
+
     return map;
 }
 
+// NOAA needs a points lookup first to find the forecast URLs for a coordinate; grid data is optional so a failure there does not lose the forecast
 export async function fetchAndParseNoaaForecast(lat: string, long: string): Promise<{ hourlyWeatherRows: ThreeHourWeatherModel[], uniqueDays: string[] }> {
     if (!isValidLatitude(lat) || !isValidLongitude(long)) {
         throw new Error(`Invalid coordinates: lat=${lat}, long=${long}`);
@@ -87,6 +109,7 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
 
     // NOAA maintains a location of grid points that lat lon point to, here we get that coarse grid position to use against their main api
     const pointsResult = await fetch(`${NOAA_API_BASE_URL}/points/${lat},${long}`, { headers, signal: AbortSignal.timeout(NOAA_REQUEST_TIMEOUT_MS) });
+
     if (!pointsResult.ok) throw new Error(`NOAA points API failed: ${pointsResult.status}`);
     const pointsData = await pointsResult.json();
     const { forecastHourlyUrl, forecastGridDataUrl } = NoaaPointsResponse.formModelFromCandidate(pointsData);
@@ -95,14 +118,17 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
         fetch(forecastHourlyUrl, { headers, signal: AbortSignal.timeout(NOAA_REQUEST_TIMEOUT_MS) }),
         fetch(forecastGridDataUrl, { headers, signal: AbortSignal.timeout(NOAA_REQUEST_TIMEOUT_MS) }),
     ]);
+
     if (!forecastResult.ok) throw new Error(`NOAA forecast API failed: ${forecastResult.status}`);
     const forecastData = await forecastResult.json();
+
     if (!gridDataResult.ok) logger.warn(`NOAA grid data API failed: ${gridDataResult.status}`);
     const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
     const precipEntries: NoaaPrecipEntry[] = gridData
         ? NoaaGridDataResponse.formModelFromCandidate(gridData).precipValues
             .map(entry => NoaaPrecipEntry.formModelFromCandidate(entry as { validTime?: unknown; value?: unknown }))
         : [];
+
     const precipMap = buildPrecipMapMm(precipEntries);
 
     const { periods } = NoaaForecastResponse.formModelFromCandidate(forecastData);
@@ -131,9 +157,11 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
         // NOAA returns windSpeed as a string like "5 mph" or "10 mph"; parseInt handles the " mph" suffix correctly.
         // Upper-bound range validation is not applied here — it occurs downstream in ThreeHourWeatherModel.formModelFromCandidate via isBelowSpeedOfSound.
         const parsedWindSpeed = parseInt(period.windSpeed);
+
         if (isNaN(parsedWindSpeed)) {
             logger.warn(`VALIDATION FAILED! field="windSpeed" value=${period.windSpeed}`);
         }
+
         const windSpeed = isNaN(parsedWindSpeed) ? 0 : parsedWindSpeed;
         const { humidity, precipChance, shortForecast } = period;
         const skyCover = inferSkyCover(shortForecast);

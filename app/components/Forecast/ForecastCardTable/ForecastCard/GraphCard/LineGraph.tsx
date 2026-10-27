@@ -33,6 +33,7 @@ export default function LineGraph({ title, points, color, indicesToLabel, height
             const linearNormalized = (value - computedMin) / (computedMax - computedMin || 1);
             const logNormalized = Math.log(1 + linearNormalized * (Math.E - 1));
             const blended = linearNormalized + logStrength * (logNormalized - linearNormalized);
+
             return PADDING_TOP + (1 - blended) * plotHeight;
         }
         : linearYAt;

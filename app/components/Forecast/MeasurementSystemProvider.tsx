@@ -23,6 +23,7 @@ export function MeasurementSystemProvider({ children }: { children: React.ReactN
 
     const convertTemperature = useCallback((fahrenheit: number) => {
         if (isMetric) return Math.round((fahrenheit - 32) * 5 / 9 / 2) * 2;
+
         return Math.round(fahrenheit / 5) * 5;
     }, [isMetric]);
 
@@ -46,6 +47,8 @@ export function MeasurementSystemProvider({ children }: { children: React.ReactN
 
 export function useMeasurementSystemProviderContext() {
     const context = useContext(MeasurementSystemContext);
+
     if (!context) throw new Error('useMeasurementSystemProviderContext must be used within a MeasurementSystemProvider');
+
     return context;
 }

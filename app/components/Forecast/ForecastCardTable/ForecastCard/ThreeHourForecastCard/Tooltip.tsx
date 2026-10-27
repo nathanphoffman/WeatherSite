@@ -22,6 +22,7 @@ export default function Tooltip({ children, text, align = 'left' }: TooltipProps
                 left: align === 'right' ? boundingRect.right : boundingRect.left,
             });
         }
+
         setVisible(true);
     };
 

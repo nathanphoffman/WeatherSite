@@ -3,6 +3,7 @@ import { fetchAndParseNoaaForecast } from "./sources/noaaApi";
 import { DayForecast, ThreeHourGroup } from "./types/forecast";
 import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
+// NOAA hourly data has no day boundaries, so a drop in middle hour (e.g. 23 to 1) is used to detect a new day
 export async function buildDayForecast(lat: string, long: string): Promise<DayForecast> {
 
     const { hourlyWeatherRows, uniqueDays } = await fetchAndParseNoaaForecast(lat, long);
@@ -34,6 +35,7 @@ export async function buildDayForecast(lat: string, long: string): Promise<DayFo
         };
 
         const dayTitle = `${currentDay} ${dayOfTheWeek}`;
+
         if (!dayForecast[dayTitle]) dayForecast[dayTitle] = [];
         dayForecast[dayTitle].push(group);
     });

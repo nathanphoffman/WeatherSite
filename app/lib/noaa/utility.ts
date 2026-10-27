@@ -1,12 +1,13 @@
 import { logger } from "../logger";
 
-
 // leftover items that don't fill a complete group of 3 are dropped
 export function splitIntoGroupsOf3<T>(items: T[]): T[][] {
     const groups: T[][] = [];
+
     for (let startIndex = 0; startIndex + 3 <= items.length; startIndex += 3) {
         groups.push(items.slice(startIndex, startIndex + 3));
     }
+
     return groups;
 }
 
@@ -16,17 +17,22 @@ export function getDayOfTheWeek(day: string) {
     const currentYear = now.getFullYear();
     const [dayMonth, dayOfMonth] = day.split("/").map(Number);
     const yearOfDate = dayMonth < currentMonth ? currentYear + 1 : currentYear;
+
     return new Date(yearOfDate, dayMonth - 1, dayOfMonth).toLocaleString('en-us', { weekday: 'long' });
 }
 
 export function getAverage(...numbers: number[]) {
     const average = Math.round(numbers.reduce((accumulator, currentValue) => accumulator + currentValue) / numbers.length);
+
     return average;
 }
 
+// midnight (0 or 24) and noon are special-cased because they read "12a" and "12p"
 export function militaryHourToRegularHour(militaryHour: number): string {
     if (militaryHour === 0 || militaryHour === 24) return '12a';
+
     if (militaryHour === 12) return '12p';
+
     return militaryHour < 12 ? `${militaryHour}a` : `${militaryHour - 12}p`;
 }
 
@@ -86,24 +92,31 @@ export function isArray(input: unknown) {
 
 export function safeJsonParse<T>(value: string | null): T | null {
     if (!value) return null;
+
     try {
         return JSON.parse(value) as T;
-    } catch {
+    } catch (error) {
+        logger.warn('JSON parse failed, treating value as missing:', error);
+
         return null;
     }
 }
 
+// objects are stringified so errors show contents; circular objects fail JSON.stringify, so fall back to String
 function describeValue(value: unknown): string {
     if (typeof value === 'object' && value !== null) {
         try {
             return JSON.stringify(value);
         } catch {
+            // circular references are the expected failure here, and String() is a safe fallback
             return String(value);
         }
     }
+
     return String(value);
 }
 
+// runs every validator before throwing so the error lists all failed checks, not just the first
 export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[], fieldName?: string) {
     const failedFunctionsOrUndefined = validators.map((validator) => validator(candidate) ? undefined : validator.name);
     const failedFunctions = stripUndefined(failedFunctionsOrUndefined);

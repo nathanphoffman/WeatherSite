@@ -3,10 +3,10 @@ import { RealFeelMin, StormMin } from "./types/calculations";
 
 export const locationCoordinates = {
     default: [40.1852, -75.538], //royersford
-    newYorkCity: [40.7198, -73.993], //nyc
-    philadelphia: [39.99310, -74.78790], //philly
+    newYorkCity: [40.7198, -73.993],
+    philadelphia: [39.99310, -74.78790],
     hillsgrove: [41.39127, -76.75871],
-    harrisburg: [40.2761, -76.8845], //harrisburg
+    harrisburg: [40.2761, -76.8845],
 };
 
 export const LAT_MULTIPLIER = 1_000_000;
@@ -36,6 +36,7 @@ export function isProduction() {
 export function getChosenLocation() {
     const argument = process.argv[2];
     const chosenLocation = !argument ? "default" : argument;
+
     return String(chosenLocation);
 }
 

@@ -22,6 +22,7 @@ const PERCENT_PER_CHANCE_STEP = 25;
 // each chance code's position in ChanceRanges is its 25% step (0 = "--", 4 = "Ocnl")
 function chanceToPercent(chance: string): number {
     const chanceStep = Object.entries(ChanceRanges).find(([, code]) => code === chance)?.[0];
+
     return Number(chanceStep ?? 0) * PERCENT_PER_CHANCE_STEP;
 }
 
@@ -73,6 +74,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
         const weeklyValues = (allGroups ?? groups).flatMap((group) => group.hours.map(dataExtractionFn));
         const weeklyHigh = Math.max(...weeklyValues);
         const weeklyLow = Math.min(...weeklyValues);
+
         return { weeklyHigh, weeklyLow };
     }
 
@@ -167,7 +169,6 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                         indicesToLabel={indicesToLabel}
                         minValue={0}
                         logStrength={1}
-                        //thresholdLines={PRECIP_THRESHOLDS.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
                         maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(0.1))}
                         formatYLabel={(value) => isMetric ? value.toFixed(1) : value.toFixed(2)}
                     />

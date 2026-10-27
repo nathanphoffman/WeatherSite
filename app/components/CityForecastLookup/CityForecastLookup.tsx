@@ -48,6 +48,7 @@ export default function CityForecastLookup({
         const matchedCity = cachedCitiesFromStorage.find(
             (cachedCity) => getCityKey(cachedCity) === getCityKey(city),
         );
+
         if (!matchedCity) {
             const newCityList = [city, ...cachedCitiesFromStorage];
             localStorage.setItem(
@@ -59,6 +60,7 @@ export default function CityForecastLookup({
 
     useEffect(() => {
         const storedVersion = Number(localStorage.getItem(STORAGE_VERSION_KEY));
+
         if (storedVersion !== STORAGE_VERSION) {
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(STORAGE_KEY_CACHED_CITIES);
@@ -66,6 +68,7 @@ export default function CityForecastLookup({
         }
 
         const saved = localStorage.getItem(STORAGE_KEY);
+
         if (saved) setSelectedCity(safeJsonParse<City>(saved));
 
         const cachedCities = getCachedCitiesFromStorage();

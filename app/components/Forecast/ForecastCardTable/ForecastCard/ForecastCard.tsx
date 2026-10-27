@@ -16,6 +16,7 @@ interface ForecastCardProps {
     onExpandChange?: (expanded: boolean) => void;
 }
 
+// flip and expand animations are timed with timeouts, so the timers are tracked and cleared to avoid state updates after the user acts again or the card unmounts
 export default function ForecastCard({ forecastDate, groups, allGroups, allFlipped, flipNonce, allExpanded, onFlipChange, onExpandChange }: ForecastCardProps) {
     const [flipped, setFlipped] = useState(false);
     const [cardExpanded, setCardExpanded] = useState(false);
@@ -25,6 +26,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
 
     const clearTimers = () => {
         if (flipTimerRef.current) clearTimeout(flipTimerRef.current);
+
         if (expandTimerRef.current) clearTimeout(expandTimerRef.current);
     };
 
@@ -57,6 +59,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
     useEffect(() => {
         clearTimers();
         setFlipped(allFlipped);
+
         if (!allFlipped) {
             setGraphsOpen(false);
             setCardExpanded(false);
@@ -82,6 +85,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
 
     const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[460px]";
 
+    // the click does something different per state because the card has two faces and the graph side can also be expanded
     const handleCardClick = () => {
         if (!flipped) {
             if (allExpanded) {

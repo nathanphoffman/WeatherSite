@@ -79,7 +79,10 @@ export function buildAxisHelpers(allHours: number[], computedMin: number, comput
     const maxHour = Math.max(...allHours);
     const hourRange = maxHour - minHour || 1;
     const valueRange = computedMax - computedMin || 1;
+
     const xAt = (hour: number) => PADDING_LEFT + ((hour - minHour) / hourRange) * plotWidth;
+
     const yAt = (value: number) => PADDING_TOP + ((computedMax - value) / valueRange) * plotHeight;
+
     return { xAt, yAt };
 }

@@ -7,6 +7,7 @@ import { blobStorage } from '@/app/lib/noaa/storage/blob';
 
 export const dynamic = 'force-dynamic';
 
+// absent coordinates fall back to the default location, but supplied ones must be valid so bad input is rejected before it reaches NOAA
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const rawLat = searchParams.get('lat');
@@ -17,6 +18,7 @@ export async function GET(request: Request) {
     if (rawLat !== null && !isValidLatitude(rawLat)) {
         return NextResponse.json({ error: "Invalid latitude" }, { status: 400 });
     }
+
     if (rawLong !== null && !isValidLongitude(rawLong)) {
         return NextResponse.json({ error: "Invalid longitude" }, { status: 400 });
     }
@@ -26,10 +28,12 @@ export async function GET(request: Request) {
 
     try {
         const forecast = await getForecast(latitude, longitude);
+
         return NextResponse.json(forecast);
     } catch (error) {
         logger.error("Failed to get forecast:", error);
         await blobStorage.logError(error);
+
         return NextResponse.json({ error: "Forecast unavailable for your location" }, { status: 500 });
     }
 }
