@@ -1,9 +1,7 @@
 import { GRAPH_DIMENSIONS, ThresholdLine } from './graphConfig';
 import { useContainerWidth } from './useContainerWidth';
-import { smoothLinePath, smoothAreaPath, buildAxisHelpers } from './graphMath';
+import { padSinglePoint, smoothLinePath, smoothAreaPath, buildAxisHelpers } from './graphMath';
 import GraphSvg from './GraphSvg/GraphSvg';
-
-export type { ThresholdLine };
 
 export interface LineGraphProps {
     title: string;
@@ -25,9 +23,7 @@ export default function LineGraph({ title, points, color, indicesToLabel, height
     const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
-    const effectivePoints = points.length === 1
-        ? [points[0], { ...points[0], hour: points[0].hour + 1 }]
-        : points;
+    const effectivePoints = padSinglePoint(points);
 
     const values = effectivePoints.map((point) => point.value);
     const computedMin = minValue ?? Math.min(...values);

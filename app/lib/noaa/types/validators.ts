@@ -32,14 +32,21 @@ export function isBelowSpeedOfSound(input: unknown) {
     return Number(input) < 767;
 }
 
+// Rejects empty strings, whitespace, hex and exponent forms that Number() would accept
+function isPlainDecimal(input: unknown) {
+    return typeof input === 'number' || (typeof input === 'string' && /^-?\d+(\.\d+)?$/.test(input));
+}
+
 // Valid latitude range: -90 to 90 (inclusive)
 export function isValidLatitude(input: unknown) {
+    if (!isPlainDecimal(input)) return false;
     const value = Number(input);
     return !isNaN(value) && value >= -90 && value <= 90;
 }
 
 // Valid longitude range: -180 to 180 (inclusive)
 export function isValidLongitude(input: unknown) {
+    if (!isPlainDecimal(input)) return false;
     const value = Number(input);
     return !isNaN(value) && value >= -180 && value <= 180;
 }

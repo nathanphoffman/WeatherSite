@@ -1,6 +1,5 @@
-import { DayForecast } from '@/app/lib/noaa/types/forecast';
+import { DayForecast, ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import ForecastCard from '@/app/components/Forecast/ForecastCardTable/ForecastCard/ForecastCard';
-import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
 
 interface ForecastCardTableProps {

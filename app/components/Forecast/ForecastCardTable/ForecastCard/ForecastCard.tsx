@@ -28,6 +28,8 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
         if (expandTimerRef.current) clearTimeout(expandTimerRef.current);
     };
 
+    useEffect(() => clearTimers, []);
+
     // Collapse graphs (0.4s animation), then flip to forecast side
     const collapseAndFlip = () => {
         clearTimers();
@@ -38,13 +40,17 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
         }, 150);
     };
 
+    const expandGraphs = () => {
+        setCardExpanded(true);
+        setGraphsOpen(true);
+    };
+
     // Flip to graph side, then after flip completes expand graphs (same animation as clicking "more")
     const flipAndExpand = () => {
         clearTimers();
         setFlipped(true);
         expandTimerRef.current = setTimeout(() => {
-            setCardExpanded(true);
-            setGraphsOpen(true);
+            expandGraphs();
         }, 250);
     };
 
@@ -56,16 +62,14 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
             setCardExpanded(false);
         } else if (allExpanded) {
             expandTimerRef.current = setTimeout(() => {
-                setCardExpanded(true);
-                setGraphsOpen(true);
+                expandGraphs();
             }, 650);
         }
     }, [flipNonce]);
 
     useEffect(() => {
         if (allExpanded && flipped && !graphsOpen) {
-            setCardExpanded(true);
-            setGraphsOpen(true);
+            expandGraphs();
         } else if (!allExpanded && graphsOpen) {
             setGraphsOpen(false);
             setCardExpanded(false);
@@ -77,6 +81,12 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
     }, [flipped]);
 
     const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[460px]";
+
+    const dateHeader = (
+        <h2 className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
+            {forecastDate}
+        </h2>
+    );
 
     return (
         <article
@@ -102,15 +112,11 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
         >
             <div className={`flip-card-inner${flipped ? ' flipped' : ''}`}>
                 <div className={`flip-card-front ${faceClasses}`}>
-                    <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
-                        {forecastDate}
-                    </div>
+                    {dateHeader}
                     <ThreeHourForecastCard groups={groups} />
                 </div>
                 <div className={`flip-card-back ${faceClasses}`}>
-                    <div className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
-                        {forecastDate}
-                    </div>
+                    {dateHeader}
                     <GraphCard
                         groups={groups}
                         allGroups={allGroups}

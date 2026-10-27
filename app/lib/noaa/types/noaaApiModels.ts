@@ -1,5 +1,5 @@
 import { DomainModel } from "./general";
-import { candidateToType, isNumber, isNotNegative, isStringNotNumber, isObject, isArray } from "../utility";
+import { candidateToType, isNumber, isNotNegative, isStringNotNumber, isObject, isArray, isString } from "../utility";
 import { isNoMoreThan100, isValidTemperatureUnit } from "./validators";
 
 // Verified against live NOAA API responses.
@@ -66,7 +66,7 @@ export interface NoaaGridDataResponse {
 export const NoaaGridDataResponse: DomainModel<NoaaGridDataResponse, { properties?: unknown }> = {
     formModelFromCandidate(candidate: { properties?: unknown }): NoaaGridDataResponse {
         const properties = candidateToType<{ quantitativePrecipitation?: { values?: unknown } }>(candidate.properties, [isObject], "properties");
-        const precipValues = (properties.quantitativePrecipitation?.values as unknown[] | undefined) ?? [];
+        const precipValues = candidateToType<unknown[]>(properties.quantitativePrecipitation?.values ?? [], [isArray], "quantitativePrecipitation.values");
         return { precipValues };
     }
 };
@@ -105,7 +105,7 @@ export const NoaaHourlyPeriod: DomainModel<NoaaHourlyPeriod, NoaaRawHourlyPeriod
             windSpeed: candidateToType(candidate.windSpeed, [isStringNotNumber], "windSpeed"),
             humidity: candidateToType(candidate.relativeHumidity?.value ?? 50, [isNumber, isNotNegative, isNoMoreThan100], "humidity"),
             precipChance: candidateToType(candidate.probabilityOfPrecipitation?.value ?? 0, [isNumber, isNotNegative, isNoMoreThan100], "precipChance"),
-            shortForecast: String(candidate.shortForecast ?? ''),
+            shortForecast: candidateToType(candidate.shortForecast ?? '', [isString], "shortForecast"),
         };
     }
 };

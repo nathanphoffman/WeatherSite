@@ -5,7 +5,6 @@ import YAxisLabels from './YAxisLabels';
 import ThresholdLines from './ThresholdLines';
 import XAxisLabels from './XAxisLabels';
 
-export type { ThresholdLine };
 
 interface GraphSvgProps {
     title: string;

@@ -1,6 +1,6 @@
 import { GRAPH_DIMENSIONS, ThresholdLine } from './graphConfig';
 import { useContainerWidth } from './useContainerWidth';
-import { smoothLinePath, buildAxisHelpers } from './graphMath';
+import { padSinglePoint, smoothLinePath, buildAxisHelpers } from './graphMath';
 import GraphSvg from './GraphSvg/GraphSvg';
 
 export interface MultiLineSeries {
@@ -27,11 +27,7 @@ export default function MultiLineGraph({ title, series, indicesToLabel, height, 
     const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
     const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
 
-    const effectiveSeries = series.map((seriesItem) =>
-        seriesItem.points.length === 1
-            ? { ...seriesItem, points: [seriesItem.points[0], { ...seriesItem.points[0], hour: seriesItem.points[0].hour + 1 }] }
-            : seriesItem
-    );
+    const effectiveSeries = series.map((seriesItem) => ({ ...seriesItem, points: padSinglePoint(seriesItem.points) }));
 
     const allValues = effectiveSeries.flatMap((seriesItem) => seriesItem.points.map((point) => point.value));
     const allHours = effectiveSeries.flatMap((seriesItem) => seriesItem.points.map((point) => point.hour));

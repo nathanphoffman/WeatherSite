@@ -1,4 +1,6 @@
-const isDevelopment = process.env.NODE_ENV !== 'production';
+import { isProduction } from './noaa/config';
+
+const isDevelopment = !isProduction();
 
 export const logger = {
     debug: (...args: unknown[]) => {

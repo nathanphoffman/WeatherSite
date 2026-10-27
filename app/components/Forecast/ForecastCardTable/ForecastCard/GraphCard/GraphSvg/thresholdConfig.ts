@@ -1,10 +1,8 @@
-export const thresholdConfig = {
+import { LABEL_CONFIG } from './labelConfig';
+
+export const THRESHOLD_CONFIG = {
     strokeWidth: 1,
     strokeDasharray: "4,3",
     opacity: 0.85,
-    label: {
-        fontSize: 13,
-        fill: "#6b7280",
-        offset: 4,
-    },
+    label: LABEL_CONFIG,
 };

@@ -1,4 +1,3 @@
-import { Magnitude } from "./types/general";
 import { logger } from "../logger";
 
 
@@ -37,7 +36,7 @@ export function pipe(functions: ((value: unknown) => unknown)[]) {
 }
 
 export function arrayNotEmpty(items: unknown[]): boolean {
-    return items && items.length > 0;
+    return Array.isArray(items) && items.length > 0;
 }
 
 export function stripUndefined(items: unknown[]): unknown[] {
@@ -80,6 +79,10 @@ export function isStringType(input: unknown) {
 
 export function isObject(input: unknown) {
     return typeof input === 'object' && input !== null && !Array.isArray(input);
+}
+
+export function isString(input: unknown) {
+    return typeof input === 'string';
 }
 
 export function isArray(input: unknown) {

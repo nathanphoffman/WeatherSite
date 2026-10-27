@@ -1,4 +1,4 @@
-import { getBlobConnectionInfo, FORECAST_TTL_SECONDS } from "../config";
+import { getBlobConnectionInfo, FORECAST_TTL_SECONDS, CACHE_VERSION } from "../config";
 import { logger } from "../../logger";
 import { buildDayForecast } from "../forecastBuilder";
 import { StorageSolution } from "../types/storage";
@@ -8,13 +8,11 @@ import { safeJsonParse } from "../utility";
 import { blobStorage } from "./blob";
 import { databaseStorage } from "./database";
 
-const CACHE_VERSION = 2;
-
 export async function getForecast(lat?: string, long?: string): Promise<DayForecast> {
 
     if(!lat || !long) throw new Error("Latitude and/or longitude not provided");
 
-    const nowInSeconds = new Date().getTime() / 1000;
+    const nowInSeconds = Math.floor(Date.now() / 1000);
 
     const blobConnectionInfo = getBlobConnectionInfo();
     const storageSolution: StorageSolution = blobConnectionInfo ? blobStorage : databaseStorage;

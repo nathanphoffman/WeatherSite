@@ -39,7 +39,8 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         setLoading(true);
         setError(null);
         setWeather(null);
-        fetch(`/api/forecast?lat=${lat}&long=${long}&source=api`, { cache: 'no-store' })
+        const abortController = new AbortController();
+        fetch(`/api/forecast?lat=${lat}&long=${long}&source=api`, { cache: 'no-store', signal: abortController.signal })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to fetch forecast');
                 return response.json();
@@ -48,10 +49,13 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
                 setWeather(data);
                 setLoading(false);
             })
-            .catch(error => {
-                setError(error.message);
+            .catch(() => {
+                if (abortController.signal.aborted) return;
+                setError('Forecast unavailable for your location');
                 setLoading(false);
             });
+
+        return () => abortController.abort();
     }, [lat, long]);
 
     if (loading) return <p className="p-6 text-gray-400">Loading forecast...</p>;

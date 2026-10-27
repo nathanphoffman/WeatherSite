@@ -1,5 +1,5 @@
 import { militaryHourToRegularHour } from '@/app/lib/noaa/utility';
-import { labelConfig } from './labelConfig';
+import { LABEL_CONFIG } from './labelConfig';
 
 interface XAxisLabelsProps {
     referencePoints: { hour: number }[];
@@ -17,7 +17,7 @@ export default function XAxisLabels({ referencePoints, indicesToLabel, skipFirst
             {displayIndices.map((dataIndex) => {
                 const point = referencePoints[dataIndex];
                 return point ? (
-                    <text key={point.hour} x={xAt(point.hour)} y={height - labelConfig.offset} fontSize={labelConfig.fontSize} fill={labelConfig.fill} textAnchor="middle">
+                    <text key={point.hour} x={xAt(point.hour)} y={height - LABEL_CONFIG.offset} fontSize={LABEL_CONFIG.fontSize} fill={LABEL_CONFIG.fill} textAnchor="middle">
                         {militaryHourToRegularHour(point.hour)}
                     </text>
                 ) : null;

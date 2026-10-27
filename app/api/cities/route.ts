@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllCities } from "@/app/utils/cityParser";
 import { logger } from "@/app/lib/logger";
+import { blobStorage } from "@/app/lib/noaa/storage/blob";
 
 export async function GET() {
     try {
@@ -8,6 +9,7 @@ export async function GET() {
         return NextResponse.json({ allCities });
     } catch (error) {
         logger.error("Failed to get cities:", error);
-        return NextResponse.json({ error: "Failed to get cities" }, { status: 500 });
+        await blobStorage.logError(error);
+        return NextResponse.json({ error: "City list unavailable" }, { status: 500 });
     }
 }

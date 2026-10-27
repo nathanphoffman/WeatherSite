@@ -11,7 +11,6 @@ const SEVERE = 4 as Magnitude;    // "Ocnl" / ≥30mph / ≥97%
 
 // Precipitation amounts in liquid-equivalent inches/hr
 const LIGHT_PRECIP = 0.02;      // drizzle
-const MODERATE_PRECIP = 0.15;   // steady rain
 const HEAVY_PRECIP = 0.35;      // heavy rain
 const INTENSE_PRECIP = 0.6;     // tropical/severe storm
 

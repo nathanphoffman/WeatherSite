@@ -10,7 +10,7 @@ import { Magnitude } from '@/app/lib/noaa/types/general';
 import Tooltip from './Tooltip';
 import { buildEntryTooltips } from './tooltipText';
 
-const magnitudeColor: Record<Magnitude, string> = {
+const MAGNITUDE_COLOR: Record<Magnitude, string> = {
     0: GREEN,
     1: WHITE,
     2: YELLOW,
@@ -26,9 +26,9 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const { convertTemperature } = useMeasurementSystemProviderContext();
     const { regularTime, hours } = group;
 
-    const temperatures = hours.map((h) => h.temperature);
-    const humidities = hours.map((h) => h.humidity);
-    const winds = hours.map((h) => h.wind);
+    const temperatures = hours.map((hourData) => hourData.temperature);
+    const humidities = hours.map((hourData) => hourData.humidity);
+    const winds = hours.map((hourData) => hourData.wind);
 
     const allThreeStormRatings = hours.map(getHourStormRating);
     const lowestStorm = Math.min(...allThreeStormRatings);
@@ -52,12 +52,12 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
     const statusIcon = unstableWeather ? '⚠️' : freezeIcon.trim() ? freezeIcon : happyFace;
 
     const tooltips = buildEntryTooltips({
-        avgTemp: Math.round(getAverage(...temperatures)),
-        avgHumidity: Math.round(getAverage(...humidities)),
-        avgWind: Math.round(getAverage(...winds)),
-        avgSkyCover: Math.round(getAverage(...hours.map((h) => h.skyCover))),
-        avgPrecipChance: Math.round(getAverage(...hours.map((h) => h.precipChance))),
-        avgSnowMagnitude: convertNOAAChancesToAverageMagnitude(...hours.map((h) => h.snow)),
+        averageTemperature: Math.round(getAverage(...temperatures)),
+        averageHumidity: Math.round(getAverage(...humidities)),
+        averageWind: Math.round(getAverage(...winds)),
+        averageSkyCover: Math.round(getAverage(...hours.map((hourData) => hourData.skyCover))),
+        averagePrecipChance: Math.round(getAverage(...hours.map((hourData) => hourData.precipChance))),
+        averageSnowMagnitude: convertNOAAChancesToAverageMagnitude(...hours.map((hourData) => hourData.snow)),
         stormRating,
         thunderMagnitude,
         unstableWeather,
@@ -72,30 +72,30 @@ export default function ThreeHourEntry({ group }: ThreeHourEntryProps) {
         <tr className="border-b border-gray-800 last:border-0">
             <td className="py-1 pr-4 text-gray-500 border-r border-dotted border-gray-700">{regularTime}</td>
             <td className="py-1 px-4 text-center border-r border-dotted border-gray-700">
-                <span className={magnitudeColor[realFeelMagnitude]}>
+                <span className={MAGNITUDE_COLOR[realFeelMagnitude]}>
                     <Tooltip text={tooltips.realFeel}>
                         <span>{convertTemperature(realFeelTemperature)}°</span>
                     </Tooltip>
                     {humidityMagnitude > 0 && (
                         <Tooltip text={tooltips.humidity}>
-                            <span className={`ml-1 ${magnitudeColor[humidityMagnitude]}`}>H</span>
+                            <span className={`ml-1 ${MAGNITUDE_COLOR[humidityMagnitude]}`}>H</span>
                         </Tooltip>
                     )}
                 </span>
             </td>
-            <td className={`py-1 px-2 text-center border-r border-dotted border-gray-700 whitespace-nowrap ${magnitudeColor[stormMagnitude]}`}>
+            <td className={`py-1 px-2 text-center border-r border-dotted border-gray-700 whitespace-nowrap ${MAGNITUDE_COLOR[stormMagnitude]}`}>
                 <Tooltip text={tooltips.storm}>
                     <span>{stormRating}</span>
                 </Tooltip>
                 {(windMagnitude > 0 || thunderMagnitude > 0) && <span className="ml-1">
                     {windMagnitude > 0 && (
                         <Tooltip text={tooltips.wind}>
-                            <span className={magnitudeColor[windMagnitude]}>W</span>
+                            <span className={MAGNITUDE_COLOR[windMagnitude]}>W</span>
                         </Tooltip>
                     )}
                     {thunderMagnitude > 0 && (
                         <Tooltip text={tooltips.thunder}>
-                            <span className={magnitudeColor[thunderMagnitude]}>T</span>
+                            <span className={MAGNITUDE_COLOR[thunderMagnitude]}>T</span>
                         </Tooltip>
                     )}
                 </span>}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { getHourRealFeel, getHourStormRating } from '@/app/lib/noaa/output/calculations';
-import { realFeelThresholds, windThresholds, stormRatingThresholds, precipThresholds } from './graphThresholds';
+import { REAL_FEEL_THRESHOLDS, WIND_THRESHOLDS, STORM_RATING_THRESHOLDS, PRECIP_THRESHOLDS } from './graphThresholds';
 import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
 import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
@@ -57,7 +57,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
 
     const realFeelPoints = sortedHours(getHourRealFeel);
     const stormRatingPoints = sortedHours(getHourStormRating);
-    const windPoints = sortedHours((hourData) => hourData.wind);
+    const windPoints = sortedHours(toWindSpeed);
     const skyCoverPoints = sortedHours((hourData) => hourData.skyCover);
     const humidityPoints = sortedHours((hourData) => hourData.humidity);
     const precipChancePoints = sortedHours((hourData) => hourData.precipChance);
@@ -101,7 +101,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                 minValue={convertTemperature(weeklyHighAndLowRealFeel.weeklyLow)}
                 maxValue={convertTemperature(weeklyHighAndLowRealFeel.weeklyHigh)}
                 formatYLabel={(value) => `${Math.round(value)}°`}
-                thresholdLines={realFeelThresholds.map((threshold) => ({ ...threshold, value: convertTemperature(threshold.value) }))}
+                thresholdLines={REAL_FEEL_THRESHOLDS.map((threshold) => ({ ...threshold, value: convertTemperature(threshold.value) }))}
             />
             <LineGraph
                 title="Storm Rating"
@@ -112,7 +112,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                 minValue={0}
                 maxValue={50}
                 logStrength={0.4}
-                thresholdLines={stormRatingThresholds}
+                thresholdLines={STORM_RATING_THRESHOLDS}
             />
 
             <button
@@ -150,7 +150,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                         maxValue={convertWindSpeed(weeklyHighAndLowWindSpeed.weeklyHigh)}
                         color="#a78bfa"
                         indicesToLabel={indicesToLabel}
-                        thresholdLines={windThresholds.map((threshold) => ({ ...threshold, value: convertWindSpeed(threshold.value) }))}
+                        thresholdLines={WIND_THRESHOLDS.map((threshold) => ({ ...threshold, value: convertWindSpeed(threshold.value) }))}
                     />
                     <LineGraph
                         title="Humidity"
@@ -169,7 +169,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                         indicesToLabel={indicesToLabel}
                         minValue={0}
                         logStrength={1}
-                        //thresholdLines={precipThresholds.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
+                        //thresholdLines={PRECIP_THRESHOLDS.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
                         maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(0.1))}
                         formatYLabel={(value) => useMetric ? value.toFixed(1) : value.toFixed(2)}
                     />

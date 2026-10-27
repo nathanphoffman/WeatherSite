@@ -1,15 +1,18 @@
-export default async function Page() {
+import Link from 'next/link';
+import { ICON_BUTTON_CLASSES } from '@/app/components/iconButtonClasses';
+import AboutSection from './AboutSection';
+
+export default function Page() {
     return (
         <article className="max-w-4xl mx-auto p-6 space-y-6">
             <div className="relative flex items-center justify-center">
-                <a href="/" className="absolute left-0 flex items-center justify-center w-10 h-10 text-xl text-gray-400 border border-gray-600 rounded-lg hover:text-white hover:border-gray-400 active:bg-gray-800" aria-label="Back to forecast">
+                <Link href="/" className={`absolute left-0 ${ICON_BUTTON_CLASSES}`} aria-label="Back to forecast">
                     ↩
-                </a>
+                </Link>
                 <h1 className="text-2xl font-bold text-white">How to Read the Forecast</h1>
             </div>
 
-            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
-                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Format</h2>
+            <AboutSection title="Format">
                 <p className="text-white font-mono text-lg">RealFeel(H) &nbsp;StormRating(W)(T) &nbsp;😊</p>
                 <ul className="space-y-1 text-gray-300 text-sm">
                     <li><span className="text-white font-semibold">RealFeel</span> — 'feels like' temperature rounded to the nearest 5th°</li>
@@ -19,10 +22,9 @@ export default async function Page() {
                     <li><span className="text-white font-semibold">⚠️</span> — A caution symbol shows if the storm factor is particularly unstable over the averaged three hour window, this may be times near a storm or a thundershower. This basically means 'use caution weather could be worse than shown.'</li>
 
                 </ul>
-            </section>
+            </AboutSection>
 
-            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
-                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Color Coding</h2>
+            <AboutSection title="Color Coding">
                 <ul className="space-y-1 text-sm">
                     <li className="text-green-400 font-semibold">Green — best</li>
                     <li className="text-gray-400 font-semibold">Grey — decent</li>
@@ -30,18 +32,16 @@ export default async function Page() {
                     <li className="text-red-400 font-semibold">Red — pretty bad</li>
                     <li className="text-red-200 font-bold">Bright — really bad</li>
                 </ul>
-            </section>
+            </AboutSection>
 
-            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-2">
-                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Smiley Face</h2>
+            <AboutSection title="Smiley Face" spacingClass="space-y-2">
                 <ul className="space-y-1 text-gray-300 text-sm">
                     <li><span className="text-white font-semibold">😎</span> — RealFeel and storm rating are both green, and humidity is not a factor (excellent conditions)</li>
                     <li><span className="text-white font-semibold">😊</span> — Conditions are decently nice, such as a grey and green combination</li>
                 </ul>
-            </section>
+            </AboutSection>
 
-            <section className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
-                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Storm Rating Guide</h2>
+            <AboutSection title="Storm Rating Guide">
                 <p className="text-gray-400 text-sm">A composite of cloud cover, precipitation, wind, and thunder — rounded to 1 sig fig under 10 or nearest 5 over 10.</p>
                 <div className="divide-y divide-gray-800 text-sm">
                     {[
@@ -61,7 +61,7 @@ export default async function Page() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </AboutSection>
         </article>
     );
 }

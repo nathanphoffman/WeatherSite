@@ -1,28 +1,33 @@
 import { GRAPH_DIMENSIONS } from './graphConfig';
 
+// this is a geometrical constant of bezier, better not to think too hard about it, it just works
+const BEZIER_MAGIC_NUMBER = 6;
+
 // Almost all of this was 100% Claude, this is a bit of a black box, but I have commented some myself and used AI to add comments to better explain itself
 // At the end of the day this is more of a mathematician function and less a coding one
 // The intent of this function and the reason it was added is to smooth our coarse three-hour data points for the line charts
+// a single point can't draw a line, so we add a second point one hour later
+export function padSinglePoint<T extends { hour: number }>(points: T[]): T[] {
+    return points.length === 1 ? [points[0], { ...points[0], hour: points[0].hour + 1 }] : points;
+}
+
 export function smoothLinePath(points: [number, number][]): string {
     if (points.length < 2) return '';
 
     // Start the SVG path command at the very first point
     let svgPath = `M ${points[0][0].toFixed(1)},${points[0][1].toFixed(1)}`;
 
-    for (let i = 0; i < points.length - 1; i++) {
-
-        // this is a geometrical constant of bezier, better not to think too hard about it, it just works
-        const BEZIER_MAGIC_NUMBER = 6;
+    for (let segmentIndex = 0; segmentIndex < points.length - 1; segmentIndex++) {
 
         // We're drawing one smooth curve segment from segmentStart to segmentEnd.
         // To avoid a sharp corner where segments meet, we look at the point that
         // came before segmentStart and the point that comes after segmentEnd.
         // Those neighbors tell us what direction the line is "traveling" at each end,
         // so the curve can flow smoothly out of the previous segment and into the next one.
-        const segmentStart     = points[i];
-        const segmentEnd       = points[i + 1];
-        const pointBeforeStart = points[i - 1] ?? segmentStart;  // only undefined on the very first segment; fall back to segmentStart so curvePullNearStart aims straight toward segmentEnd
-        const pointAfterEnd    = points[i + 2] ?? segmentEnd;    // only undefined on the very last segment; fall back to segmentEnd so curvePullNearEnd aims straight back toward segmentStart
+        const segmentStart     = points[segmentIndex];
+        const segmentEnd       = points[segmentIndex + 1];
+        const pointBeforeStart = points[segmentIndex - 1] ?? segmentStart;  // only undefined on the very first segment; fall back to segmentStart so curvePullNearStart aims straight toward segmentEnd
+        const pointAfterEnd    = points[segmentIndex + 2] ?? segmentEnd;    // only undefined on the very last segment; fall back to segmentEnd so curvePullNearEnd aims straight back toward segmentStart
 
         // A Bezier curve uses two invisible "pull points" to shape the curve.
         // The curve bends toward each pull point without actually passing through it —

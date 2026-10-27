@@ -3,6 +3,7 @@ import { ThreeHourWeatherModel } from '../types/threeHourWeather';
 import { NoaaHourlyPeriod, NoaaPointsResponse, NoaaForecastResponse, NoaaGridDataResponse, NoaaPrecipEntry } from '../types/noaaApiModels';
 import { isValidLatitude, isValidLongitude } from '../types/validators';
 import { logger } from '../../logger';
+import { NOAA_API_BASE_URL, NOAA_USER_AGENT, NOAA_REQUEST_TIMEOUT_MS } from '../config';
 
 
 
@@ -80,22 +81,23 @@ export async function fetchAndParseNoaaForecast(lat: string, long: string): Prom
     }
 
     const headers = {
-        'User-Agent': 'WeatherSite/1.0 (weather app)',
+        'User-Agent': NOAA_USER_AGENT,
         'Accept': 'application/geo+json',
     };
 
     // NOAA maintains a location of grid points that lat lon point to, here we get that coarse grid position to use against their main api
-    const pointsResult = await fetch(`https://api.weather.gov/points/${lat},${long}`, { headers });
+    const pointsResult = await fetch(`${NOAA_API_BASE_URL}/points/${lat},${long}`, { headers, signal: AbortSignal.timeout(NOAA_REQUEST_TIMEOUT_MS) });
     if (!pointsResult.ok) throw new Error(`NOAA points API failed: ${pointsResult.status}`);
     const pointsData = await pointsResult.json();
     const { forecastHourlyUrl, forecastGridDataUrl } = NoaaPointsResponse.formModelFromCandidate(pointsData);
 
     const [forecastResult, gridDataResult] = await Promise.all([
-        fetch(forecastHourlyUrl, { headers }),
-        fetch(forecastGridDataUrl, { headers }),
+        fetch(forecastHourlyUrl, { headers, signal: AbortSignal.timeout(NOAA_REQUEST_TIMEOUT_MS) }),
+        fetch(forecastGridDataUrl, { headers, signal: AbortSignal.timeout(NOAA_REQUEST_TIMEOUT_MS) }),
     ]);
     if (!forecastResult.ok) throw new Error(`NOAA forecast API failed: ${forecastResult.status}`);
     const forecastData = await forecastResult.json();
+    if (!gridDataResult.ok) logger.warn(`NOAA grid data API failed: ${gridDataResult.status}`);
     const gridData = gridDataResult.ok ? await gridDataResult.json() : null;
     const precipEntries: NoaaPrecipEntry[] = gridData
         ? NoaaGridDataResponse.formModelFromCandidate(gridData).precipValues

@@ -9,6 +9,7 @@ const SITE_ID = blobConnectionInfo?.SITE_ID; // netlify also calls this project 
 const BLOB_TOKEN = blobConnectionInfo?.BLOB_TOKEN;
 
 const FORECASTS = 'FORECASTS';
+const ERRORS = 'ERRORS';
 
 export const blobStorage = {
     saveLatLongForecast: async function (weather: Weather) {
@@ -40,5 +41,18 @@ export const blobStorage = {
         // we check to see if the forecast is current before trusting it
         if(Number(weatherObj.unixSeconds) > unixSecondsAgeLimit) return weatherObj.forecast;
         else return "";
+    },
+
+    // never throws, so logging can't mask the original error
+    logError: async function (error: unknown) {
+        try {
+            if(!blobConnectionInfo) return;
+
+            const message = error instanceof Error ? error.stack ?? error.message : String(error);
+            const store = getStore(ERRORS, { siteID: SITE_ID, token: BLOB_TOKEN });
+            await store.set(`${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, message);
+        } catch {
+            // intentionally silent
+        }
     }
 };

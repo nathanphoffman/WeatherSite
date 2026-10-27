@@ -13,6 +13,11 @@ export const LAT_MULTIPLIER = 1_000_000;
 export const LONG_MULTIPLIER = 1_000_000;
 
 export const FORECAST_TTL_SECONDS = 3600;
+export const CACHE_VERSION = 2;
+
+export const NOAA_API_BASE_URL = 'https://api.weather.gov';
+export const NOAA_USER_AGENT = 'WeatherSite/1.0 (weather app)';
+export const NOAA_REQUEST_TIMEOUT_MS = 10_000;
 
 export function getBlobConnectionInfo() {
     const SITE_ID = process.env.BLOB_SITE_ID; // netlify also calls this project id
@@ -24,8 +29,12 @@ export function getBlobConnectionInfo() {
     };
 }
 
+export function isProduction() {
+    return process.env.NODE_ENV === 'production';
+}
+
 export function getChosenLocation() {
-    const argument = (process.argv as any[])?.[2];
+    const argument = process.argv[2];
     const chosenLocation = !argument ? "default" : argument;
     return String(chosenLocation);
 }

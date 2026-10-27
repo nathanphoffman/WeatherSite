@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import CitySearch from "@/app/components/CityForecastLookup/CitySearch";
 import Forecast from "../Forecast/Forecast";
 import { City } from "@/app/utils/cityParser";
+import { getCityKey } from "@/app/utils/cityKey";
 import { safeJsonParse } from "@/app/lib/noaa/utility";
 
 const STORAGE_KEY = "lastCity";
@@ -45,7 +46,7 @@ export default function CityForecastLookup({
   const addSelectedCityToLookupCache = (city: City) => {
     const cachedCitiesFromStorage = getCachedCitiesFromStorage();
     const matchedCity = cachedCitiesFromStorage.find(
-      (cachedCity) => cachedCity.city === city.city,
+      (cachedCity) => getCityKey(cachedCity) === getCityKey(city),
     );
     if (!matchedCity) {
       const newCityList = [city, ...cachedCitiesFromStorage];
@@ -68,11 +69,11 @@ export default function CityForecastLookup({
     if (saved) setSelectedCity(safeJsonParse<City>(saved));
 
     const cachedCities = getCachedCitiesFromStorage();
-    const cachedCityNames = new Set(cachedCities.map((city) => city.city));
+    const cachedCityKeys = new Set(cachedCities.map(getCityKey));
     setCachedAndPopularCities([
       ...cachedCities,
       ...cachedAndPopularCities.filter(
-        (city) => !cachedCityNames.has(city.city),
+        (cityItem) => !cachedCityKeys.has(getCityKey(cityItem)),
       ),
     ]);
   }, []);

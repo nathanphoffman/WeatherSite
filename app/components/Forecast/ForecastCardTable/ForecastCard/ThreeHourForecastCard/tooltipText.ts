@@ -61,12 +61,12 @@ export interface EntryTooltips {
 }
 
 export interface EntryTooltipInputs {
-    avgTemp: number;
-    avgHumidity: number;
-    avgWind: number;
-    avgSkyCover: number;
-    avgPrecipChance: number;
-    avgSnowMagnitude: Magnitude;
+    averageTemperature: number;
+    averageHumidity: number;
+    averageWind: number;
+    averageSkyCover: number;
+    averagePrecipChance: number;
+    averageSnowMagnitude: Magnitude;
     stormRating: number;
     thunderMagnitude: Magnitude;
     unstableWeather: boolean;
@@ -74,28 +74,28 @@ export interface EntryTooltipInputs {
     highestStorm: number;
     freezeIcon: string;
     happyFace: string;
-    convertTemperature: (temp: number) => number;
+    convertTemperature: (temperature: number) => number;
 }
 
 export function buildEntryTooltips(inputs: EntryTooltipInputs): EntryTooltips {
     const {
-        avgTemp, avgHumidity, avgWind, avgSkyCover, avgPrecipChance, avgSnowMagnitude,
+        averageTemperature, averageHumidity, averageWind, averageSkyCover, averagePrecipChance, averageSnowMagnitude,
         stormRating, thunderMagnitude, unstableWeather, lowestStorm, highestStorm,
         freezeIcon, happyFace, convertTemperature,
     } = inputs;
 
-    const realFeel = `Avg actual: ${convertTemperature(avgTemp)}°\nReal feel adjusts for humidity, wind, and sun`;
+    const realFeel = `Avg actual: ${convertTemperature(averageTemperature)}°\nReal feel adjusts for humidity, wind, and sun`;
 
-    const humidity = `Humidity: ${avgHumidity}%\n${getHumidityLabel(avgHumidity)}`;
+    const humidity = `Humidity: ${averageHumidity}%\n${getHumidityLabel(averageHumidity)}`;
 
     const storm = [
         getStormLabel(stormRating),
-        `Sky: ${avgSkyCover}% — ${getSkyCoverLabel(avgSkyCover)}`,
-        getPrecipLabel(avgPrecipChance),
-        avgSnowMagnitude > 0 ? `Snow: ${getMagnitudeChanceLabel(avgSnowMagnitude)}` : null,
+        `Sky: ${averageSkyCover}% — ${getSkyCoverLabel(averageSkyCover)}`,
+        getPrecipLabel(averagePrecipChance),
+        averageSnowMagnitude > 0 ? `Snow: ${getMagnitudeChanceLabel(averageSnowMagnitude)}` : null,
     ].filter(Boolean).join('\n');
 
-    const wind = `Wind: ${getWindLabel(avgWind)}`;
+    const wind = `Wind: ${getWindLabel(averageWind)}`;
 
     const thunder = `Thunder: ${getMagnitudeChanceLabel(thunderMagnitude)}`;
 

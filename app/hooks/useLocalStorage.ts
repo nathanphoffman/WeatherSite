@@ -16,10 +16,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     const setValue = useCallback((value: T | ((previous: T) => T)) => {
         setStoredValue((previous) => {
             const next = value instanceof Function ? value(previous) : value;
-            if (next === null || next === undefined) {
-                localStorage.removeItem(key);
-            } else {
-                localStorage.setItem(key, JSON.stringify(next));
+            try {
+                if (next === null || next === undefined) {
+                    localStorage.removeItem(key);
+                } else {
+                    localStorage.setItem(key, JSON.stringify(next));
+                }
+            } catch {
+                // storage unavailable (quota or private mode); keep in-memory state only
             }
             return next;
         });
