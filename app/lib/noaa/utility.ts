@@ -1,14 +1,13 @@
 import { logger } from "../logger";
 
 
-export function splitIntoGroupsOf3<T>(items: T[], previous?: T[][]): T[][] | undefined {
-    const deepClone = [...items];
-    const firstThreeItems = deepClone.splice(0, 3);
-
-    if (items.length < 3) return previous;
-    else if (!previous || previous.length === 0) return splitIntoGroupsOf3(deepClone, [firstThreeItems]);
-    else if (previous && previous.length > 0 && items.length > 2) return splitIntoGroupsOf3(deepClone, [...previous, firstThreeItems]);
-    else return undefined;
+// leftover items that don't fill a complete group of 3 are dropped
+export function splitIntoGroupsOf3<T>(items: T[]): T[][] {
+    const groups: T[][] = [];
+    for (let startIndex = 0; startIndex + 3 <= items.length; startIndex += 3) {
+        groups.push(items.slice(startIndex, startIndex + 3));
+    }
+    return groups;
 }
 
 export function getDayOfTheWeek(day: string) {
@@ -29,10 +28,6 @@ export function militaryHourToRegularHour(militaryHour: number): string {
     if (militaryHour === 0 || militaryHour === 24) return '12a';
     if (militaryHour === 12) return '12p';
     return militaryHour < 12 ? `${militaryHour}a` : `${militaryHour - 12}p`;
-}
-
-export function pipe(functions: ((value: unknown) => unknown)[]) {
-    return (x: unknown) => functions.reduce((accumulator, func) => func(accumulator), x);
 }
 
 export function arrayNotEmpty(items: unknown[]): boolean {
@@ -98,15 +93,26 @@ export function safeJsonParse<T>(value: string | null): T | null {
     }
 }
 
+function describeValue(value: unknown): string {
+    if (typeof value === 'object' && value !== null) {
+        try {
+            return JSON.stringify(value);
+        } catch {
+            return String(value);
+        }
+    }
+    return String(value);
+}
+
 export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[], fieldName?: string) {
     const failedFunctionsOrUndefined = validators.map((validator) => validator(candidate) ? undefined : validator.name);
     const failedFunctions = stripUndefined(failedFunctionsOrUndefined);
 
     if (arrayNotEmpty(failedFunctions)) {
         const fieldInfo = fieldName ? ` field="${fieldName}"` : "";
-        logger.warn(`VALIDATION FAILED!${fieldInfo} value=${candidate}`);
+        logger.warn(`VALIDATION FAILED!${fieldInfo} value=${describeValue(candidate)}`);
         const fieldLabel = fieldName ? ` for field "${fieldName}"` : "";
-        throw new Error(`value ${candidate}${fieldLabel} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(",")}`);
+        throw new Error(`value ${describeValue(candidate)}${fieldLabel} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(",")}`);
     }
     else return candidate as T;
 }

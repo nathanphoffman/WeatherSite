@@ -16,9 +16,9 @@ export async function buildDayForecast(lat: string, long: string): Promise<DayFo
     dayForecast[`${currentDay} ${today}`] = [];
     let dayTracker = 0;
 
-    hourlyWeatherRowsGroupsOf3?.forEach((threeHours: ThreeHourWeatherModel[], i, allWeatherGroups) => {
+    hourlyWeatherRowsGroupsOf3.forEach((threeHours: ThreeHourWeatherModel[], groupIndex, allWeatherGroups) => {
         const middleHour = threeHours[1].hour;
-        const previousMiddleHour = i === 0 ? 0 : allWeatherGroups[i - 1][1].hour;
+        const previousMiddleHour = groupIndex === 0 ? 0 : allWeatherGroups[groupIndex - 1][1].hour;
         let dayOfTheWeek = getDayOfTheWeek(String(currentDay));
 
         // days of the week are scraped separately from data so we determine which days belong to which hours here

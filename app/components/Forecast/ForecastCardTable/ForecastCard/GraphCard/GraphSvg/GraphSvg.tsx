@@ -37,7 +37,7 @@ export default function GraphSvg({
         <>
             <p className="text-xs text-gray-500 uppercase tracking-wide mt-6">{title}</p>
             <div ref={containerRef}>
-                <svg viewBox={`0 0 ${svgWidth} ${height}`} width="100%" height={height}>
+                <svg viewBox={`0 0 ${svgWidth} ${height}`} width="100%" height={height} role="img" aria-label={title}>
                     <GraphBorders paddingLeft={PADDING_LEFT} paddingTop={PADDING_TOP} plotWidth={plotWidth} plotHeight={plotHeight} />
                     <YAxisLabels paddingLeft={PADDING_LEFT} paddingTop={PADDING_TOP} plotHeight={plotHeight} computedMin={computedMin} computedMax={computedMax} formatYLabel={format} />
                     {thresholdLines && (

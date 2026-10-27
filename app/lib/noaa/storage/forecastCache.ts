@@ -8,9 +8,7 @@ import { safeJsonParse } from "../utility";
 import { blobStorage } from "./blob";
 import { databaseStorage } from "./database";
 
-export async function getForecast(lat?: string, long?: string): Promise<DayForecast> {
-
-    if(!lat || !long) throw new Error("Latitude and/or longitude not provided");
+export async function getForecast(lat: string, long: string): Promise<DayForecast> {
 
     const nowInSeconds = Math.floor(Date.now() / 1000);
 

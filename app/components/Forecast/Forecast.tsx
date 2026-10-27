@@ -58,8 +58,8 @@ export default function Forecast({ lat, long, allFlipped, flipNonce, onFlipCount
         return () => abortController.abort();
     }, [lat, long]);
 
-    if (loading) return <p className="p-6 text-gray-400">Loading forecast...</p>;
-    if (error) return <p className="p-6 text-red-400">{error}</p>;
+    if (loading) return <p role="status" className="p-6 text-gray-400">Loading forecast...</p>;
+    if (error) return <p role="alert" className="p-6 text-red-400">{error}</p>;
     if (!weather) return null;
 
     const handleCardFlipChange = (date: string, flipped: boolean) => {

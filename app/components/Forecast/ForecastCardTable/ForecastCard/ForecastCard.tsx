@@ -82,6 +82,25 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
 
     const faceClasses = "bg-gray-900 border border-gray-700 rounded-xl p-4 pb-10 min-h-[460px]";
 
+    const handleCardClick = () => {
+        if (!flipped) {
+            if (allExpanded) {
+                flipAndExpand();
+            } else {
+                clearTimers();
+                setFlipped(true);
+            }
+        } else {
+            if (graphsOpen) {
+                collapseAndFlip();
+            } else {
+                clearTimers();
+                setFlipped(false);
+                setCardExpanded(false);
+            }
+        }
+    };
+
     const dateHeader = (
         <h2 className="text-base font-semibold text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-700">
             {forecastDate}
@@ -91,24 +110,7 @@ export default function ForecastCard({ forecastDate, groups, allGroups, allFlipp
     return (
         <article
             className={`flip-card w-full cursor-pointer${cardExpanded && flipped ? ' flip-card-expanded' : ''}`}
-            onClick={() => {
-                if (!flipped) {
-                    if (allExpanded) {
-                        flipAndExpand();
-                    } else {
-                        clearTimers();
-                        setFlipped(true);
-                    }
-                } else {
-                    if (graphsOpen) {
-                        collapseAndFlip();
-                    } else {
-                        clearTimers();
-                        setFlipped(false);
-                        setCardExpanded(false);
-                    }
-                }
-            }}
+            onClick={handleCardClick}
         >
             <div className={`flip-card-inner${flipped ? ' flipped' : ''}`}>
                 <div className={`flip-card-front ${faceClasses}`}>

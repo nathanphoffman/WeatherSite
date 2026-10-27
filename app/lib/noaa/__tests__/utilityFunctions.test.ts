@@ -16,12 +16,12 @@ import { isNumber, isNotNegative } from "../utility";
 // splitIntoGroupsOf3
 // ---------------------------------------------------------------------------
 describe("splitIntoGroupsOf3", () => {
-    it("returns undefined for an empty array", () => {
-        expect(splitIntoGroupsOf3([])).toBeUndefined();
+    it("returns an empty array for an empty array", () => {
+        expect(splitIntoGroupsOf3([])).toEqual([]);
     });
 
-    it("returns undefined when fewer than 3 items are provided", () => {
-        expect(splitIntoGroupsOf3([1, 2])).toBeUndefined();
+    it("returns an empty array when fewer than 3 items are provided", () => {
+        expect(splitIntoGroupsOf3([1, 2])).toEqual([]);
     });
 
     it("groups exactly 3 items into a single group", () => {

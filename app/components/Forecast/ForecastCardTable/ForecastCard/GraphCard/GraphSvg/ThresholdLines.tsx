@@ -18,7 +18,7 @@ export default function ThresholdLines({ thresholds, computedMin, computedMax, p
         <>
             {/* These are dotted lines that indicate the severity and coloration that applies in the scale */}
             {visibleThresholds.map((threshold) => (
-                <g key={threshold.value}>
+                <g key={`${threshold.value}-${threshold.color}`}>
                     <line
                         x1={paddingLeft}
                         y1={yAt(threshold.value)}

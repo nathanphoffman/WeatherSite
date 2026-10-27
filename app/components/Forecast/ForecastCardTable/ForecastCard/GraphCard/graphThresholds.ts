@@ -1,4 +1,4 @@
-import { RealFeelPreferences, StormPreferences } from '@/app/lib/noaa/config';
+import { RealFeelPreferences, StormPreferences, WindRanges } from '@/app/lib/noaa/config';
 import { ThresholdLine } from './graphConfig';
 
 const COLOR_EXTREME = '#f43f5e';
@@ -26,11 +26,13 @@ export const STORM_THRESHOLDS: ThresholdLine[] = [
     { value: StormPreferences.VeryBadMin, color: COLOR_EXTREME },
 ];
 
+const windMinimum = (magnitude: 1 | 2 | 3 | 4) => (WindRanges[magnitude] as number[])[0];
+
 export const WIND_THRESHOLDS: ThresholdLine[] = [
-    { value: 10, color: COLOR_REFERENCE },
-    { value: 16, color: COLOR_POOR },
-    { value: 23, color: COLOR_BAD },
-    { value: 30, color: COLOR_EXTREME },
+    { value: windMinimum(1), color: COLOR_REFERENCE },
+    { value: windMinimum(2), color: COLOR_POOR },
+    { value: windMinimum(3), color: COLOR_BAD },
+    { value: windMinimum(4), color: COLOR_EXTREME },
 ];
 
 export const STORM_RATING_THRESHOLDS: ThresholdLine[] = [

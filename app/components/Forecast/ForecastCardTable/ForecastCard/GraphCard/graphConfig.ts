@@ -14,3 +14,16 @@ export interface ThresholdLine {
 }
 
 export const defaultFormatYLabel = (value: number) => String(Math.round(value));
+
+export const GRAPH_COLORS = {
+    REAL_FEEL: '#3b82f6',
+    STORM_RATING: '#a855f7',
+    CLOUD_COVER: '#94a3b8',
+    PRECIP_CHANCE: '#60a5fa',
+    WIND_SPEED: '#a78bfa',
+    HUMIDITY: '#06b6d4',
+    PRECIP_AMOUNT: '#38bdf8',
+    RAIN: '#60a5fa',
+    SNOW: '#e2e8f0',
+    THUNDER: '#fbbf24',
+};

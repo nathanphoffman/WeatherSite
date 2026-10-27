@@ -68,7 +68,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
             if (!loading && currentlyShownCities.length === 0) {
                 setLoading(true);
 
-                // !! artificial delay to show a loading screen
+                // artificial delay to show a loading screen
                 setTimeout(async () => {
                     try {
                         const response = await fetch('/api/cities');
@@ -103,7 +103,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
     const filteredCities = getCurrentlyFilteredCities(query);
 
     return (
-        <header className="p-4 flex justify-center">
+        <div className="p-4 flex justify-center">
             <div className="flex items-center gap-2 w-full max-w-sm">
                 <Link
                     href="/about"
@@ -115,6 +115,7 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                 <div className="relative flex-1 min-w-0">
                     <input
                         type="text"
+                        aria-label="Search for a city"
                         role="combobox"
                         aria-autocomplete="list"
                         aria-expanded={!citySelected && filteredCities.length > 0}
@@ -156,6 +157,6 @@ export default function CitySearch({ cities, initialCity, onSelect, onClear }: C
                     </button>
                 )}
             </div>
-        </header>
+        </div>
     );
 }

@@ -15,11 +15,11 @@ export default function Page() {
             <AboutSection title="Format">
                 <p className="text-white font-mono text-lg">RealFeel(H) &nbsp;StormRating(W)(T) &nbsp;😊</p>
                 <ul className="space-y-1 text-gray-300 text-sm">
-                    <li><span className="text-white font-semibold">RealFeel</span> — 'feels like' temperature rounded to the nearest 5th°</li>
+                    <li><span className="text-white font-semibold">RealFeel</span> — &apos;feels like&apos; temperature rounded to the nearest 5th°</li>
                     <li><span className="text-white font-semibold">(H)</span> — appears when humidity is high</li>
                     <li><span className="text-white font-semibold">(W)</span> — appears when it is windy</li>
                     <li><span className="text-white font-semibold">(T)</span> — appears when there is a chance of thunderstorms</li>
-                    <li><span className="text-white font-semibold">⚠️</span> — A caution symbol shows if the storm factor is particularly unstable over the averaged three hour window, this may be times near a storm or a thundershower. This basically means 'use caution weather could be worse than shown.'</li>
+                    <li><span className="text-white font-semibold">⚠️</span> — A caution symbol shows if the storm factor is particularly unstable over the averaged three hour window, this may be times near a storm or a thundershower. This basically means &apos;use caution weather could be worse than shown.&apos;</li>
 
                 </ul>
             </AboutSection>

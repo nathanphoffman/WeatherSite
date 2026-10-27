@@ -32,14 +32,14 @@ export const blobStorage = {
         const weather = await store.get(key, {type: 'text'});
         if(!weather) return "";
 
-        const weatherObj = safeJsonParse<Weather>(weather);
-        if (!weatherObj) {
+        const weatherRecord = safeJsonParse<Weather>(weather);
+        if (!weatherRecord) {
             logger.error(`VALIDATION FAILED! field="weatherBlob" value=<corrupted>`);
             return "";
         }
 
         // we check to see if the forecast is current before trusting it
-        if(Number(weatherObj.unixSeconds) > unixSecondsAgeLimit) return weatherObj.forecast;
+        if(Number(weatherRecord.unixSeconds) > unixSecondsAgeLimit) return weatherRecord.forecast;
         else return "";
     },
 

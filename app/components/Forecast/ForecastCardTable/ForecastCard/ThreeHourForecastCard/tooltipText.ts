@@ -17,12 +17,14 @@ function getPrecipLabel(precipChance: number): string {
     return `Rain expected (${precipChance}%)`;
 }
 
-function getWindLabel(wind: number): string {
-    if (wind <= 9) return `Calm (${wind} mph)`;
-    if (wind <= 15) return `Light winds (${wind} mph)`;
-    if (wind <= 22) return `Moderate winds (${wind} mph)`;
-    if (wind <= 29) return `Strong winds (${wind} mph)`;
-    return `High winds (${wind} mph)`;
+// category cutoffs are in mph; the displayed speed is already converted to the chosen unit
+function getWindLabel(windMph: number, displayedWind: number, windUnit: string): string {
+    const speed = `${displayedWind} ${windUnit}`;
+    if (windMph <= 9) return `Calm (${speed})`;
+    if (windMph <= 15) return `Light winds (${speed})`;
+    if (windMph <= 22) return `Moderate winds (${speed})`;
+    if (windMph <= 29) return `Strong winds (${speed})`;
+    return `High winds (${speed})`;
 }
 
 function getHumidityLabel(humidity: number): string {
@@ -74,6 +76,8 @@ export interface EntryTooltipInputs {
     highestStorm: number;
     freezeIcon: string;
     happyFace: string;
+    convertWindSpeed: (mph: number) => number;
+    windUnit: string;
     convertTemperature: (temperature: number) => number;
 }
 
@@ -81,7 +85,7 @@ export function buildEntryTooltips(inputs: EntryTooltipInputs): EntryTooltips {
     const {
         averageTemperature, averageHumidity, averageWind, averageSkyCover, averagePrecipChance, averageSnowMagnitude,
         stormRating, thunderMagnitude, unstableWeather, lowestStorm, highestStorm,
-        freezeIcon, happyFace, convertTemperature,
+        freezeIcon, happyFace, convertTemperature, convertWindSpeed, windUnit,
     } = inputs;
 
     const realFeel = `Avg actual: ${convertTemperature(averageTemperature)}°\nReal feel adjusts for humidity, wind, and sun`;
@@ -95,7 +99,7 @@ export function buildEntryTooltips(inputs: EntryTooltipInputs): EntryTooltips {
         averageSnowMagnitude > 0 ? `Snow: ${getMagnitudeChanceLabel(averageSnowMagnitude)}` : null,
     ].filter(Boolean).join('\n');
 
-    const wind = `Wind: ${getWindLabel(averageWind)}`;
+    const wind = `Wind: ${getWindLabel(averageWind, convertWindSpeed(averageWind), windUnit)}`;
 
     const thunder = `Thunder: ${getMagnitudeChanceLabel(thunderMagnitude)}`;
 

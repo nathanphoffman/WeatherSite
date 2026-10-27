@@ -6,7 +6,7 @@ interface LabelProps {
     value: string;
 }
 
-export function YAxisLabel({ x, y, value }: LabelProps) {
+function YAxisLabel({ x, y, value }: LabelProps) {
     return (
         <text x={x} y={y} fontSize={LABEL_CONFIG.fontSize} fill={LABEL_CONFIG.fill} textAnchor="end">
             {value}

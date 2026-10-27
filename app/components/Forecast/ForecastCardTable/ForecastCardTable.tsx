@@ -13,7 +13,7 @@ interface ForecastCardTableProps {
 }
 
 export default function ForecastCardTable({ weather, allGroups, allFlipped, flipNonce, allExpanded, onCardFlipChange, onExpandChange }: ForecastCardTableProps) {
-    const { useMetric, toggleSystem } = useMeasurementSystemProviderContext();
+    const { isMetric, toggleSystem } = useMeasurementSystemProviderContext();
 
     return (
         <>
@@ -21,15 +21,17 @@ export default function ForecastCardTable({ weather, allGroups, allFlipped, flip
                 <div className="flex text-sm border border-gray-700 rounded-lg overflow-hidden">
                     <button
                         type="button"
-                        onClick={() => useMetric && toggleSystem()}
-                        className={`px-4 py-1.5 transition-colors ${!useMetric ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+                        aria-pressed={!isMetric}
+                        onClick={() => isMetric && toggleSystem()}
+                        className={`px-4 py-1.5 transition-colors ${!isMetric ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
                     >
                         Imperial
                     </button>
                     <button
                         type="button"
-                        onClick={() => !useMetric && toggleSystem()}
-                        className={`px-4 py-1.5 transition-colors ${useMetric ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+                        aria-pressed={isMetric}
+                        onClick={() => !isMetric && toggleSystem()}
+                        className={`px-4 py-1.5 transition-colors ${isMetric ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
                     >
                         Metric
                     </button>

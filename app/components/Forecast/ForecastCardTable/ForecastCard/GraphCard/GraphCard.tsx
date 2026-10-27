@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ChanceRanges } from '@/app/lib/noaa/config';
 import { ThreeHourGroup } from '@/app/lib/noaa/types/forecast';
 import { getHourRealFeel, getHourStormRating } from '@/app/lib/noaa/output/calculations';
-import { REAL_FEEL_THRESHOLDS, WIND_THRESHOLDS, STORM_RATING_THRESHOLDS, PRECIP_THRESHOLDS } from './graphThresholds';
+import { REAL_FEEL_THRESHOLDS, WIND_THRESHOLDS, STORM_RATING_THRESHOLDS } from './graphThresholds';
+import { GRAPH_COLORS } from './graphConfig';
 import LineGraph from './LineGraph';
 import MultiLineGraph from './MultiLineGraph';
 import { useMeasurementSystemProviderContext } from '@/app/components/Forecast/MeasurementSystemProvider';
@@ -15,16 +17,12 @@ interface GraphCardProps {
     onExpandChange?: (expanded: boolean) => void;
 }
 
-const CHANCE_TO_PERCENT: Record<string, number> = {
-    '--': 0,
-    'SChc': 25,
-    'Chc': 50,
-    'Lkly': 75,
-    'Ocnl': 100,
-};
+const PERCENT_PER_CHANCE_STEP = 25;
 
+// each chance code's position in ChanceRanges is its 25% step (0 = "--", 4 = "Ocnl")
 function chanceToPercent(chance: string): number {
-    return CHANCE_TO_PERCENT[chance] ?? 0;
+    const chanceStep = Object.entries(ChanceRanges).find(([, code]) => code === chance)?.[0];
+    return Number(chanceStep ?? 0) * PERCENT_PER_CHANCE_STEP;
 }
 
 type HourData = ThreeHourGroup['hours'][number];
@@ -33,7 +31,7 @@ const toWindSpeed = (hourData: HourData) => hourData.wind;
 
 export default function GraphCard({ groups, allGroups, allExpanded, onExpandChange }: GraphCardProps) {
     const [expanded, setExpanded] = useState(false);
-    const { useMetric, convertTemperature, convertWindSpeed, convertPrecip } = useMeasurementSystemProviderContext();
+    const { isMetric, convertTemperature, convertWindSpeed, convertPrecip } = useMeasurementSystemProviderContext();
 
     useEffect(() => {
         setExpanded(allExpanded);
@@ -88,14 +86,14 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
     return (
         <section>
             <div className="flex justify-between items-baseline">
-                <span className="text-4xl font-bold text-white">{convertTemperature(dailyHighRealFeel)}°</span>
-                <span className="text-4xl font-bold text-gray-400">{convertTemperature(dailyLowRealFeel)}°</span>
+                <span className="text-4xl font-bold text-white"><span className="sr-only">Daily high </span>{convertTemperature(dailyHighRealFeel)}°</span>
+                <span className="text-4xl font-bold text-gray-400"><span className="sr-only">Daily low </span>{convertTemperature(dailyLowRealFeel)}°</span>
             </div>
 
             <LineGraph
-                title={`Real Feel (${useMetric ? '°C' : '°F'})`}
+                title={`Real Feel (${isMetric ? '°C' : '°F'})`}
                 points={realFeelPoints.map((point) => ({ ...point, value: convertTemperature(point.value) }))}
-                color="#3b82f6"
+                color={GRAPH_COLORS.REAL_FEEL}
                 indicesToLabel={indicesToLabel}
                 height={110}
                 minValue={convertTemperature(weeklyHighAndLowRealFeel.weeklyLow)}
@@ -106,7 +104,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
             <LineGraph
                 title="Storm Rating"
                 points={stormRatingPoints}
-                color="#a855f7"
+                color={GRAPH_COLORS.STORM_RATING}
                 indicesToLabel={indicesToLabel}
                 height={90}
                 minValue={0}
@@ -128,7 +126,7 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                     <LineGraph
                         title="Cloud Cover"
                         points={skyCoverPoints}
-                        color="#94a3b8"
+                        color={GRAPH_COLORS.CLOUD_COVER}
                         indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
@@ -137,25 +135,25 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                     <LineGraph
                         title="Precip Chance"
                         points={precipChancePoints}
-                        color="#60a5fa"
+                        color={GRAPH_COLORS.PRECIP_CHANCE}
                         indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
                         formatYLabel={(value) => `${value}%`}
                     />
                     <LineGraph
-                        title={`Wind Speed (${useMetric ? 'km/h' : 'mph'})`}
+                        title={`Wind Speed (${isMetric ? 'km/h' : 'mph'})`}
                         points={windPoints.map((point) => ({ ...point, value: convertWindSpeed(point.value) }))}
                         minValue={convertWindSpeed(weeklyHighAndLowWindSpeed.weeklyLow)}
                         maxValue={convertWindSpeed(weeklyHighAndLowWindSpeed.weeklyHigh)}
-                        color="#a78bfa"
+                        color={GRAPH_COLORS.WIND_SPEED}
                         indicesToLabel={indicesToLabel}
                         thresholdLines={WIND_THRESHOLDS.map((threshold) => ({ ...threshold, value: convertWindSpeed(threshold.value) }))}
                     />
                     <LineGraph
                         title="Humidity"
                         points={humidityPoints}
-                        color="#06b6d4"
+                        color={GRAPH_COLORS.HUMIDITY}
                         indicesToLabel={indicesToLabel}
                         minValue={0}
                         maxValue={100}
@@ -163,23 +161,23 @@ export default function GraphCard({ groups, allGroups, allExpanded, onExpandChan
                     />
 
                     <LineGraph
-                        title={`Precipitation (${useMetric ? 'mm' : 'in'})`}
+                        title={`Precipitation (${isMetric ? 'mm' : 'in'})`}
                         points={precipAmountPoints.map((point) => ({ ...point, value: convertPrecip(point.value) }))}
-                        color="#38bdf8"
+                        color={GRAPH_COLORS.PRECIP_AMOUNT}
                         indicesToLabel={indicesToLabel}
                         minValue={0}
                         logStrength={1}
                         //thresholdLines={PRECIP_THRESHOLDS.map((threshold) => ({ ...threshold, value: convertPrecip(threshold.value) }))}
                         maxValue={Math.max(...precipAmountPoints.map((point) => convertPrecip(point.value)).filter(isFinite), convertPrecip(0.1))}
-                        formatYLabel={(value) => useMetric ? value.toFixed(1) : value.toFixed(2)}
+                        formatYLabel={(value) => isMetric ? value.toFixed(1) : value.toFixed(2)}
                     />
 
                     <MultiLineGraph
                         title="Rain / Snow / Thunder"
                         series={[
-                            { points: rainPoints, color: '#60a5fa', label: 'Rain' },
-                            { points: snowPoints, color: '#e2e8f0', label: 'Snow' },
-                            { points: thunderPoints, color: '#fbbf24', label: 'Thunder' },
+                            { points: rainPoints, color: GRAPH_COLORS.RAIN, label: 'Rain' },
+                            { points: snowPoints, color: GRAPH_COLORS.SNOW, label: 'Snow' },
+                            { points: thunderPoints, color: GRAPH_COLORS.THUNDER, label: 'Thunder' },
                         ]}
                         indicesToLabel={indicesToLabel}
                         minValue={0}

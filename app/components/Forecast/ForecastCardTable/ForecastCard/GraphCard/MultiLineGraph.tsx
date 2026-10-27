@@ -1,5 +1,5 @@
-import { GRAPH_DIMENSIONS, ThresholdLine } from './graphConfig';
-import { useContainerWidth } from './useContainerWidth';
+import { ThresholdLine } from './graphConfig';
+import { usePlotGeometry } from './usePlotGeometry';
 import { padSinglePoint, smoothLinePath, buildAxisHelpers } from './graphMath';
 import GraphSvg from './GraphSvg/GraphSvg';
 
@@ -21,11 +21,7 @@ export interface MultiLineGraphProps {
 }
 
 export default function MultiLineGraph({ title, series, indicesToLabel, height, minValue, maxValue, formatYLabel, thresholdLines }: MultiLineGraphProps) {
-    const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = GRAPH_DIMENSIONS;
-    const { ref: containerRef, width: svgWidth } = useContainerWidth();
-    const resolvedHeight = height ?? SVG_HEIGHT;
-    const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
-    const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
+    const { containerRef, svgWidth, resolvedHeight, plotWidth, plotHeight } = usePlotGeometry(height);
 
     const effectiveSeries = series.map((seriesItem) => ({ ...seriesItem, points: padSinglePoint(seriesItem.points) }));
 

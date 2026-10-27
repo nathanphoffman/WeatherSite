@@ -1,5 +1,5 @@
 import { GRAPH_DIMENSIONS, ThresholdLine } from './graphConfig';
-import { useContainerWidth } from './useContainerWidth';
+import { usePlotGeometry } from './usePlotGeometry';
 import { padSinglePoint, smoothLinePath, smoothAreaPath, buildAxisHelpers } from './graphMath';
 import GraphSvg from './GraphSvg/GraphSvg';
 
@@ -17,11 +17,8 @@ export interface LineGraphProps {
 }
 
 export default function LineGraph({ title, points, color, indicesToLabel, height, minValue, maxValue, formatYLabel, thresholdLines, logStrength }: LineGraphProps) {
-    const { SVG_HEIGHT, PADDING_LEFT, PADDING_RIGHT, PADDING_TOP, PADDING_BOTTOM } = GRAPH_DIMENSIONS;
-    const { ref: containerRef, width: svgWidth } = useContainerWidth();
-    const resolvedHeight = height ?? SVG_HEIGHT;
-    const plotWidth = svgWidth - PADDING_LEFT - PADDING_RIGHT;
-    const plotHeight = resolvedHeight - PADDING_TOP - PADDING_BOTTOM;
+    const { containerRef, svgWidth, resolvedHeight, plotWidth, plotHeight } = usePlotGeometry(height);
+    const { PADDING_TOP } = GRAPH_DIMENSIONS;
 
     const effectivePoints = padSinglePoint(points);
 
