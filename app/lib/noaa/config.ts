@@ -19,14 +19,9 @@ export const NOAA_API_BASE_URL = 'https://api.weather.gov';
 export const NOAA_USER_AGENT = 'WeatherSite/1.0 (weather app)';
 export const NOAA_REQUEST_TIMEOUT_MS = 10_000;
 
-export function getBlobConnectionInfo() {
-    const SITE_ID = process.env.BLOB_SITE_ID; // netlify also calls this project id
-    const BLOB_TOKEN = process.env.BLOB_TOKEN;
-
-    if(!SITE_ID || !BLOB_TOKEN) return undefined;
-    else return {
-        SITE_ID, BLOB_TOKEN
-    };
+export function getDatabasePath() {
+    // point this at a mounted volume (e.g. on Railway) so the cache survives redeploys
+    return process.env.DATABASE_PATH ?? "./database.sqlite";
 }
 
 export function isProduction() {

@@ -10,7 +10,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@netlify/blobs": "^10.7.1",
     "@types/papaparse": "^5.5.2",
     "better-sqlite3": "^12.6.2",
     "clean": "^4.0.2",

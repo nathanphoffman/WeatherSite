@@ -3,7 +3,6 @@ import { getForecast } from '@/app/lib/noaa/storage/forecastCache';
 import { locationCoordinates } from '@/app/lib/noaa/config';
 import { isValidLatitude, isValidLongitude } from '@/app/lib/noaa/types/validators';
 import { logger } from '@/app/lib/logger';
-import { blobStorage } from '@/app/lib/noaa/storage/blob';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +31,6 @@ export async function GET(request: Request) {
         return NextResponse.json(forecast);
     } catch (error) {
         logger.error("Failed to get forecast:", error);
-        await blobStorage.logError(error);
 
         return NextResponse.json({ error: "Forecast unavailable for your location" }, { status: 500 });
     }

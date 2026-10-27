@@ -1,4 +1,4 @@
-import { LAT_MULTIPLIER, LONG_MULTIPLIER } from "../config";
+import { LAT_MULTIPLIER, LONG_MULTIPLIER, getDatabasePath } from "../config";
 import { Weather } from "../types/databaseModels";
 import { StorageSolution } from "../types/storage";
 import { logger } from "../../logger";
@@ -7,7 +7,7 @@ import Database from 'better-sqlite3';
 let _db: Database.Database | undefined = undefined;
 
 export function openDatabaseConnection() {
-    if (!_db) _db = new Database("./database.sqlite", { verbose: logger.debug });
+    if (!_db) _db = new Database(getDatabasePath(), { verbose: logger.debug });
 
     return _db;
 }
